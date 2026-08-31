@@ -11,9 +11,10 @@ import { getServerSideURL } from '@/utilities/getURL'
  * version, NOT document content. Any block/CSS/JS change flips it, which is what
  * invalidates every cached page (step 9's re-render-everything job keys on it).
  *
- * Here (step 7) the bundles are materialised into `public/_render/` and served by
- * this app. Step 9 swaps the destination for R2 + CDN by pointing
- * RENDER_ASSET_BASE_URL at the CDN — no code change.
+ * Serving: when RENDER_ASSET_BASE_URL is unset the bundles are materialised into
+ * `public/_render/` and served by this app. When it is set (step 9 points it at
+ * R2/CDN) the publish pipeline uploads the bundles there instead and nothing is
+ * written locally.
  */
 
 const SRC_DIR = join(process.cwd(), 'src', 'render', 'assets')
@@ -32,35 +33,38 @@ function assetBaseURL(): string {
   return process.env.RENDER_ASSET_BASE_URL || getServerSideURL()
 }
 
-function build(): RenderAssets {
+/** Raw bundle contents + their content hash. Used by the S3 uploader (step 9). */
+export function readAssetSources(): { version: string; css: string; js: string } {
   const css = readFileSync(join(SRC_DIR, 'blocks.css'), 'utf8')
   const jsSource = readFileSync(join(SRC_DIR, 'blocks.js'), 'utf8')
-
   const version = createHash('sha256')
     .update(css)
     .update('\0')
     .update(jsSource)
     .digest('hex')
     .slice(0, 8)
+  return { version, css, js: jsSource.replace(/__RENDER_VERSION__/g, version) }
+}
 
-  const js = jsSource.replace(/__RENDER_VERSION__/g, version)
+function build(): RenderAssets {
+  const { version, css, js } = readAssetSources()
 
   const cssName = `blocks.${version}.css`
   const jsName = `blocks.${version}.js`
+  const servedLocally = !process.env.RENDER_ASSET_BASE_URL
 
-  mkdirSync(OUT_DIR, { recursive: true })
-
-  // Drop stale bundles from older render versions.
-  for (const file of readdirSync(OUT_DIR)) {
-    if (/^blocks\.[0-9a-f]{8}\.(css|js)$/.test(file) && file !== cssName && file !== jsName) {
-      unlinkSync(join(OUT_DIR, file))
+  if (servedLocally) {
+    mkdirSync(OUT_DIR, { recursive: true })
+    for (const file of readdirSync(OUT_DIR)) {
+      if (/^blocks\.[0-9a-f]{8}\.(css|js)$/.test(file) && file !== cssName && file !== jsName) {
+        unlinkSync(join(OUT_DIR, file))
+      }
     }
+    const cssPath = join(OUT_DIR, cssName)
+    const jsPath = join(OUT_DIR, jsName)
+    if (!existsSync(cssPath)) writeFileSync(cssPath, css)
+    if (!existsSync(jsPath)) writeFileSync(jsPath, js)
   }
-
-  const cssPath = join(OUT_DIR, cssName)
-  const jsPath = join(OUT_DIR, jsName)
-  if (!existsSync(cssPath)) writeFileSync(cssPath, css)
-  if (!existsSync(jsPath)) writeFileSync(jsPath, js)
 
   const base = assetBaseURL().replace(/\/$/, '')
   return {
@@ -77,5 +81,5 @@ export function getRenderAssets(): RenderAssets {
 
 /** Just the hash, for cache keys / manifests without materialising URLs. */
 export function getRenderVersion(): string {
-  return getRenderAssets().version
+  return readAssetSources().version
 }

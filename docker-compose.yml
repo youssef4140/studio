@@ -19,5 +19,57 @@ services:
       timeout: 5s
       retries: 10
 
+  # BullMQ backing store for the publish pipeline (step 9).
+  redis:
+    image: redis:7-alpine
+    container_name: studio-redis
+    restart: unless-stopped
+    ports:
+      # 6380 on the host — 6379 is often taken by a local Redis
+      - '6380:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # S3-compatible object storage — stands in for Cloudflare R2 locally.
+  # Console at http://localhost:9001 (studio / studio-secret).
+  minio:
+    image: minio/minio:latest
+    container_name: studio-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: studio
+      MINIO_ROOT_PASSWORD: studio-secret
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # One-shot: create the render bucket and make it publicly readable
+  # (a CDN-fronted public bucket is what consumers fetch envelopes + assets from).
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 studio studio-secret &&
+      mc mb --ignore-existing local/studio-render &&
+      mc anonymous set download local/studio-render &&
+      echo 'studio-render bucket ready'
+      "
+    restart: 'no'
+
 volumes:
   postgres_data:
+  minio_data:

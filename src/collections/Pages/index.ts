@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { Hero } from '@/blocks/Hero'
 import { Faq } from '@/blocks/Faq'
 import { EntityList } from '@/blocks/EntityList'
+import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 
 // Landing pages (§1.1): freeform, blocks arranged on a canvas.
 // This is the minimal shape from build-order step 5 — title, slug, layout, drafts.
@@ -47,5 +48,25 @@ export const Pages: CollectionConfig<'pages'> = {
   ],
   versions: {
     drafts: true,
+  },
+  hooks: {
+    // Publish pipeline (step 9). Fire-and-forget onto the BullMQ queue; the
+    // worker renders the envelope and writes it to object storage. Enqueue on
+    // any change to a published doc AND on the published->draft transition (so
+    // the artifact gets pulled).
+    afterChange: [
+      ({ doc, previousDoc }) => {
+        const isPublished = doc?._status === 'published'
+        const wasPublished = previousDoc?._status === 'published'
+        if (isPublished || wasPublished) enqueuePublish('pages', doc.id)
+        return doc
+      },
+    ],
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) enqueueUnpublish('pages', doc.slug)
+        return doc
+      },
+    ],
   },
 }
