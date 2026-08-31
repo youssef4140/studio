@@ -13,6 +13,7 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { signPreviewToken } from '@/preview/token'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,6 +25,12 @@ export default buildConfig({
     },
     user: Users.slug,
     livePreview: {
+      // One-way live preview (step 10): the iframe loads our preview route, which
+      // runs renderBlocks() against draft data. Regenerated per edit-view render,
+      // so the signed token stays short-lived.
+      collections: ['pages'],
+      url: ({ data }) =>
+        `${getServerSideURL()}/preview/pages/${data?.id}?token=${signPreviewToken('pages')}`,
       breakpoints: [
         {
           label: 'Mobile',
