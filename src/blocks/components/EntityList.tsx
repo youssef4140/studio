@@ -1,31 +1,23 @@
 import React from 'react'
 
-import type { BlockStyleValues } from '@/fields/blockStyles'
+import type { EntityListBlock } from '@/payload-types'
 
-/**
- * Render-ready stub. Props mirror src/blocks/EntityList.ts; after step 6 these
- * become the generated `EntityListBlock` interface.
- *
- * The actual item data comes from the bound entity's array field (`field`), which
- * renderBlocks() resolves via interpolation in step 12. Until entities exist this
- * renders `items` if a caller passes them, otherwise just the heading + shell.
- * Appearance tokens are applied by renderBlocks() (step 7).
- */
 export interface EntityListItem {
   label: string
   description?: string | null
 }
 
-export interface EntityListProps extends BlockStyleValues {
-  heading?: string | null
-  field: 'symptoms' | 'treatments'
-  style: 'bullets' | 'cards'
-  items?: EntityListItem[]
-}
+/**
+ * `items` is not a stored field — renderBlocks() resolves it from the bound
+ * entity's `field` array in step 12 and passes it in. Until then a caller may
+ * pass `items` explicitly; with none, only the heading + shell render.
+ * Inner content only — the shared <Block> wrapper owns the outer <section>.
+ */
+type EntityListProps = EntityListBlock & { items?: EntityListItem[] }
 
 export const EntityList: React.FC<EntityListProps> = ({ heading, style, items = [] }) => {
   return (
-    <section className="entity-list" data-block="entity-list" data-style={style}>
+    <div className="entity-list" data-style={style}>
       {heading ? <h2 className="entity-list__heading">{heading}</h2> : null}
       {style === 'cards' ? (
         <div className="entity-list__cards">
@@ -47,6 +39,6 @@ export const EntityList: React.FC<EntityListProps> = ({ heading, style, items = 
           ))}
         </ul>
       )}
-    </section>
+    </div>
   )
 }

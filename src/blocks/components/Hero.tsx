@@ -1,33 +1,19 @@
 import React from 'react'
 
-import type { BlockStyleValues } from '@/fields/blockStyles'
+import type { HeroBlock } from '@/payload-types'
+import { resolveImage } from '@/render/media'
 
 /**
- * Render-ready stub. Props mirror src/blocks/Hero.ts; after step 6 these become
- * the generated `HeroBlock` interface from @/payload-types. Appearance tokens
- * (background/paddingY/hideOn) are mapped to classes by renderBlocks() in step 7,
- * not here. Logical CSS properties only — the stylesheet lives in the step-7 bundle.
+ * Written once, used by the canvas, the preview iframe and the published HTML
+ * (§2). Renders inner content only — the shared <Block> wrapper (src/render)
+ * owns the outer <section>, `data-block` and the appearance classes.
+ * Logical CSS only; rules live in src/render/assets/blocks.css.
  */
-export interface HeroProps extends BlockStyleValues {
-  heading: string
-  subheading?: string | null
-  image?: HeroImage | number | null
-  cta?: { label?: string | null; href?: string | null } | null
-}
+export const Hero: React.FC<HeroBlock> = ({ heading, subheading, image, cta }) => {
+  const img = resolveImage(image)
 
-interface HeroImage {
-  url?: string | null
-  alt?: string | null
-  width?: number | null
-  height?: number | null
-}
-
-const isImage = (value: HeroProps['image']): value is HeroImage =>
-  Boolean(value) && typeof value === 'object'
-
-export const Hero: React.FC<HeroProps> = ({ heading, subheading, image, cta }) => {
   return (
-    <section className="hero" data-block="hero">
+    <div className="hero">
       <div className="hero__body">
         <h1 className="hero__heading">{heading}</h1>
         {subheading ? <p className="hero__subheading">{subheading}</p> : null}
@@ -37,15 +23,18 @@ export const Hero: React.FC<HeroProps> = ({ heading, subheading, image, cta }) =
           </a>
         ) : null}
       </div>
-      {isImage(image) && image.url ? (
+      {img ? (
         <img
           className="hero__image"
-          src={image.url}
-          alt={image.alt ?? ''}
-          width={image.width ?? undefined}
-          height={image.height ?? undefined}
+          src={img.src}
+          srcSet={img.srcSet}
+          alt={img.alt}
+          width={img.width}
+          height={img.height}
+          loading="lazy"
+          decoding="async"
         />
       ) : null}
-    </section>
+    </div>
   )
 }

@@ -20,3 +20,10 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Materialised render bundles (step 7; step 9 moves these to R2/CDN)
+public/_render/
+
+# TypeScript incremental build info
+tsconfig.tsbuildinfo
+*.tsbuildinfo

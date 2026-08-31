@@ -1,0 +1,191 @@
+/*
+ * Studio block stylesheet — the versioned bundle (§3).
+ * Consumers link this once. Never inline per-page <style>.
+ *
+ * Rules:
+ *  - Design tokens (CSS custom properties) only, no raw values in component rules.
+ *    Per-tenant themes override the :root tokens (step 18).
+ *  - Logical properties only: padding-inline, margin-block, inset-inline-start,
+ *    border-inline-end, text-align: start. Never left/right/margin-left/etc.
+ */
+
+:root {
+  --studio-color-surface: #f5f6f8;
+  --studio-color-muted: #e9edf1;
+  --studio-color-brand: #0d6e6e;
+  --studio-color-on-brand: #ffffff;
+  --studio-color-inverse: #0b0b0c;
+  --studio-color-on-inverse: #f5f6f8;
+  --studio-color-border: #d5dbe1;
+  --studio-color-text: #14181c;
+
+  --studio-space-sm: 1rem;
+  --studio-space-md: 2.5rem;
+  --studio-space-lg: 4.5rem;
+
+  --studio-measure: 42rem;
+  --studio-radius: 6px;
+}
+
+/* ---- block wrapper + appearance tokens (see src/render/appearance.ts) ---- */
+
+.block {
+  box-sizing: border-box;
+  color: var(--studio-color-text);
+}
+
+.block *,
+.block *::before,
+.block *::after {
+  box-sizing: inherit;
+}
+
+.block--bg-surface {
+  background-color: var(--studio-color-surface);
+}
+.block--bg-muted {
+  background-color: var(--studio-color-muted);
+}
+.block--bg-brand {
+  background-color: var(--studio-color-brand);
+  color: var(--studio-color-on-brand);
+}
+.block--bg-inverse {
+  background-color: var(--studio-color-inverse);
+  color: var(--studio-color-on-inverse);
+}
+
+.block--py-none {
+  padding-block: 0;
+}
+.block--py-sm {
+  padding-block: var(--studio-space-sm);
+}
+.block--py-md {
+  padding-block: var(--studio-space-md);
+}
+.block--py-lg {
+  padding-block: var(--studio-space-lg);
+}
+
+@media (max-width: 47.99em) {
+  .block--hide-mobile {
+    display: none;
+  }
+}
+@media (min-width: 48em) and (max-width: 63.99em) {
+  .block--hide-tablet {
+    display: none;
+  }
+}
+@media (min-width: 64em) {
+  .block--hide-desktop {
+    display: none;
+  }
+}
+
+/* ---- shared inner layout ---- */
+
+.block > * {
+  margin-inline: auto;
+  max-inline-size: 72rem;
+  padding-inline: var(--studio-space-sm);
+}
+
+/* ---- Hero ---- */
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--studio-space-md);
+  align-items: center;
+}
+.hero__body {
+  flex: 1 1 20rem;
+  max-inline-size: var(--studio-measure);
+}
+.hero__heading {
+  margin-block: 0 0.5rem;
+  font-size: clamp(1.9rem, 1.2rem + 3vw, 3rem);
+  line-height: 1.1;
+}
+.hero__subheading {
+  margin-block: 0;
+  font-size: 1.15rem;
+  opacity: 0.85;
+}
+.hero__cta {
+  display: inline-block;
+  margin-block-start: 1.5rem;
+  padding-block: 0.65rem;
+  padding-inline: 1.4rem;
+  border: 1px solid currentColor;
+  border-radius: var(--studio-radius);
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+}
+.hero__image {
+  flex: 1 1 18rem;
+  max-inline-size: 100%;
+  block-size: auto;
+  border-radius: var(--studio-radius);
+}
+
+/* ---- FAQ (zero JS: native <details>/<summary>) ---- */
+
+.faq__heading {
+  margin-block: 0 1rem;
+  font-size: 1.6rem;
+}
+.faq__item {
+  border-block-start: 1px solid var(--studio-color-border);
+}
+.faq__item:last-child {
+  border-block-end: 1px solid var(--studio-color-border);
+}
+.faq__question {
+  cursor: pointer;
+  padding-block: 0.9rem;
+  font-weight: 600;
+  list-style-position: inside;
+}
+.faq__answer {
+  padding-block-end: 1rem;
+  opacity: 0.9;
+}
+.faq__answer > :first-child {
+  margin-block-start: 0;
+}
+
+/* ---- EntityList ---- */
+
+.entity-list__heading {
+  margin-block: 0 1rem;
+  font-size: 1.6rem;
+}
+.entity-list__bullets {
+  margin-block: 0;
+  padding-inline-start: 1.25rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.entity-list__cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  padding-inline: 0;
+}
+.entity-list__card {
+  border: 1px solid var(--studio-color-border);
+  border-radius: var(--studio-radius);
+  padding: 1.1rem;
+}
+.entity-list__card-title {
+  margin-block: 0 0.35rem;
+  font-size: 1.05rem;
+}
+.entity-list__card-body {
+  margin-block: 0;
+  opacity: 0.85;
+}
