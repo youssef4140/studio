@@ -27,3 +27,6 @@ public/_render/
 # TypeScript incremental build info
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+
+# Local consumer integration harnesses (step 8) — not part of Studio
+consumers/
