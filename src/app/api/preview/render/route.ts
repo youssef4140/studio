@@ -1,8 +1,7 @@
 import { renderBlocks } from '@/render/renderBlocks'
+import { isRenderableCollection } from '@/render/collections'
 import type { RenderableDoc } from '@/render/types'
 import { verifyPreviewToken } from '@/preview/token'
-
-const SUPPORTED = new Set(['pages'])
 
 /**
  * POST /api/preview/render   (step 10)
@@ -22,7 +21,7 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const { collection, token, data } = body
-  if (!collection || !SUPPORTED.has(collection) || !verifyPreviewToken(token, collection)) {
+  if (!collection || !isRenderableCollection(collection) || !verifyPreviewToken(token, collection)) {
     return Response.json({ error: 'unauthorized' }, { status: 403 })
   }
   if (!data || typeof data !== 'object') {

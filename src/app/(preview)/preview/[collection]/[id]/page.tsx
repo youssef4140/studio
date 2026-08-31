@@ -3,12 +3,11 @@ import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
 
 import { renderBlocks } from '@/render/renderBlocks'
+import { isRenderableCollection } from '@/render/collections'
 import type { RenderableDoc } from '@/render/types'
 import { getServerSideURL } from '@/utilities/getURL'
 import { verifyPreviewToken } from '@/preview/token'
 import { PreviewClient } from '@/preview/PreviewClient'
-
-const SUPPORTED = new Set(['pages'])
 
 export const dynamic = 'force-dynamic'
 
@@ -22,7 +21,7 @@ export default async function PreviewPage({
   const { collection, id } = await params
   const { token } = await searchParams
 
-  if (!SUPPORTED.has(collection) || !verifyPreviewToken(token, collection)) {
+  if (!isRenderableCollection(collection) || !verifyPreviewToken(token, collection)) {
     notFound()
   }
 
@@ -31,7 +30,7 @@ export default async function PreviewPage({
   let doc: RenderableDoc & Record<string, unknown>
   try {
     doc = (await payload.findByID({
-      collection: collection as 'pages',
+      collection,
       id,
       draft: true,
       depth: 2,

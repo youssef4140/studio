@@ -26,10 +26,24 @@ export interface RenderEnvelope {
   renderedAt: string
 }
 
-/** Minimum shape `renderBlocks()` needs from a document. */
+interface SeoGroup {
+  title?: string | null
+  description?: string | null
+  image?: unknown
+}
+
+/**
+ * Minimum shape renderBlocks() needs from a document. A doc carries EITHER a
+ * `layout` blocks array (Pages) OR a `content` Lexical doc (Articles) — the
+ * renderer branches on which is present.
+ */
 export interface RenderableDoc {
   id: number | string
   slug?: string | null
   title?: string | null
+  excerpt?: string | null
+  seo?: SeoGroup | null
   layout?: PageBlock[] | null
+  /** Lexical SerializedEditorState — validated structurally by the renderer. */
+  content?: unknown
 }

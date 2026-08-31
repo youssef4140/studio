@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { TextEditor } from './collections/TextEditor'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -28,9 +29,11 @@ export default buildConfig({
       // One-way live preview (step 10): the iframe loads our preview route, which
       // runs renderBlocks() against draft data. Regenerated per edit-view render,
       // so the signed token stays short-lived.
-      collections: ['pages'],
-      url: ({ data }) =>
-        `${getServerSideURL()}/preview/pages/${data?.id}?token=${signPreviewToken('pages')}`,
+      collections: ['pages', 'textEditor'],
+      url: ({ data, collectionConfig }) => {
+        const slug = collectionConfig?.slug ?? 'pages'
+        return `${getServerSideURL()}/preview/${slug}/${data?.id}?token=${signPreviewToken(slug)}`
+      },
       breakpoints: [
         {
           label: 'Mobile',
@@ -60,7 +63,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Media, Categories, Users],
+  collections: [Pages, TextEditor, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,

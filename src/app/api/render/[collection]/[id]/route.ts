@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
 import { renderBlocks } from '@/render/renderBlocks'
+import { isRenderableCollection } from '@/render/collections'
 import type { RenderableDoc } from '@/render/types'
 
 /**
@@ -15,15 +16,13 @@ import type { RenderableDoc } from '@/render/types'
  * on a consumer request path.
  */
 
-const SUPPORTED = new Set(['pages'])
-
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ collection: string; id: string }> },
 ): Promise<Response> {
   const { collection, id } = await params
 
-  if (!SUPPORTED.has(collection)) {
+  if (!isRenderableCollection(collection)) {
     return Response.json({ error: `Unsupported collection: ${collection}` }, { status: 400 })
   }
 
@@ -34,7 +33,7 @@ export async function GET(
   try {
     if (isNumericId) {
       doc = (await payload.findByID({
-        collection: collection as 'pages',
+        collection,
         id,
         depth: 2,
         draft: false,
@@ -42,7 +41,7 @@ export async function GET(
       })) as RenderableDoc
     } else {
       const { docs } = await payload.find({
-        collection: collection as 'pages',
+        collection,
         where: { slug: { equals: id } },
         depth: 2,
         draft: false,

@@ -12,7 +12,9 @@
  * the canvas (step 15) add debouncing there, not a fragile fixed jobId.
  */
 
-export function enqueuePublish(collection: string, id: string | number): void {
+import type { RenderableCollection } from '@/render/collections'
+
+export function enqueuePublish(collection: RenderableCollection, id: string | number): void {
   void (async () => {
     try {
       const { getQueue } = await import('./queue')
@@ -27,7 +29,7 @@ export function enqueuePublish(collection: string, id: string | number): void {
   })()
 }
 
-export function enqueueUnpublish(collection: string, slug: string): void {
+export function enqueueUnpublish(collection: RenderableCollection, slug: string): void {
   void (async () => {
     try {
       const { getQueue } = await import('./queue')
