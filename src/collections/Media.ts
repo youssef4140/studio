@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { syncCloudinaryFolderOnMove } from '@/media/cloudinaryStorage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,6 +57,14 @@ export const Media: CollectionConfig = {
       }),
     },
   ],
+  hooks: {
+    // Only ever does anything when CLOUDINARY_URL is set AND this update
+    // actually changes `folder` on an already-uploaded doc — see the doc
+    // comment on the hook itself for why this can't just live in
+    // autoAssignMediaFolder (it also has to catch a superadmin manually
+    // re-filing a Media doc, not just the first-use backfill).
+    beforeChange: [syncCloudinaryFolderOnMove],
+  },
   upload: {
     // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
     staticDir: path.resolve(dirname, '../../public/media'),

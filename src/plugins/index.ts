@@ -1,3 +1,4 @@
+import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
@@ -9,6 +10,7 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 
 import { Page } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { cloudinaryAdapter, isCloudinaryConfigured } from '@/media/cloudinaryStorage'
 
 // Note: form-builder and SEO are introduced properly per the build order
 // (§8: forms at step 17, JSON-LD at step 12). They are left wired here because
@@ -68,6 +70,23 @@ export const plugins: Plugin[] = [
     generateTitle,
     generateURL,
   }),
+  // Media -> Cloudinary, only when CLOUDINARY_URL is configured (falls back
+  // to local disk otherwise — see src/collections/Media.ts's own `upload`
+  // config, untouched). `disablePayloadAccessControl: true` because
+  // Cloudinary URLs are already public CDN links; no need to proxy through
+  // Payload's own file route.
+  ...(isCloudinaryConfigured()
+    ? [
+        cloudStoragePlugin({
+          collections: {
+            media: {
+              adapter: cloudinaryAdapter,
+              disablePayloadAccessControl: true,
+            },
+          },
+        }),
+      ]
+    : []),
   formBuilderPlugin({
     fields: {
       payment: false,

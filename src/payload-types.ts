@@ -326,6 +326,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  cloudinaryFolder?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -339,6 +340,7 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -347,6 +349,7 @@ export interface Media {
       filename?: string | null;
     };
     square?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -355,6 +358,7 @@ export interface Media {
       filename?: string | null;
     };
     small?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -363,6 +367,7 @@ export interface Media {
       filename?: string | null;
     };
     medium?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -371,6 +376,7 @@ export interface Media {
       filename?: string | null;
     };
     large?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -379,6 +385,7 @@ export interface Media {
       filename?: string | null;
     };
     xlarge?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -387,6 +394,7 @@ export interface Media {
       filename?: string | null;
     };
     og?: {
+      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -1087,6 +1095,7 @@ export interface MediaSelect<T extends boolean = true> {
   folder?: T;
   alt?: T;
   caption?: T;
+  cloudinaryFolder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1104,6 +1113,7 @@ export interface MediaSelect<T extends boolean = true> {
         thumbnail?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1114,6 +1124,7 @@ export interface MediaSelect<T extends boolean = true> {
         square?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1124,6 +1135,7 @@ export interface MediaSelect<T extends boolean = true> {
         small?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1134,6 +1146,7 @@ export interface MediaSelect<T extends boolean = true> {
         medium?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1144,6 +1157,7 @@ export interface MediaSelect<T extends boolean = true> {
         large?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1154,6 +1168,7 @@ export interface MediaSelect<T extends boolean = true> {
         xlarge?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1164,6 +1179,7 @@ export interface MediaSelect<T extends boolean = true> {
         og?:
           | T
           | {
+              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
