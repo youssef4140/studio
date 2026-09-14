@@ -12,7 +12,9 @@ export default function PreviewLayout({ children }: { children: React.ReactNode 
   const assets = getRenderAssets()
 
   return (
-    <html lang="en">
+    // blocks.js (a defer script) sets data-blocks-runtime on <html> before React
+    // hydrates this iframe, so the attribute is always an expected client/server diff.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
