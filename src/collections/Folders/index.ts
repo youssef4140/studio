@@ -39,7 +39,12 @@ export const Folders: CollectionConfig = {
     read: authenticated,
   },
   admin: {
-    useAsTitle: 'name',
+    // `path`, not `name` — a bare name is ambiguous the moment two tenants
+    // both have a same-named subfolder (compoundUniqueSlug only enforces
+    // uniqueness WITHIN a parent, e.g. ptofthecity/services and tny/services
+    // can both exist). This is what shows in the `folder` relationship
+    // picker on Pages/TextEditor, in breadcrumbs, and in the doc header.
+    useAsTitle: 'path',
     defaultColumns: ['name', 'path', 'isTenant'],
   },
   fields: [
