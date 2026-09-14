@@ -16,7 +16,14 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  folders: true,
+  // Not Payload's native `folders: true` browsing system — that's a separate,
+  // polymorphic admin-UX feature with no path/theme concept (see Folders'
+  // own doc comment). Media is scoped into the SAME tenant/subfolder tree as
+  // Pages/Articles via this relationship, so a folder's edit view (its `media`
+  // join field) can list everything that belongs to it.
+  admin: {
+    defaultColumns: ['filename', 'folder', 'alt', 'updatedAt'],
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -24,6 +31,16 @@ export const Media: CollectionConfig = {
     update: authenticated,
   },
   fields: [
+    {
+      name: 'folder',
+      type: 'relationship',
+      relationTo: 'folders',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Which project/subfolder this belongs to. Left blank on upload — auto-filled the first time this image is used on a page or article.',
+      },
+    },
     {
       name: 'alt',
       type: 'text',

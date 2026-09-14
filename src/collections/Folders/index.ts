@@ -76,6 +76,46 @@ export const Folders: CollectionConfig = {
         description: 'Computed — true for a root folder (no parent), i.e. a tenant.',
       },
     },
+    // Virtual/computed — reverse lookups so a folder's own edit view shows
+    // what's inside it ("subfolders and relevant media under it"). Not stored;
+    // Payload resolves these live from each target collection's own scope
+    // field. `on` must match the field name on the other side exactly.
+    {
+      name: 'subfolders',
+      type: 'join',
+      collection: 'folders',
+      on: 'parent',
+      admin: {
+        defaultColumns: ['name', 'slug', 'path'],
+      },
+    },
+    {
+      name: 'pages',
+      type: 'join',
+      collection: 'pages',
+      on: 'folder',
+      admin: {
+        defaultColumns: ['title', 'slug', '_status'],
+      },
+    },
+    {
+      name: 'articles',
+      type: 'join',
+      collection: 'textEditor',
+      on: 'folder',
+      admin: {
+        defaultColumns: ['title', 'slug', '_status'],
+      },
+    },
+    {
+      name: 'media',
+      type: 'join',
+      collection: 'media',
+      on: 'folder',
+      admin: {
+        defaultColumns: ['filename', 'alt'],
+      },
+    },
     {
       name: 'theme',
       type: 'group',

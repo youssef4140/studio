@@ -11,6 +11,7 @@ import { compoundUniqueSlug } from '@/fields/compoundUnique'
 import { folderScopeFields, syncTenant } from '@/fields/folderScope'
 import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
+import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
 
 // Landing pages (§1.1): freeform, blocks arranged on a canvas.
 // This is the minimal shape from build-order step 5 — title, slug, layout, drafts —
@@ -82,6 +83,7 @@ export const Pages: CollectionConfig<'pages'> = {
         if (isPublished || wasPublished) enqueuePublish('pages', doc.id)
         return doc
       },
+      autoAssignMediaFolder,
     ],
     afterDelete: [
       async ({ doc, req }) => {

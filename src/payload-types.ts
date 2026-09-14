@@ -77,14 +77,16 @@ export interface Config {
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-kv': PayloadKv;
-    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
-    'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media';
+    folders: {
+      subfolders: 'folders';
+      pages: 'pages';
+      articles: 'textEditor';
+      media: 'media';
     };
   };
   collectionsSelect: {
@@ -98,7 +100,6 @@ export interface Config {
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -191,6 +192,26 @@ export interface Folder {
    * Computed — true for a root folder (no parent), i.e. a tenant.
    */
   isTenant?: boolean | null;
+  subfolders?: {
+    docs?: (number | Folder)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  pages?: {
+    docs?: (number | Page)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  articles?: {
+    docs?: (number | TextEditor)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  media?: {
+    docs?: (number | Media)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   /**
    * Typography and colour palette — set on the tenant (root folder) only.
    */
@@ -235,31 +256,49 @@ export interface Folder {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeroBlock".
+ * via the `definition` "textEditor".
  */
-export interface HeroBlock {
-  heading: string;
-  subheading?: string | null;
-  image?: (number | null) | Media;
-  cta?: {
-    label?: string | null;
-    href?: string | null;
+export interface TextEditor {
+  id: number;
+  title: string;
+  /**
+   * Unique within its folder — two tenants can both use the same slug.
+   */
+  slug: string;
+  /**
+   * The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).
+   */
+  folder: number | Folder;
+  /**
+   * Computed from folder — the root (tenant) folder.
+   */
+  tenant?: (number | null) | Folder;
+  excerpt?: string | null;
+  featuredImage?: (number | null) | Media;
+  publishedAt?: string | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
   };
-  /**
-   * Surface token for the block background.
-   */
-  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
-  /**
-   * Vertical padding (block-start / block-end) token.
-   */
-  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
-  /**
-   * Breakpoints where this block is hidden. Empty = visible everywhere.
-   */
-  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'hero';
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -267,6 +306,10 @@ export interface HeroBlock {
  */
 export interface Media {
   id: number;
+  /**
+   * Which project/subfolder this belongs to. Left blank on upload — auto-filled the first time this image is used on a page or article.
+   */
+  folder?: (number | null) | Folder;
   alt?: string | null;
   caption?: {
     root: {
@@ -283,7 +326,6 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -356,29 +398,31 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-folders".
+ * via the `definition` "HeroBlock".
  */
-export interface FolderInterface {
-  id: number;
-  name: string;
-  folder?: (number | null) | FolderInterface;
-  documentsAndFolders?: {
-    docs?: (
-      | {
-          relationTo?: 'payload-folders';
-          value: number | FolderInterface;
-        }
-      | {
-          relationTo?: 'media';
-          value: number | Media;
-        }
-    )[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
+export interface HeroBlock {
+  heading: string;
+  subheading?: string | null;
+  image?: (number | null) | Media;
+  cta?: {
+    label?: string | null;
+    href?: string | null;
   };
-  folderType?: 'media'[] | null;
-  updatedAt: string;
-  createdAt: string;
+  /**
+   * Surface token for the block background.
+   */
+  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
+  /**
+   * Vertical padding (block-start / block-end) token.
+   */
+  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
+  /**
+   * Breakpoints where this block is hidden. Empty = visible everywhere.
+   */
+  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -536,52 +580,6 @@ export interface EntityListBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'entityList';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "textEditor".
- */
-export interface TextEditor {
-  id: number;
-  title: string;
-  /**
-   * Unique within its folder — two tenants can both use the same slug.
-   */
-  slug: string;
-  /**
-   * The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).
-   */
-  folder: number | Folder;
-  /**
-   * Computed from folder — the root (tenant) folder.
-   */
-  tenant?: (number | null) | Folder;
-  excerpt?: string | null;
-  featuredImage?: (number | null) | Media;
-  publishedAt?: string | null;
-  seo?: {
-    title?: string | null;
-    description?: string | null;
-    image?: (number | null) | Media;
-  };
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -899,10 +897,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-submissions';
         value: number | FormSubmission;
-      } | null)
-    | ({
-        relationTo: 'payload-folders';
-        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1090,9 +1084,9 @@ export interface TextEditorSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  folder?: T;
   alt?: T;
   caption?: T;
-  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1208,6 +1202,10 @@ export interface FoldersSelect<T extends boolean = true> {
   slug?: T;
   path?: T;
   isTenant?: T;
+  subfolders?: T;
+  pages?: T;
+  articles?: T;
+  media?: T;
   theme?:
     | T
     | {
@@ -1438,18 +1436,6 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-folders_select".
- */
-export interface PayloadFoldersSelect<T extends boolean = true> {
-  name?: T;
-  folder?: T;
-  documentsAndFolders?: T;
-  folderType?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

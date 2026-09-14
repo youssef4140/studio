@@ -12,6 +12,7 @@ import { folderScopeFields, syncTenant } from '@/fields/folderScope'
 import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 import { studioLexicalFeatures } from '@/fields/studioLexical'
+import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
 
 /**
  * Articles (§1.3): long-form prose with blocks embedded in the flow.
@@ -109,6 +110,7 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
         if (isPublished || wasPublished) enqueuePublish('textEditor', doc.id)
         return doc
       },
+      autoAssignMediaFolder,
     ],
     afterDelete: [
       async ({ doc, req }) => {
