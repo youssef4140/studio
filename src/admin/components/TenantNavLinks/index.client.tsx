@@ -125,13 +125,13 @@ export const TenantNavLinksClient: React.FC<{ tenants: TreeTenant[] }> = ({ tena
                   None yet
                 </div>
               ) : (
-                bucket.subfolders.map(({ folder }) => (
+                bucket.subfolders.map(({ docs, folder }) => (
                   <AccordionRow
                     depth={2}
                     href={formatAdminURL({ adminRoute, path: `/collections/folders/${folder.id}` })}
                     id={`nav-tenant-${tenant.slug}-${bucket.label.toLowerCase()}-${folder.slug}`}
                     key={folder.id}
-                    label={folder.name}
+                    label={docs.length > 0 ? `${folder.name} (${docs.length})` : folder.name}
                   />
                 ))
               )}

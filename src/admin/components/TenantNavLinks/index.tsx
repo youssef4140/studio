@@ -11,12 +11,16 @@ const BUCKET_DEFS = [
 
 /**
  * Surfaces the whole content tree in the nav itself, as an accordion:
- * tenant -> Pages/Articles/Media -> the subfolders that actually hold that
- * content type (services, programs, ...). Fetched once, server-side, so the
- * accordion is pure client-side expand/collapse over data that's already
- * there — no per-click loading state. Same underlying shape as
- * TenantContentTree (the folder edit view's own overview), just rendered as
- * nav rows instead of form content.
+ * tenant -> Pages/Articles/Media -> every subfolder (services, programs,
+ * ...), each with a doc count for that content type. Fetched once,
+ * server-side, so the accordion is pure client-side expand/collapse over
+ * data that's already there — no per-click loading state.
+ *
+ * Deliberately does NOT hide a subfolder from a bucket just because it has
+ * zero docs of that type yet — a subfolder isn't restricted to one content
+ * type (nothing stops "services" from holding an article too), and hiding
+ * it would mean there's no way to navigate to a brand-new subfolder before
+ * it has its first page/article/media in it.
  *
  * Registered as admin.components.beforeNavLinks in src/payload.config.ts.
  */
@@ -62,7 +66,7 @@ export const TenantNavLinks = async ({ payload }: { payload: Payload }) => {
               }
             }),
           )
-          return { label, subfolders: subfolderEntries.filter((entry) => entry.docs.length > 0) }
+          return { label, subfolders: subfolderEntries }
         }),
       )
 
