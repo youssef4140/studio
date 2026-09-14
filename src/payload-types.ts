@@ -162,7 +162,7 @@ export interface Page {
    * Computed from folder — the root (tenant) folder.
    */
   tenant?: (number | null) | Folder;
-  layout?: (HeroBlock | ContentBlock | FaqBlock | EntityListBlock)[] | null;
+  layout?: (HeroBlock | ContentBlock | FaqBlock | FaqTnyBlock | EntityListBlock)[] | null;
   seo?: {
     title?: string | null;
     description?: string | null;
@@ -466,6 +466,49 @@ export interface FaqBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqTnyBlock".
+ */
+export interface FaqTnyBlock {
+  heading?: string | null;
+  items?:
+    | {
+        question: string;
+        answer?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Surface token for the block background.
+   */
+  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
+  /**
+   * Vertical padding (block-start / block-end) token.
+   */
+  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
+  /**
+   * Breakpoints where this block is hidden. Empty = visible everywhere.
+   */
+  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faqTny';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -918,6 +961,7 @@ export interface PagesSelect<T extends boolean = true> {
         hero?: T | HeroBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
+        faqTny?: T | FaqTnyBlockSelect<T>;
         entityList?: T | EntityListBlockSelect<T>;
       };
   seo?:
@@ -976,6 +1020,25 @@ export interface FaqBlockSelect<T extends boolean = true> {
         question?: T;
         answer?: T;
         featured?: T;
+        id?: T;
+      };
+  background?: T;
+  paddingY?: T;
+  hideOn?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqTnyBlock_select".
+ */
+export interface FaqTnyBlockSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
         id?: T;
       };
   background?: T;

@@ -46,6 +46,7 @@ export const studioJSXConverters: JSXConvertersFunction = ({ defaultConverters }
   blocks: {
     hero: blockConverter('hero'),
     faq: blockConverter('faq'),
+    faqTny: blockConverter('faqTny'),
     entityList: blockConverter('entityList'),
   },
   // Text-state tokens (color/emphasis) apply on top of the default bold/italic/

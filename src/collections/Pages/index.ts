@@ -2,8 +2,10 @@ import type { CollectionConfig } from 'payload'
 
 import { Hero } from '@/blocks/Hero'
 import { Faq } from '@/blocks/Faq'
+import { FaqTny } from '@/blocks/FaqTny'
 import { EntityList } from '@/blocks/EntityList'
 import { Content } from '@/blocks/Content'
+import { validateBlockTenants } from '@/blocks/tenantScope'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { compoundUniqueSlug } from '@/fields/compoundUnique'
 import { folderScopeFields, syncTenant } from '@/fields/folderScope'
@@ -49,7 +51,7 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'layout',
       type: 'blocks',
-      blocks: [Hero, Content, Faq, EntityList],
+      blocks: [Hero, Content, Faq, FaqTny, EntityList],
       admin: {
         initCollapsed: true,
       },
@@ -68,7 +70,7 @@ export const Pages: CollectionConfig<'pages'> = {
     drafts: true,
   },
   hooks: {
-    beforeValidate: [syncTenant],
+    beforeValidate: [syncTenant, validateBlockTenants],
     // Publish pipeline (step 9). Fire-and-forget onto the BullMQ queue; the
     // worker renders the envelope and writes it to object storage. Enqueue on
     // any change to a published doc AND on the published->draft transition (so

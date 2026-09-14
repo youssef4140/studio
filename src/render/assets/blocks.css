@@ -229,6 +229,46 @@
   margin-block-start: 0;
 }
 
+/* ---- FAQ (TNY) — numbered variant, zero JS ---- */
+
+.faq-tny__heading {
+  margin-block: 0 1.2rem;
+  font-size: 1.6rem;
+}
+.faq-tny__items {
+  list-style: none;
+  margin: 0;
+  padding-inline-start: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.faq-tny__item {
+  border: 1px solid var(--studio-color-border);
+  border-radius: var(--studio-radius);
+  padding-inline: 1rem;
+}
+.faq-tny__question {
+  cursor: pointer;
+  padding-block: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.faq-tny__number {
+  font-variant-numeric: tabular-nums;
+  color: var(--studio-color-brand);
+  font-weight: 700;
+}
+.faq-tny__answer {
+  padding-block-end: 1rem;
+  padding-inline-start: calc(0.75rem + 1.6em);
+  opacity: 0.9;
+}
+.faq-tny__answer > :first-child {
+  margin-block-start: 0;
+}
+
 /* ---- Article body (Lexical prose with blocks embedded in the flow) ---- */
 
 .article-body {

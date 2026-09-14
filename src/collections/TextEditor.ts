@@ -3,7 +3,9 @@ import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { Hero } from '@/blocks/Hero'
 import { Faq } from '@/blocks/Faq'
+import { FaqTny } from '@/blocks/FaqTny'
 import { EntityList } from '@/blocks/EntityList'
+import { validateBlockTenants } from '@/blocks/tenantScope'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { compoundUniqueSlug } from '@/fields/compoundUnique'
 import { folderScopeFields, syncTenant } from '@/fields/folderScope'
@@ -90,7 +92,7 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
         features: ({ defaultFeatures }) => [
           ...studioLexicalFeatures({ defaultFeatures, headingSizes: ['h2', 'h3', 'h4'] }),
           // Same Block configs as Pages.layout — one definition, both surfaces.
-          BlocksFeature({ blocks: [Hero, Faq, EntityList] }),
+          BlocksFeature({ blocks: [Hero, Faq, FaqTny, EntityList] }),
         ],
       }),
     },
@@ -99,7 +101,7 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
     drafts: true,
   },
   hooks: {
-    beforeValidate: [syncTenant],
+    beforeValidate: [syncTenant, validateBlockTenants],
     afterChange: [
       ({ doc, previousDoc }) => {
         const isPublished = doc?._status === 'published'

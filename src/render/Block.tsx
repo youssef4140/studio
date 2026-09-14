@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Hero } from '@/blocks/components/Hero'
 import { Faq } from '@/blocks/components/Faq'
+import { FaqTny } from '@/blocks/components/FaqTny'
 import { EntityList } from '@/blocks/components/EntityList'
 import { Content } from '@/blocks/components/Content'
 
@@ -21,6 +22,8 @@ function inner(block: PageBlock): React.ReactNode {
       return <Hero {...block} />
     case 'faq':
       return <Faq {...block} />
+    case 'faqTny':
+      return <FaqTny {...block} />
     case 'entityList':
       return <EntityList {...block} />
     case 'content':

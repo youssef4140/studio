@@ -1,4 +1,4 @@
-import type { CollectionBeforeValidateHook } from 'payload'
+import { APIError, type CollectionBeforeValidateHook } from 'payload'
 
 /**
  * Computes `path` (the full ancestor chain, e.g. `ptofthecity/services`) and
@@ -51,7 +51,7 @@ export const applyThemeJSON: CollectionBeforeValidateHook = ({ data }) => {
   try {
     parsed = typeof raw === 'string' ? JSON.parse(raw) : (raw as typeof parsed)
   } catch {
-    throw new Error('Theme JSON is not valid JSON.')
+    throw new APIError('Theme JSON is not valid JSON.', 400, undefined, true)
   }
 
   data.theme = {
