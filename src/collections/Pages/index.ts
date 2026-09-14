@@ -3,11 +3,13 @@ import type { CollectionConfig } from 'payload'
 import { Hero } from '@/blocks/Hero'
 import { Faq } from '@/blocks/Faq'
 import { EntityList } from '@/blocks/EntityList'
+import { Content } from '@/blocks/Content'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 
 // Landing pages (§1.1): freeform, blocks arranged on a canvas.
-// This is the minimal shape from build-order step 5 — title, slug, layout, drafts.
-// SEO / JSON-LD (step 12) and the canvas field UI (step 14+) layer on later.
+// This is the minimal shape from build-order step 5 — title, slug, layout, drafts —
+// plus an `seo` group (brought forward from step 12 on request). JSON-LD and the
+// canvas field UI (step 14+) still layer on later.
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
   access: {
@@ -40,10 +42,19 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'layout',
       type: 'blocks',
-      blocks: [Hero, Faq, EntityList],
+      blocks: [Hero, Content, Faq, EntityList],
       admin: {
         initCollapsed: true,
       },
+    },
+    {
+      name: 'seo',
+      type: 'group',
+      fields: [
+        { name: 'title', type: 'text' },
+        { name: 'description', type: 'textarea' },
+        { name: 'image', type: 'upload', relationTo: 'media' },
+      ],
     },
   ],
   versions: {

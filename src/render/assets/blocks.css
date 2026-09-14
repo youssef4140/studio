@@ -132,6 +132,35 @@
   border-radius: var(--studio-radius);
 }
 
+/* ---- Content (plain prose) ---- */
+
+.content {
+  max-inline-size: var(--studio-measure);
+}
+.content > * {
+  margin-block: 0 1.1rem;
+}
+.content h2 {
+  margin-block: 1.6rem 0.7rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.content h3 {
+  margin-block: 1.3rem 0.5rem;
+  font-size: 1.2rem;
+}
+.content h4 {
+  margin-block: 1.1rem 0.4rem;
+  font-size: 1.05rem;
+}
+.content a {
+  color: var(--studio-color-brand);
+}
+.content ul,
+.content ol {
+  padding-inline-start: 1.3rem;
+}
+
 /* ---- FAQ (zero JS: native <details>/<summary>) ---- */
 
 .faq__heading {

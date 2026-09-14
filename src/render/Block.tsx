@@ -3,6 +3,7 @@ import React from 'react'
 import { Hero } from '@/blocks/components/Hero'
 import { Faq } from '@/blocks/components/Faq'
 import { EntityList } from '@/blocks/components/EntityList'
+import { Content } from '@/blocks/components/Content'
 
 import { appearanceClasses } from './appearance'
 import type { PageBlock } from './types'
@@ -22,6 +23,8 @@ function inner(block: PageBlock): React.ReactNode {
       return <Faq {...block} />
     case 'entityList':
       return <EntityList {...block} />
+    case 'content':
+      return <Content {...block} />
     default:
       return null
   }
