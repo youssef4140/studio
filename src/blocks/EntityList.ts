@@ -12,6 +12,11 @@ export const EntityList: Block = {
     singular: 'Entity List',
     plural: 'Entity Lists',
   },
+  admin: {
+    images: {
+      thumbnail: { url: '/block-thumbnails/entity-list.svg', alt: 'Entity List block preview' },
+    },
+  },
   fields: [
     {
       name: 'heading',

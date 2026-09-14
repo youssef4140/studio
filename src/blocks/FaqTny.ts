@@ -18,6 +18,11 @@ export const FaqTny: Block = {
   custom: {
     studioTenant: 'tny',
   },
+  admin: {
+    images: {
+      thumbnail: { url: '/block-thumbnails/faq-tny.svg', alt: 'FAQ (TNY) block preview' },
+    },
+  },
   fields: [
     {
       name: 'heading',

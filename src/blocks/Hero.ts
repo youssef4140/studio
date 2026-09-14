@@ -10,6 +10,11 @@ export const Hero: Block = {
     singular: 'Hero',
     plural: 'Heroes',
   },
+  admin: {
+    images: {
+      thumbnail: { url: '/block-thumbnails/hero.svg', alt: 'Hero block preview' },
+    },
+  },
   fields: [
     {
       name: 'heading',

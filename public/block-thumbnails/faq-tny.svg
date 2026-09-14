@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320">
+  <rect width="480" height="320" fill="#ffffff"/>
+
+  <rect x="392" y="24" width="56" height="24" rx="12" fill="#2f6f6d"/>
+  <text x="420" y="41" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">TNY</text>
+
+  <circle cx="64" cy="88" r="14" fill="#2f6f6d"/>
+  <text x="64" y="93" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">1</text>
+  <rect x="96" y="81" width="300" height="14" rx="7" fill="#4a5560"/>
+  <line x1="40" y1="118" x2="440" y2="118" stroke="#edeff2" stroke-width="1"/>
+
+  <circle cx="64" cy="148" r="14" fill="#2f6f6d"/>
+  <text x="64" y="153" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">2</text>
+  <rect x="96" y="141" width="260" height="14" rx="7" fill="#4a5560"/>
+  <line x1="40" y1="178" x2="440" y2="178" stroke="#edeff2" stroke-width="1"/>
+
+  <circle cx="64" cy="208" r="14" fill="#2f6f6d"/>
+  <text x="64" y="213" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">3</text>
+  <rect x="96" y="201" width="320" height="14" rx="7" fill="#4a5560"/>
+  <line x1="40" y1="238" x2="440" y2="238" stroke="#edeff2" stroke-width="1"/>
+
+  <circle cx="64" cy="268" r="14" fill="#2f6f6d"/>
+  <text x="64" y="273" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">4</text>
+  <rect x="96" y="261" width="240" height="14" rx="7" fill="#4a5560"/>
+</svg>

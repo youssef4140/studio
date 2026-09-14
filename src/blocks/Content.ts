@@ -15,6 +15,11 @@ export const Content: Block = {
     singular: 'Content',
     plural: 'Content',
   },
+  admin: {
+    images: {
+      thumbnail: { url: '/block-thumbnails/content.svg', alt: 'Content block preview' },
+    },
+  },
   fields: [
     {
       name: 'body',

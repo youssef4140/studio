@@ -10,6 +10,11 @@ export const Faq: Block = {
     singular: 'FAQ',
     plural: 'FAQs',
   },
+  admin: {
+    images: {
+      thumbnail: { url: '/block-thumbnails/faq.svg', alt: 'FAQ block preview' },
+    },
+  },
   fields: [
     {
       name: 'heading',
