@@ -76,6 +76,23 @@ export const Folders: CollectionConfig = {
         description: 'Computed — true for a root folder (no parent), i.e. a tenant.',
       },
     },
+    // A tenant (root folder) can only ever hold PAGES/ARTICLES indirectly —
+    // folderScopeFields' `folder` field (src/fields/folderScope.ts) requires
+    // a non-root folder, so a doc's `folder` can never equal a tenant's own
+    // id. This tree fetches and groups everything from the tenant's
+    // subfolders down, which the plain join fields below can't do (a join
+    // is a flat, single-level "docs whose field X equals this doc's id" —
+    // no recursion). Root-only.
+    {
+      name: 'contentOverview',
+      type: 'ui',
+      admin: {
+        condition: (data) => !data?.parent,
+        components: {
+          Field: '@/admin/components/TenantContentTree#TenantContentTree',
+        },
+      },
+    },
     // Virtual/computed — reverse lookups so a folder's own edit view shows
     // what's inside it ("subfolders and relevant media under it"). Not stored;
     // Payload resolves these live from each target collection's own scope
@@ -95,6 +112,9 @@ export const Folders: CollectionConfig = {
       collection: 'pages',
       on: 'folder',
       admin: {
+        // Always empty on a tenant/root — see contentOverview above, which
+        // replaces this there with the real (recursive) picture.
+        condition: (data) => Boolean(data?.parent),
         defaultColumns: ['title', 'slug', '_status'],
       },
     },
@@ -104,6 +124,7 @@ export const Folders: CollectionConfig = {
       collection: 'textEditor',
       on: 'folder',
       admin: {
+        condition: (data) => Boolean(data?.parent),
         defaultColumns: ['title', 'slug', '_status'],
       },
     },
