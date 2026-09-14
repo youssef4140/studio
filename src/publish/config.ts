@@ -43,7 +43,9 @@ export const publishConfig = {
 
 /** Key layout inside the bucket. */
 export const keys = {
-  envelope: (collection: string, slug: string) => `render/${collection}/${slug}.json`,
+  // `address` is the compound tenant/folder/.../slug path (src/publish/address.ts)
+  // — slashes just nest as further S3 key segments, no format change needed.
+  envelope: (collection: string, address: string) => `render/${collection}/${address}.json`,
   assetPrefix: '_render',
   /** Marker holding the renderVersion of the last full asset sync. */
   meta: 'render/_meta.json',

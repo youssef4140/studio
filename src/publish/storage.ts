@@ -38,10 +38,10 @@ async function bodyToString(body: unknown): Promise<string> {
 /** Write the published envelope. Returns its public URL. */
 export async function putEnvelope(
   collection: string,
-  slug: string,
+  address: string,
   envelope: RenderEnvelope,
 ): Promise<string> {
-  const key = keys.envelope(collection, slug)
+  const key = keys.envelope(collection, address)
   await s3().send(
     new PutObjectCommand({
       Bucket: bucket,
@@ -54,9 +54,9 @@ export async function putEnvelope(
   return `${publicUrl}/${key}`
 }
 
-export async function deleteEnvelope(collection: string, slug: string): Promise<void> {
+export async function deleteEnvelope(collection: string, address: string): Promise<void> {
   await s3().send(
-    new DeleteObjectCommand({ Bucket: bucket, Key: keys.envelope(collection, slug) }),
+    new DeleteObjectCommand({ Bucket: bucket, Key: keys.envelope(collection, address) }),
   )
 }
 

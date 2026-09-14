@@ -46,4 +46,7 @@ export interface RenderableDoc {
   layout?: PageBlock[] | null
   /** Lexical SerializedEditorState — validated structurally by the renderer. */
   content?: unknown
+  /** Folder relationship — id or populated Folder. Used to resolve the render address/tenant. */
+  folder?: unknown
+  tenant?: unknown
 }

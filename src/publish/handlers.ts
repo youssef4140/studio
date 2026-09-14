@@ -11,9 +11,10 @@ import { purge, purgeEverything } from './cdn'
 import { deleteEnvelope, putEnvelope } from './storage'
 import { recordRenderVersion, syncAssets } from './assets-sync'
 import { notifyConsumers } from './webhooks'
+import { resolveDocAddress } from './address'
 
-const envelopePublicUrl = (collection: string, slug: string) =>
-  `${publishConfig.s3.publicUrl}/${keys.envelope(collection, slug)}`
+const envelopePublicUrl = (collection: string, address: string) =>
+  `${publishConfig.s3.publicUrl}/${keys.envelope(collection, address)}`
 
 /**
  * Render one document and publish its artifact: envelope -> object storage ->
@@ -26,7 +27,7 @@ export async function publishDoc({
 }: {
   collection: RenderableCollection
   id: string | number
-}): Promise<{ status: 'published' | 'unpublished' | 'missing'; slug?: string }> {
+}): Promise<{ status: 'published' | 'unpublished' | 'missing'; address?: string }> {
   const payload = await getPayload({ config: configPromise })
 
   let doc: (RenderableDoc & { _status?: string | null }) | null = null
@@ -45,49 +46,54 @@ export async function publishDoc({
   if (!doc) return { status: 'missing' }
 
   if (doc._status !== 'published') {
-    if (doc.slug) {
-      await deleteEnvelope(collection, doc.slug)
-      await purge([envelopePublicUrl(collection, doc.slug)])
+    if (doc.slug && doc.folder) {
+      const address = await resolveDocAddress(payload, doc)
+      await deleteEnvelope(collection, address)
+      await purge([envelopePublicUrl(collection, address)])
       await notifyConsumers({
         type: 'page.unpublished',
         collection,
         slug: doc.slug,
+        address,
         renderVersion: getRenderVersion(),
       })
+      return { status: 'unpublished', address }
     }
-    return { status: 'unpublished', slug: doc.slug ?? undefined }
+    return { status: 'unpublished' }
   }
 
-  const slug = doc.slug as string
+  const address = await resolveDocAddress(payload, doc)
   const envelope = await renderBlocks(collection, doc)
-  const envelopeUrl = await putEnvelope(collection, slug, envelope)
+  const envelopeUrl = await putEnvelope(collection, address, envelope)
   await purge([envelopeUrl])
   await notifyConsumers({
     type: 'page.published',
     collection,
-    slug,
+    slug: doc.slug ?? undefined,
+    address,
     renderVersion: envelope.renderVersion,
     renderedAt: envelope.renderedAt,
     envelopeUrl,
   })
 
-  return { status: 'published', slug }
+  return { status: 'published', address }
 }
 
-/** Hard delete — drop the artifact and tell consumers. */
+/** Hard delete — drop the artifact and tell consumers. `address` is already
+ *  resolved by the caller (the doc no longer exists to resolve it from). */
 export async function unpublishDoc({
   collection,
-  slug,
+  address,
 }: {
   collection: RenderableCollection
-  slug: string
+  address: string
 }): Promise<void> {
-  await deleteEnvelope(collection, slug)
-  await purge([envelopePublicUrl(collection, slug)])
+  await deleteEnvelope(collection, address)
+  await purge([envelopePublicUrl(collection, address)])
   await notifyConsumers({
     type: 'page.unpublished',
     collection,
-    slug,
+    address,
     renderVersion: getRenderVersion(),
   })
 }
@@ -120,8 +126,11 @@ export async function rerenderAll({
         page,
       })
       for (const doc of res.docs) {
-        const envelope = await renderBlocks(collection, doc as RenderableDoc)
-        await putEnvelope(collection, (doc as RenderableDoc).slug as string, envelope)
+        const renderableDoc = doc as RenderableDoc
+        if (!renderableDoc.folder) continue // no folder yet — nothing to address, skip
+        const address = await resolveDocAddress(payload, renderableDoc)
+        const envelope = await renderBlocks(collection, renderableDoc)
+        await putEnvelope(collection, address, envelope)
         count++
       }
       if (!res.hasNextPage) break

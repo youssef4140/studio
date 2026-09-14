@@ -4,6 +4,10 @@ import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { Hero } from '@/blocks/Hero'
 import { Faq } from '@/blocks/Faq'
 import { EntityList } from '@/blocks/EntityList'
+import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { compoundUniqueSlug } from '@/fields/compoundUnique'
+import { folderScopeFields, syncTenant } from '@/fields/folderScope'
+import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 import { studioLexicalFeatures } from '@/fields/studioLexical'
 
@@ -22,11 +26,11 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
     plural: 'Articles',
   },
   access: {
-    read: ({ req }) => Boolean(req.user) || { _status: { equals: 'published' } },
+    read: authenticatedOrPublished,
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'publishedAt', 'updatedAt'],
+    defaultColumns: ['title', 'folder', 'slug', 'publishedAt', 'updatedAt'],
   },
   defaultPopulate: {
     title: true,
@@ -44,10 +48,14 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
       index: true,
-      admin: { position: 'sidebar' },
+      validate: compoundUniqueSlug({ collection: 'textEditor', scopeField: 'folder' }),
+      admin: {
+        position: 'sidebar',
+        description: 'Unique within its folder — two tenants can both use the same slug.',
+      },
     },
+    ...folderScopeFields,
     {
       name: 'excerpt',
       type: 'textarea',
@@ -91,6 +99,7 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
     drafts: true,
   },
   hooks: {
+    beforeValidate: [syncTenant],
     afterChange: [
       ({ doc, previousDoc }) => {
         const isPublished = doc?._status === 'published'
@@ -100,8 +109,11 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
       },
     ],
     afterDelete: [
-      ({ doc }) => {
-        if (doc?.slug) enqueueUnpublish('textEditor', doc.slug)
+      async ({ doc, req }) => {
+        if (doc?.folder && doc?.slug) {
+          const address = await resolveDocAddress(req.payload, doc)
+          enqueueUnpublish('textEditor', address)
+        }
         return doc
       },
     ],

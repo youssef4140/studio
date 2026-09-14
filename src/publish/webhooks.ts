@@ -6,6 +6,8 @@ export interface ConsumerEvent {
   type: 'page.published' | 'page.unpublished' | 'rerender.completed'
   collection: string
   slug?: string
+  /** The full tenant/folder/.../slug render address — see src/publish/address.ts. */
+  address?: string
   renderVersion: string
   renderedAt?: string
   envelopeUrl?: string

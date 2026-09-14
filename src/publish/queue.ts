@@ -9,7 +9,7 @@ export type PublishJobName = 'publish-doc' | 'unpublish-doc' | 'rerender-all'
 
 export interface PublishJobData {
   'publish-doc': { collection: string; id: string | number }
-  'unpublish-doc': { collection: string; slug: string }
+  'unpublish-doc': { collection: string; address: string }
   'rerender-all': { reason: string }
 }
 

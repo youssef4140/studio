@@ -150,7 +150,18 @@ export interface UserAuthOperations {
 export interface Page {
   id: number;
   title: string;
+  /**
+   * Unique within its folder — two tenants can both use the same slug.
+   */
   slug: string;
+  /**
+   * The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).
+   */
+  folder: number | Folder;
+  /**
+   * Computed from folder — the root (tenant) folder.
+   */
+  tenant?: (number | null) | Folder;
   layout?: (HeroBlock | ContentBlock | FaqBlock | EntityListBlock)[] | null;
   seo?: {
     title?: string | null;
@@ -160,6 +171,67 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders".
+ */
+export interface Folder {
+  id: number;
+  name: string;
+  /**
+   * Used in the render/storage address — lowercase, no spaces.
+   */
+  slug: string;
+  /**
+   * Computed — the full folder chain, e.g. ptofthecity/services.
+   */
+  path?: string | null;
+  /**
+   * Computed — true for a root folder (no parent), i.e. a tenant.
+   */
+  isTenant?: boolean | null;
+  /**
+   * Typography and colour palette — set on the tenant (root folder) only.
+   */
+  theme?: {
+    typography?: {
+      fontFamily?: ('system-ui' | 'Inter' | 'Merriweather' | 'Poppins' | 'Lora') | null;
+    };
+    palette?: {
+      surface?: string | null;
+      muted?: string | null;
+      brand?: string | null;
+      onBrand?: string | null;
+      inverse?: string | null;
+      onInverse?: string | null;
+      border?: string | null;
+      text?: string | null;
+    };
+    /**
+     * Paste { "typography": {...}, "palette": {...} } to bulk-set the fields above. Cleared after import.
+     */
+    themeJSON?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  parent?: (number | null) | Folder;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Folder;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -429,7 +501,18 @@ export interface EntityListBlock {
 export interface TextEditor {
   id: number;
   title: string;
+  /**
+   * Unique within its folder — two tenants can both use the same slug.
+   */
   slug: string;
+  /**
+   * The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).
+   */
+  folder: number | Folder;
+  /**
+   * Computed from folder — the root (tenant) folder.
+   */
+  tenant?: (number | null) | Folder;
   excerpt?: string | null;
   featuredImage?: (number | null) | Media;
   publishedAt?: string | null;
@@ -473,67 +556,6 @@ export interface Category {
   breadcrumbs?:
     | {
         doc?: (number | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "folders".
- */
-export interface Folder {
-  id: number;
-  name: string;
-  /**
-   * Used in the render/storage address — lowercase, no spaces.
-   */
-  slug: string;
-  /**
-   * Computed — the full folder chain, e.g. ptofthecity/services.
-   */
-  path?: string | null;
-  /**
-   * Computed — true for a root folder (no parent), i.e. a tenant.
-   */
-  isTenant?: boolean | null;
-  /**
-   * Typography and colour palette — set on the tenant (root folder) only.
-   */
-  theme?: {
-    typography?: {
-      fontFamily?: ('system-ui' | 'Inter' | 'Merriweather' | 'Poppins' | 'Lora') | null;
-    };
-    palette?: {
-      surface?: string | null;
-      muted?: string | null;
-      brand?: string | null;
-      onBrand?: string | null;
-      inverse?: string | null;
-      onInverse?: string | null;
-      border?: string | null;
-      text?: string | null;
-    };
-    /**
-     * Paste { "typography": {...}, "palette": {...} } to bulk-set the fields above. Cleared after import.
-     */
-    themeJSON?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-  };
-  parent?: (number | null) | Folder;
-  breadcrumbs?:
-    | {
-        doc?: (number | null) | Folder;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -888,6 +910,8 @@ export interface PayloadMigration {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  folder?: T;
+  tenant?: T;
   layout?:
     | T
     | {
@@ -981,6 +1005,8 @@ export interface EntityListBlockSelect<T extends boolean = true> {
 export interface TextEditorSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  folder?: T;
+  tenant?: T;
   excerpt?: T;
   featuredImage?: T;
   publishedAt?: T;

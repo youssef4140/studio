@@ -29,15 +29,15 @@ export function enqueuePublish(collection: RenderableCollection, id: string | nu
   })()
 }
 
-export function enqueueUnpublish(collection: RenderableCollection, slug: string): void {
+export function enqueueUnpublish(collection: RenderableCollection, address: string): void {
   void (async () => {
     try {
       const { getQueue } = await import('./queue')
-      await getQueue().add('unpublish-doc', { collection, slug })
+      await getQueue().add('unpublish-doc', { collection, address })
     } catch (err) {
       console.error('[publish] enqueue unpublish-doc failed; running inline', err)
       const { unpublishDoc } = await import('./handlers')
-      await unpublishDoc({ collection, slug }).catch((e) =>
+      await unpublishDoc({ collection, address }).catch((e) =>
         console.error('[publish] inline unpublishDoc failed', e),
       )
     }
