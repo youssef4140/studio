@@ -5,6 +5,7 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
+import { Folders } from './collections/Folders'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { TextEditor } from './collections/TextEditor'
@@ -63,7 +64,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, TextEditor, Media, Categories, Users],
+  collections: [Pages, TextEditor, Media, Categories, Folders, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,

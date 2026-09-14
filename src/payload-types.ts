@@ -71,6 +71,7 @@ export interface Config {
     textEditor: TextEditor;
     media: Media;
     categories: Category;
+    folders: Folder;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -91,6 +92,7 @@ export interface Config {
     textEditor: TextEditorSelect<false> | TextEditorSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    folders: FoldersSelect<false> | FoldersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -481,6 +483,67 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders".
+ */
+export interface Folder {
+  id: number;
+  name: string;
+  /**
+   * Used in the render/storage address — lowercase, no spaces.
+   */
+  slug: string;
+  /**
+   * Computed — the full folder chain, e.g. ptofthecity/services.
+   */
+  path?: string | null;
+  /**
+   * Computed — true for a root folder (no parent), i.e. a tenant.
+   */
+  isTenant?: boolean | null;
+  /**
+   * Typography and colour palette — set on the tenant (root folder) only.
+   */
+  theme?: {
+    typography?: {
+      fontFamily?: ('system-ui' | 'Inter' | 'Merriweather' | 'Poppins' | 'Lora') | null;
+    };
+    palette?: {
+      surface?: string | null;
+      muted?: string | null;
+      brand?: string | null;
+      onBrand?: string | null;
+      inverse?: string | null;
+      onInverse?: string | null;
+      border?: string | null;
+      text?: string | null;
+    };
+    /**
+     * Paste { "typography": {...}, "palette": {...} } to bulk-set the fields above. Cleared after import.
+     */
+    themeJSON?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  parent?: (number | null) | Folder;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Folder;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -751,6 +814,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'folders';
+        value: number | Folder;
       } | null)
     | ({
         relationTo: 'users';
@@ -1031,6 +1098,49 @@ export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders_select".
+ */
+export interface FoldersSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  path?: T;
+  isTenant?: T;
+  theme?:
+    | T
+    | {
+        typography?:
+          | T
+          | {
+              fontFamily?: T;
+            };
+        palette?:
+          | T
+          | {
+              surface?: T;
+              muted?: T;
+              brand?: T;
+              onBrand?: T;
+              inverse?: T;
+              onInverse?: T;
+              border?: T;
+              text?: T;
+            };
+        themeJSON?: T;
+      };
   parent?: T;
   breadcrumbs?:
     | T

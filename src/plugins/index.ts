@@ -57,6 +57,13 @@ export const plugins: Plugin[] = [
     collections: ['categories'],
     generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
   }),
+  // Folders (tenants + subfolders, Phase 2). Separate registration: its own
+  // `path` field (computed by a collection hook) is the real render address —
+  // this generateURL only feeds nestedDocsPlugin's own `breadcrumbs` labels.
+  nestedDocsPlugin({
+    collections: ['folders'],
+    generateURL: (docs) => docs.map((doc) => doc.slug).join('/'),
+  }),
   seoPlugin({
     generateTitle,
     generateURL,
