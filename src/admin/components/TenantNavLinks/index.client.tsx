@@ -19,6 +19,7 @@ export interface TreeSubfolderEntry {
 
 export interface TreeBucket {
   label: string
+  collection: string
   subfolders: TreeSubfolderEntry[]
 }
 
@@ -128,7 +129,7 @@ export const TenantNavLinksClient: React.FC<{ tenants: TreeTenant[] }> = ({ tena
                 bucket.subfolders.map(({ docs, folder }) => (
                   <AccordionRow
                     depth={2}
-                    href={formatAdminURL({ adminRoute, path: `/collections/folders/${folder.id}` })}
+                    href={`${formatAdminURL({ adminRoute, path: `/collections/${bucket.collection}` })}?where[folder][equals]=${folder.id}`}
                     id={`nav-tenant-${tenant.slug}-${bucket.label.toLowerCase()}-${folder.slug}`}
                     key={folder.id}
                     label={docs.length > 0 ? `${folder.name} (${docs.length})` : folder.name}

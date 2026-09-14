@@ -66,7 +66,7 @@ export const TenantNavLinks = async ({ payload }: { payload: Payload }) => {
               }
             }),
           )
-          return { label, subfolders: subfolderEntries }
+          return { label, collection, subfolders: subfolderEntries }
         }),
       )
 
