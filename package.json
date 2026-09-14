@@ -17,6 +17,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "worker": "cross-env NODE_OPTIONS=--no-deprecation tsx src/publish/worker.ts",
     "publish:rerender": "cross-env NODE_OPTIONS=--no-deprecation tsx src/publish/rerender.ts",
+    "seed:superadmin": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedSuperadmin.ts",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
