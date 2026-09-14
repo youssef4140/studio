@@ -1,10 +1,11 @@
 import type { CollectionConfig } from 'payload'
-import { BlocksFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { Hero } from '@/blocks/Hero'
 import { Faq } from '@/blocks/Faq'
 import { EntityList } from '@/blocks/EntityList'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
+import { studioLexicalFeatures } from '@/fields/studioLexical'
 
 /**
  * Articles (§1.3): long-form prose with blocks embedded in the flow.
@@ -79,8 +80,7 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
       required: true,
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+          ...studioLexicalFeatures({ defaultFeatures, headingSizes: ['h2', 'h3', 'h4'] }),
           // Same Block configs as Pages.layout — one definition, both surfaces.
           BlocksFeature({ blocks: [Hero, Faq, EntityList] }),
         ],

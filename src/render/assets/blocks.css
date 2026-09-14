@@ -92,6 +92,42 @@
   padding-inline: var(--studio-space-sm);
 }
 
+/* ---- Editor images (inline uploads in Content / Article rich text) ---- */
+/* max-inline-size: 100% is the hard ceiling — an image never exceeds its
+   column on any screen, whichever size token is chosen. */
+
+.editor-image {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+  border-radius: var(--studio-radius);
+}
+.editor-image--small {
+  inline-size: min(100%, 20rem);
+}
+.editor-image--medium {
+  inline-size: min(100%, 32rem);
+}
+.editor-image--large {
+  inline-size: min(100%, 48rem);
+}
+.editor-image--full {
+  inline-size: 100%;
+}
+.editor-image--align-left {
+  margin-inline: 0;
+}
+.editor-image--align-center {
+  margin-inline: auto;
+}
+.editor-image--align-right {
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+}
+.editor-image + * {
+  margin-block-start: 1.1rem;
+}
+
 /* ---- Hero ---- */
 
 .hero {
@@ -155,6 +191,10 @@
 }
 .content a {
   color: var(--studio-color-brand);
+}
+.content img {
+  max-inline-size: 100%;
+  block-size: auto;
 }
 .content ul,
 .content ol {

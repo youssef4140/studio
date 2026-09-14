@@ -1,12 +1,8 @@
 import type { Block } from 'payload'
-import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { blockStyles } from '@/fields/blockStyles'
+import { studioLexicalFeatures } from '@/fields/studioLexical'
 
 // allowedIn: page, layout
 // Plain prose — an intro paragraph, explanatory body copy, the kind of
@@ -25,12 +21,8 @@ export const Content: Block = {
       type: 'richText',
       required: true,
       editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
-          FixedToolbarFeature(),
-          InlineToolbarFeature(),
-        ],
+        features: ({ defaultFeatures }) =>
+          studioLexicalFeatures({ defaultFeatures, headingSizes: ['h2', 'h3', 'h4'] }),
       }),
     },
     ...blockStyles,
