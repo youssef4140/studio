@@ -26,6 +26,11 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
+    components: {
+      // Each tenant (root Folder) as its own nav link, above the generic
+      // collections list — see src/admin/components/TenantNavLinks.
+      beforeNavLinks: ['@/admin/components/TenantNavLinks#TenantNavLinks'],
+    },
     livePreview: {
       // One-way live preview (step 10): the iframe loads our preview route, which
       // runs renderBlocks() against draft data. Regenerated per edit-view render,
