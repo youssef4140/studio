@@ -1,384 +1,147 @@
-# Studio
+# Content Studio
 
-Headless content studio on Payload CMS. There is no public website. Studio renders published Pages and Articles into JSON envelopes, writes them to S3-compatible storage behind a CDN, and notifies consumer apps by webhook.
+Content Studio is a self-hosted, multi-tenant Payload CMS backend for a family of physical-therapy client sites (e.g. `ptofthecity`, `tny`). Editors write Pages and Articles here; each consumer site is a **separate** app (Nuxt, Laravel, whatever) that fetches pre-rendered HTML from this backend at its own render address. Studio itself has no public frontend — nothing renders on a consumer request path.
 
-## Production setup
+- Postgres, not Mongo. Self-hosted, no vendor lock-in.
+- Rendering happens **at publish time**, in a background worker — never while a consumer is waiting on a request.
+- Design tokens, not freeform values: typography/color choices, block spacing, and text styling all come from a fixed set of options, not raw CSS/hex input, except where a tenant deliberately overrides its palette.
 
-### 1. Provision infrastructure
+## A) Stack, install, and run
 
-| Service | Used for |
-| --- | --- |
-| Postgres 16 | Payload database |
-| Redis | BullMQ publish queue |
-| S3-compatible bucket (e.g. Cloudflare R2), publicly readable through a CDN | Published envelopes and versioned CSS/JS bundles |
-| Cloudinary (optional) | Media uploads. Without it, uploads go to local disk. |
+### Stack
 
-### 2. Configure the environment
+| Concern | Technology |
+|---|---|
+| App framework | Next.js 16 (App Router, Turbopack) |
+| CMS / admin panel | Payload CMS 3.88 |
+| Database | Postgres 16 (`@payloadcms/db-postgres`) |
+| Rich text | Lexical (`@payloadcms/richtext-lexical`) |
+| Publish queue | BullMQ + Redis |
+| Published output storage | S3-compatible object storage — MinIO locally, swap for Cloudflare R2 or real S3 in production |
+| Media storage | Local disk by default; Cloudinary (optional, opt-in via env var) |
+| Package manager | pnpm |
+| Local infra | Docker Compose (Postgres, Redis, MinIO) |
 
-Copy [.env.example](.env.example) and set every variable for production:
+### Prerequisites
 
-- `DATABASE_URL`, `REDIS_URL`
-- `PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET`, `CONSUMER_WEBHOOK_SECRET`. Generate each one with `openssl rand -hex 24`.
-- `NEXT_PUBLIC_SERVER_URL`: the public origin of the Studio app, with no trailing slash.
-- `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`.
-- `S3_PUBLIC_URL` and `RENDER_ASSET_BASE_URL`: the public CDN URL of the bucket. For R2, set `S3_FORCE_PATH_STYLE=false` unless your endpoint needs path-style addressing.
-- `CDN_PURGE_PROVIDER=cloudflare` with `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_API_TOKEN`, or `none`.
-- `CONSUMER_WEBHOOK_URLS`: comma-separated URLs of the consumer apps.
-- `CLOUDINARY_URL` (optional): enables Cloudinary media storage.
+- Node.js `^18.20.2` or `>=20.9.0`
+- pnpm `^9`, `^10`, or `^11`
+- Docker + Docker Compose
 
-### 3. Build the images
-
-`NEXT_PUBLIC_SERVER_URL` is fixed into the build, so pass it as a build arg. Changing it later means rebuilding the image.
-
-```bash
-docker build --target app   --build-arg NEXT_PUBLIC_SERVER_URL=https://studio.example.com -t studio-app .
-docker build --target tools -t studio-tools .
-```
-
-- `studio-app`: the Next.js server (admin, API, render and preview routes). It listens on port 3000.
-- `studio-tools`: the publish worker (its default command), also used to run migrations and scripts.
-
-### 4. Run migrations (on every deploy, before starting the app)
+### Install & run
 
 ```bash
-docker run --rm --env-file .env studio-tools node_modules/.bin/payload migrate
-```
+# 1. Clone and enter the project
+git clone https://github.com/youssef4140/studio.git && cd studio
 
-Production never auto-pushes schema. Tables come only from [src/migrations/](src/migrations/).
-
-### 5. Start the app and the worker
-
-```bash
-docker run -d --env-file .env -p 3000:3000 -v studio_media:/app/public/media studio-app
-docker run -d --env-file .env studio-tools
-```
-
-- Mount a persistent volume at `/app/public/media` if you are **not** using Cloudinary. Otherwise uploads are lost when the container is replaced.
-- The worker must be running for publishes to reach storage. On boot it uploads the current CSS/JS bundle. If block CSS/JS changed since the last deploy, it also re-renders every published document automatically.
-
-### 6. Create the first superadmin
-
-1. Open `https://<your-studio>/admin` and create the first user.
-2. Promote that user to superadmin. Only superadmins can manage folders (tenants) and users.
-
-```bash
-docker run --rm --env-file .env studio-tools node_modules/.bin/tsx scripts/seedSuperadmin.ts you@example.com
-```
-
-### Try the full stack locally
-
-```bash
+# 2. Environment
 cp .env.example .env
-docker compose --profile app up -d --build
+# Fill in PAYLOAD_SECRET / CRON_SECRET / PREVIEW_SECRET / CONSUMER_WEBHOOK_SECRET —
+# generate each with: openssl rand -hex 24
+
+# 3. Local infra: Postgres (5432), Redis (6380 -> 6379 in-container), MinIO (9000 API / 9001 console)
+docker compose up -d
+
+# 4. Install dependencies
+pnpm install
+
+# 5. Start the app
+pnpm dev
+# -> http://localhost:3000/admin
+# First visit prompts you to create the first user (gets the default `admin` role).
 ```
 
-This command runs Postgres, Redis, MinIO (standing in for R2), migrations, the app on http://localhost:3000, and the worker. The Docker stack uses its own database (`studio_app`), Redis index and bucket, separate from the ones `pnpm dev` uses.
-
----
-
-_The rest of this README is the original Payload website template documentation. Parts of it (Posts, the public website frontend, search) no longer apply to this project._
-
-# Payload Website Template
-
-This is the official [Payload Website Template](https://github.com/payloadcms/payload/blob/3.x/templates/website). Use it to power websites, blogs, or portfolios from small to enterprise. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.
-
-This template is right for you if you are working on:
-
-- A personal or enterprise-grade website, blog, or portfolio
-- A content publishing platform with a fully featured publication workflow
-- Exploring the capabilities of Payload
-
-Core features:
-
-- [Pre-configured Payload Config](#how-it-works)
-- [Authentication](#users-authentication)
-- [Access Control](#access-control)
-- [Layout Builder](#layout-builder)
-- [Draft Preview](#draft-preview)
-- [Live Preview](#live-preview)
-- [On-demand Revalidation](#on-demand-revalidation)
-- [SEO](#seo)
-- [Search](#search)
-- [Redirects](#redirects)
-- [Jobs and Scheduled Publishing](#jobs-and-scheduled-publish)
-- [Website](#website)
-
-## Quick Start
-
-To spin up this example locally, follow these steps:
-
-### Clone
-
-If you have not done so already, you need to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
-
-Use the `create-payload-app` CLI to clone this template directly to your machine:
+Two things every fresh checkout needs that a plain `pnpm dev` doesn't give you:
 
 ```bash
-pnpx create-payload-app my-project -t website
+# 6. Promote an account to superadmin — required to manage folders/tenants,
+#    tenant theming, and other admin accounts. There's no "first user is
+#    superadmin" special case.
+pnpm seed:superadmin you@example.com
+
+# 7. Start the publish worker (separate terminal, separate long-lived process).
+#    Publishing/unpublishing is asynchronous via BullMQ — without this running,
+#    saves succeed but nothing actually gets rendered or uploaded.
+pnpm worker
 ```
 
-### Development
+Optional: to route Media uploads to Cloudinary instead of local disk, set `CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>` in `.env` (see `.env.example`). Leave it unset to keep local-disk storage — nothing else changes.
 
-1. First [clone the repo](#clone) if you have not done so already
-1. `cd my-project && cp .env.example .env` to copy the example environment variables
-1. `pnpm install && pnpm dev` to install dependencies and start the dev server
-1. open `http://localhost:3000` to open the app in your browser
+### Everyday scripts
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Next.js dev server (Turbopack) |
+| `pnpm worker` | Publish-pipeline worker (BullMQ) — run alongside `dev` |
+| `pnpm seed:superadmin <email>` | Promote an existing user to `superadmin` |
+| `pnpm publish:rerender` | Force a full re-render/re-publish of every published doc |
+| `pnpm generate:types` | Regenerate `src/payload-types.ts` after a collection/field change |
+| `pnpm generate:importmap` | Regenerate the admin panel's custom-component import map |
+| `pnpm build` / `pnpm start` | Production build / start |
+| `pnpm dev:prod` | Clean `.next`, build, and start — a local rehearsal of production |
+| `pnpm lint` / `pnpm lint:fix` | ESLint |
+| `pnpm test` | Integration (Vitest) + e2e (Playwright) tests |
 
-## How it works
+### Production notes
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+- **Schema management**: this project currently uses Payload's `db push` (automatic schema sync on boot), not migrations — `payload migrate:create` has never been run here. That's fine for active development, but `db push` can occasionally hit an ambiguous rename it has to resolve without asking (no interactive TTY in a background process), which can silently drop and recreate tables. Adopt real migrations before deploying anywhere the data matters.
+- **The worker is a separate deployable**: `pnpm worker` needs to run as its own long-lived process (its own container/service) in production, independent of the Next.js server — it's what actually renders and uploads content after a publish.
+- **Object storage**: swap the `S3_*` env vars for real Cloudflare R2 (or any S3-compatible) credentials — MinIO is a local stand-in only.
 
-### Collections
+## B) Feature overview
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+### Multi-tenant content organization
 
-- #### Users (Authentication)
+One self-referencing `Folders` collection is the whole tenant model — there's no separate Tenants collection. A **tenant is a root folder** (`ptofthecity`, `tny`); **subfolders** (`services`, `programs`, `articles`, ...) organize Pages and Articles underneath it, purely for organization. A folder's `path` (e.g. `ptofthecity/services`) is the *render/storage address* — not a real public URL, since Studio has no frontend of its own; each consumer app decides its own real routing and just fetches content by this address.
 
-  Users are auth-enabled collections that have access to the admin panel and unpublished content. See [Access Control](#access-control) for more details.
+Pages and Articles always live inside a subfolder, never directly in a tenant root, and their slugs are unique **within their folder**, not globally — `ptofthecity/services` and `tny/services` can both exist.
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+### Roles & access control
 
-- #### Posts
+- `admin` (default) and `superadmin` roles on Users.
+- **superadmin-only**: create/edit/delete folders, set tenant typography/palette, manage other admin accounts (a regular admin can't self-elevate, even via a raw API call — enforced at the field level).
+- **Any authenticated user**: create/edit Pages and Articles, upload Media.
+- **Public (unauthenticated)**: read access to published content only.
 
-  Posts are used to generate blog posts, news articles, or any other type of content that is published over time. All posts are layout builder enabled so you can generate unique layouts for each post using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Posts are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
+### Per-tenant theming
 
-- #### Pages
+Each tenant (root folder) gets its own typography (a curated font list) and an 8-token color palette, set either field-by-field in the admin UI or by pasting a `{ typography, palette }` JSON blob. This reaches the published output as **structured data** on the render envelope (`envelope.theme` — a CSS variable map + font info), not a raw CSS string — consumers merge it into their own `:root`.
 
-  All pages are layout builder enabled so you can generate unique layouts for each page using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Pages are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
+### Tenant-scoped block variants
 
-- #### Media
+A block can be restricted to one tenant (e.g. `FaqTny`, a genuinely separate component from the plain `Faq`) via server-only metadata (`custom.studioTenant`) right on the block's own config file. A save-time hook rejects a document that mixes a tenant-tagged block with the wrong tenant. Every block also carries its own preview picture for the block-picker UI (`admin.images.thumbnail`), defined the same way — right alongside the tenant tag, in the block's own file.
 
-  This is the uploads enabled collection used by pages, posts, and projects to contain media like images, videos, downloads, and other assets. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+### Content blocks
 
-- #### Categories
+`Hero`, `Content` (rich prose), `FAQ` (+ its `FAQ (TNY)` variant), and `Entity List` — each a small Payload block config plus a plain React component. All of them render through **one shared `renderBlocks()` pipeline**, used identically by the render API, the publish worker, and the live-preview route, so there's exactly one implementation of "turn this document into HTML."
 
-  A taxonomy used to group posts together. Categories can be nested inside of one another, for example "News > Technology". See the official [Payload Nested Docs Plugin](https://payloadcms.com/docs/plugins/nested-docs) for more details.
+### Rich text editor (Lexical)
 
-### Globals
+Fixed toolbar, inline links and formatting mixed within a single paragraph, headings, an upload feature with per-image size/alignment controls (and real CSS constraints, so images can't overflow), and token-driven color/emphasis text states — not a freeform color or font-size picker.
 
-See the [Globals](https://payloadcms.com/docs/configuration/globals) docs for details on how to extend this functionality.
+### Render-at-publish pipeline
 
-- `Header`
+Publishing a document enqueues a BullMQ job; a standalone worker process renders it through `renderBlocks()` into an envelope (`{ html, head, assets, theme, renderVersion }`), writes it to S3-compatible object storage, purges the CDN cache, and notifies consumer apps over a signed webhook (`x-studio-signature: sha256=...`). **Rendering never happens on a consumer request path** — it's always pre-computed.
 
-  The data required by the header on your front-end like nav links.
+The render address is `<folder path>/<slug>`, e.g. `ptofthecity/services/physical-therapy`. Consumers (or the render API itself, for dev/tooling) fetch a document at:
 
-- `Footer`
-
-  Same as above but for the footer of your site.
-
-## Access control
-
-Basic access control is setup to limit access to various content based based on publishing status.
-
-- `users`: Users can access the admin panel and create or edit content.
-- `posts`: Everyone can access published posts, but only users can create, update, or delete them.
-- `pages`: Everyone can access published pages, but only users can create, update, or delete them.
-
-For more details on how to extend this functionality, see the [Payload Access Control](https://payloadcms.com/docs/access-control/overview#access-control) docs.
-
-## Layout Builder
-
-Create unique page layouts for any type of content using a powerful layout builder. This template comes pre-configured with the following layout building blocks:
-
-- Hero
-- Content
-- Media
-- Call To Action
-- Archive
-
-Each block is fully designed and built into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Lexical editor
-
-A deep editorial experience that allows complete freedom to focus just on writing content without breaking out of the flow with support for Payload blocks, media, links and other features provided out of the box. See [Lexical](https://payloadcms.com/docs/rich-text/overview) docs.
-
-## Draft Preview
-
-All posts and pages are draft-enabled so you can preview them before publishing them to your website. To do this, these collections use [Versions](https://payloadcms.com/docs/configuration/collections#versions) with `drafts` set to `true`. This means that when you create a new post, project, or page, it will be saved as a draft and will not be visible on your website until you publish it. This also means that you can preview your draft before publishing it to your website. To do this, we automatically format a custom URL which redirects to your front-end to securely fetch the draft version of your content.
-
-Since the front-end of this template is statically generated, this also means that pages, posts, and projects will need to be regenerated as changes are made to published documents. To do this, we use an `afterChange` hook to regenerate the front-end when a document has changed and its `_status` is `published`.
-
-For more details on how to extend this functionality, see the official [Draft Preview Example](https://github.com/payloadcms/payload/tree/3.x/examples/draft-preview).
-
-## Live preview
-
-In addition to draft previews you can also enable live preview to view your end resulting page as you're editing content with full support for SSR rendering. See [Live preview docs](https://payloadcms.com/docs/live-preview/overview) for more details.
-
-## On-demand Revalidation
-
-We've added hooks to collections and globals so that all of your pages, posts, footer, or header changes will automatically be updated in the frontend via on-demand revalidation supported by Nextjs.
-
-> Note: if an image has been changed, for example it's been cropped, you will need to republish the page it's used on in order to be able to revalidate the Nextjs image cache.
-
-## SEO
-
-This template comes pre-configured with the official [Payload SEO Plugin](https://payloadcms.com/docs/plugins/seo) for complete SEO control from the admin panel. All SEO data is fully integrated into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Search
-
-This template also pre-configured with the official [Payload Search Plugin](https://payloadcms.com/docs/plugins/search) to showcase how SSR search features can easily be implemented into Next.js with Payload. See [Website](#website) for more details.
-
-## Redirects
-
-If you are migrating an existing site or moving content to a new URL, you can use the `redirects` collection to create a proper redirect from old URLs to new ones. This will ensure that proper request status codes are returned to search engines and that your users are not left with a broken link. This template comes pre-configured with the official [Payload Redirects Plugin](https://payloadcms.com/docs/plugins/redirects) for complete redirect control from the admin panel. All redirects are fully integrated into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Jobs and Scheduled Publish
-
-We have configured [Scheduled Publish](https://payloadcms.com/docs/versions/drafts#scheduled-publish) which uses the [jobs queue](https://payloadcms.com/docs/jobs-queue/jobs) in order to publish or unpublish your content on a scheduled time. The tasks are run on a cron schedule and can also be run as a separate instance if needed.
-
-> Note: When deployed on Vercel, depending on the plan tier, you may be limited to daily cron only.
-
-## Website
-
-This template includes a beautifully designed, production-ready front-end built with the [Next.js App Router](https://nextjs.org), served right alongside your Payload app in a instance. This makes it so that you can deploy both your backend and website where you need it.
-
-Core features:
-
-- [Next.js App Router](https://nextjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [React Hook Form](https://react-hook-form.com)
-- [Payload Admin Bar](https://github.com/payloadcms/payload/tree/3.x/packages/admin-bar)
-- [TailwindCSS styling](https://tailwindcss.com/)
-- [shadcn/ui components](https://ui.shadcn.com/)
-- User Accounts and Authentication
-- Fully featured blog
-- Publication workflow
-- Dark mode
-- Pre-made layout building blocks
-- SEO
-- Search
-- Redirects
-- Live preview
-
-### Cache
-
-Although Next.js includes a robust set of caching strategies out of the box, Payload Cloud proxies and caches all files through Cloudflare using the [Official Cloud Plugin](https://www.npmjs.com/package/@payloadcms/payload-cloud). This means that Next.js caching is not needed and is disabled by default. If you are hosting your app outside of Payload Cloud, you can easily reenable the Next.js caching mechanisms by removing the `no-store` directive from all fetch requests in `./src/app/_api` and then removing all instances of `export const dynamic = 'force-dynamic'` from pages files, such as `./src/app/(pages)/[slug]/page.tsx`. For more details, see the official [Next.js Caching Docs](https://nextjs.org/docs/app/building-your-application/caching).
-
-## Development
-
-To spin up this example locally, follow the [Quick Start](#quick-start). Then [Seed](#seed) the database with a few pages, posts, and projects.
-
-### Working with Postgres
-
-Postgres and other SQL-based databases follow a strict schema for managing your data. In comparison to our MongoDB adapter, this means that there's a few extra steps to working with Postgres.
-
-Note that often times when making big schema changes you can run the risk of losing data if you're not manually migrating it.
-
-#### Local development
-
-Ideally we recommend running a local copy of your database so that schema updates are as fast as possible. By default the Postgres adapter has `push: true` for development environments. This will let you add, modify and remove fields and collections without needing to run any data migrations.
-
-If your database is pointed to production you will want to set `push: false` otherwise you will risk losing data or having your migrations out of sync.
-
-#### Migrations
-
-[Migrations](https://payloadcms.com/docs/database/migrations) are essentially SQL code versions that keeps track of your schema. When deploy with Postgres you will need to make sure you create and then run your migrations.
-
-Locally create a migration
-
-```bash
-pnpm payload migrate:create
+```
+GET /api/render/pages/ptofthecity/services/physical-therapy
+GET /api/render/textEditor/tny/articles/rotator-cuff-recovery
 ```
 
-This creates the migration files you will need to push alongside with your new configuration.
+### Preview
 
-On the server after building and before running `pnpm start` you will want to run your migrations
+Draft preview and one-way live preview in the admin — the preview pane runs the exact same `renderBlocks()` pipeline against unsaved draft data, so what an editor sees while writing matches what actually gets published.
 
-```bash
-pnpm payload migrate
-```
+### Media
 
-This command will check for any migrations that have not yet been run and try to run them and it will keep a record of migrations that have been run in the database.
+Local disk by default. Set `CLOUDINARY_URL` and Media uploads switch to Cloudinary instead — organized under `studio/<tenant>/<subfolder>` (mirroring the Folders tree exactly), stored as webp with automatic quality. Any authenticated user can upload; a Media document's folder is auto-assigned the first time it's actually used on a Page or Article ("assign on first use"), and if Cloudinary is active, the underlying asset is physically moved to match.
 
-### Docker
+### Admin navigation
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+Each tenant appears directly in the nav sidebar as an accordion — expand a tenant to see **Pages / Articles / Media**, expand one of those to see the subfolders holding that content type (with a doc count per subfolder), and click through straight to that collection's list, pre-filtered to the folder. The same breakdown also appears inline on a tenant's own edit page.
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+### SEO
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-### Seed
-
-To seed the database with a few pages, posts, and projects you can click the 'seed database' link from the admin panel.
-
-The seed script will also create a demo user for demonstration purposes only:
-
-- Demo Author
-  - Email: `demo-author@payloadcms.com`
-  - Password: `password`
-
-> NOTICE: seeding the database is destructive because it drops your current database to populate a fresh one from the seed template. Only run this command if you are starting a new project or can afford to lose your current data.
-
-## Production
-
-To run Payload in production, you need to build and start the Admin panel. To do so, follow these steps:
-
-1. Invoke the `next build` script by running `pnpm build` or `npm run build` in your project root. This creates a `.next` directory with a production-ready admin bundle.
-1. Finally run `pnpm start` or `npm run start` to run Node in production and serve Payload from the `.build` directory.
-1. When you're ready to go live, see Deployment below for more details.
-
-### Deploying to Vercel
-
-This template can also be deployed to Vercel for free. You can get started by choosing the Vercel DB adapter during the setup of the template or by manually installing and configuring it:
-
-```bash
-pnpm add @payloadcms/db-vercel-postgres
-```
-
-```ts
-// payload.config.ts
-import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
-
-export default buildConfig({
-  // ...
-  db: vercelPostgresAdapter({
-    pool: {
-      connectionString: process.env.POSTGRES_URL || '',
-    },
-  }),
-  // ...
-```
-
-We also support Vercel's blob storage:
-
-```bash
-pnpm add @payloadcms/storage-vercel-blob
-```
-
-```ts
-// payload.config.ts
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
-
-export default buildConfig({
-  // ...
-  plugins: [
-    vercelBlobStorage({
-      collections: {
-        [Media.slug]: true,
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
-  ],
-  // ...
-```
-
-There is also a simplified [one click deploy](https://github.com/payloadcms/payload/tree/3.x/templates/with-vercel-postgres) to Vercel should you need it.
-
-### Self-hosting
-
-Before deploying your app, you need to:
-
-1. Ensure your app builds and serves in production. See [Production](#production) for more details.
-2. You can then deploy Payload as you would any other Node.js or Next.js application either directly on a VPS, DigitalOcean's Apps Platform, via Coolify or more. More guides coming soon.
-
-You can also deploy your app manually, check out the [deployment documentation](https://payloadcms.com/docs/production/deployment) for full details.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
-# studio
+A per-document SEO group (title, description, image) on Pages and Articles, carried into the render envelope's `head` data for consumers to use however they render `<head>`.
