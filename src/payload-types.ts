@@ -307,6 +307,10 @@ export interface FolderInterface {
  */
 export interface FaqBlock {
   heading?: string | null;
+  /**
+   * Optional note shown above the questions.
+   */
+  note?: string | null;
   items?:
     | {
         question: string;
@@ -325,6 +329,10 @@ export interface FaqBlock {
           };
           [k: string]: unknown;
         } | null;
+        /**
+         * Surface this question above the rest.
+         */
+        featured?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -805,11 +813,13 @@ export interface HeroBlockSelect<T extends boolean = true> {
  */
 export interface FaqBlockSelect<T extends boolean = true> {
   heading?: T;
+  note?: T;
   items?:
     | T
     | {
         question?: T;
         answer?: T;
+        featured?: T;
         id?: T;
       };
   background?: T;

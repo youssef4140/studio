@@ -16,6 +16,13 @@ export const Faq: Block = {
       type: 'text',
     },
     {
+      name: 'note',
+      type: 'textarea',
+      admin: {
+        description: 'Optional note shown above the questions.',
+      },
+    },
+    {
       name: 'items',
       type: 'array',
       labels: {
@@ -31,6 +38,14 @@ export const Faq: Block = {
         {
           name: 'answer',
           type: 'richText',
+        },
+        {
+          name: 'featured',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'Surface this question above the rest.',
+          },
         },
       ],
     },
