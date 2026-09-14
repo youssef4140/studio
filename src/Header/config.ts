@@ -7,6 +7,10 @@ export const Header: GlobalConfig = {
   access: {
     read: () => true,
   },
+  admin: {
+    // Unused — no frontend nav consumes this yet. Hidden rather than removed.
+    hidden: true,
+  },
   fields: [
     {
       name: 'navItems',

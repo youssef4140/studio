@@ -7,6 +7,10 @@ export const Footer: GlobalConfig = {
   access: {
     read: () => true,
   },
+  admin: {
+    // Unused — no frontend footer consumes this yet. Hidden rather than removed.
+    hidden: true,
+  },
   fields: [
     {
       name: 'navItems',

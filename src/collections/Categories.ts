@@ -14,6 +14,9 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    // Unused for now — nothing in the content model references it yet. Hidden
+    // rather than removed; revisit at step 12 (taxonomy for BodyParts / Articles).
+    hidden: true,
   },
   fields: [
     {
