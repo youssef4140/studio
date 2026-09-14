@@ -1,26 +1,105 @@
 'use client'
 
 import { Link, NavGroup, useConfig } from '@payloadcms/ui'
-import { usePathname } from 'next/navigation'
+import { ChevronIcon } from '@payloadcms/ui/icons/Chevron'
 import { formatAdminURL } from 'payload/shared'
-import React from 'react'
+import React, { useState } from 'react'
 
 const baseClass = 'nav'
 
-export interface TenantNavLink {
+export interface TreeDoc {
+  id: number
+  title: string
+}
+
+export interface TreeSubfolderEntry {
+  folder: { id: number; name: string; slug: string }
+  docs: TreeDoc[]
+}
+
+export interface TreeBucket {
+  label: string
+  subfolders: TreeSubfolderEntry[]
+}
+
+export interface TreeTenant {
   id: number
   name: string
   slug: string
+  buckets: TreeBucket[]
 }
 
 /**
- * Mirrors @payloadcms/next's DefaultNavClient link markup exactly (same
- * classes/structure) so these sit visually indistinguishable from the real
- * collection nav links below them — just addressed straight at a folder's
- * edit view instead of a collection list.
+ * One row of the accordion. A row with children toggles open/closed on
+ * click (chevron + label both trigger it, matching @payloadcms/ui's own
+ * NavGroup) rather than navigating — there's nowhere for "Pages" itself to
+ * go, it's a virtual grouping, not a real folder. A leaf row (no children)
+ * is a plain link instead.
  */
-export const TenantNavLinksClient: React.FC<{ tenants: TenantNavLink[] }> = ({ tenants }) => {
-  const pathname = usePathname()
+const AccordionRow: React.FC<{
+  children?: React.ReactNode
+  depth: number
+  href?: string
+  id?: string
+  label: string
+}> = ({ children, depth, href, id, label }) => {
+  const [open, setOpen] = useState(false)
+  const hasChildren = Boolean(children)
+
+  const row = (
+    <div
+      style={{
+        alignItems: 'center',
+        display: 'flex',
+        gap: '0.4rem',
+        paddingInlineStart: `${depth * 0.9}rem`,
+      }}
+    >
+      {hasChildren ? (
+        <button
+          aria-expanded={open}
+          onClick={() => setOpen((prev) => !prev)}
+          style={{
+            background: 'transparent',
+            border: 0,
+            color: 'inherit',
+            cursor: 'pointer',
+            display: 'flex',
+            flexShrink: 0,
+            padding: 0,
+          }}
+          type="button"
+        >
+          <ChevronIcon direction={open ? 'up' : 'down'} size="small" />
+        </button>
+      ) : (
+        <span style={{ display: 'inline-block', flexShrink: 0, width: '0.8rem' }} />
+      )}
+      {href && !hasChildren ? (
+        <Link className={`${baseClass}__link`} href={href} id={id} prefetch={false} style={{ paddingInlineStart: 0 }}>
+          <span className={`${baseClass}__link-label`}>{label}</span>
+        </Link>
+      ) : (
+        <span
+          className={`${baseClass}__link-label`}
+          onClick={hasChildren ? () => setOpen((prev) => !prev) : undefined}
+          style={{ cursor: hasChildren ? 'pointer' : 'default' }}
+        >
+          {label}
+        </span>
+      )}
+    </div>
+  )
+
+  return (
+    <div>
+      {row}
+      {hasChildren && open && <div>{children}</div>}
+    </div>
+  )
+}
+
+export const TenantNavLinksClient: React.FC<{ tenants: TreeTenant[] }> = ({ tenants }) => {
   const { config } = useConfig()
   const {
     routes: { admin: adminRoute },
@@ -30,31 +109,36 @@ export const TenantNavLinksClient: React.FC<{ tenants: TenantNavLink[] }> = ({ t
 
   return (
     <NavGroup label="Projects">
-      {tenants.map((tenant) => {
-        const href = formatAdminURL({ adminRoute, path: `/collections/folders/${tenant.id}` })
-        const isActive = pathname.startsWith(href) && ['/', undefined].includes(pathname[href.length])
-
-        const label = (
-          <>
-            {isActive && <div className={`${baseClass}__link-indicator`} />}
-            <span className={`${baseClass}__link-label`}>{tenant.name}</span>
-          </>
-        )
-
-        if (pathname === href) {
-          return (
-            <div className={`${baseClass}__link`} id={`nav-tenant-${tenant.slug}`} key={tenant.id}>
-              {label}
-            </div>
-          )
-        }
-
-        return (
-          <Link className={`${baseClass}__link`} href={href} id={`nav-tenant-${tenant.slug}`} key={tenant.id} prefetch={false}>
-            {label}
-          </Link>
-        )
-      })}
+      {tenants.map((tenant) => (
+        <AccordionRow depth={0} id={`nav-tenant-${tenant.slug}`} key={tenant.id} label={tenant.name}>
+          {tenant.buckets.map((bucket) => (
+            <AccordionRow depth={1} key={bucket.label} label={bucket.label}>
+              {bucket.subfolders.length === 0 ? (
+                <div
+                  style={{
+                    color: 'var(--theme-elevation-400)',
+                    fontSize: '0.8rem',
+                    paddingBlock: '0.15rem',
+                    paddingInlineStart: `${2 * 0.9}rem`,
+                  }}
+                >
+                  None yet
+                </div>
+              ) : (
+                bucket.subfolders.map(({ folder }) => (
+                  <AccordionRow
+                    depth={2}
+                    href={formatAdminURL({ adminRoute, path: `/collections/folders/${folder.id}` })}
+                    id={`nav-tenant-${tenant.slug}-${bucket.label.toLowerCase()}-${folder.slug}`}
+                    key={folder.id}
+                    label={folder.name}
+                  />
+                ))
+              )}
+            </AccordionRow>
+          ))}
+        </AccordionRow>
+      ))}
     </NavGroup>
   )
 }
