@@ -21,6 +21,15 @@ export interface RenderEnvelope {
     canonical: string | null
     jsonLd: Record<string, unknown>[]
   }
+  /**
+   * The document's tenant theme — structured, not a raw CSS string. Consumers
+   * merge `vars` into their own :root. `null` when the tenant has no theme set.
+   */
+  theme: {
+    vars: Record<string, string>
+    fontFamily: string | null
+    googleFontsUrl: string | null
+  } | null
   /** Global render-logic hash. Changes on any block/CSS/JS change; invalidates every cached page. */
   renderVersion: string
   renderedAt: string

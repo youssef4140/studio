@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { renderBlocks } from '@/render/renderBlocks'
 import { getRenderVersion } from '@/render/assets'
 import { RENDERABLE_COLLECTIONS, type RenderableCollection } from '@/render/collections'
+import { resolveDocTheme } from '@/render/theme'
 import type { RenderableDoc } from '@/render/types'
 
 import { keys, publishConfig } from './config'
@@ -63,7 +64,8 @@ export async function publishDoc({
   }
 
   const address = await resolveDocAddress(payload, doc)
-  const envelope = await renderBlocks(collection, doc)
+  const theme = await resolveDocTheme(payload, doc.tenant)
+  const envelope = await renderBlocks(collection, doc, { theme })
   const envelopeUrl = await putEnvelope(collection, address, envelope)
   await purge([envelopeUrl])
   await notifyConsumers({
@@ -129,7 +131,8 @@ export async function rerenderAll({
         const renderableDoc = doc as RenderableDoc
         if (!renderableDoc.folder) continue // no folder yet — nothing to address, skip
         const address = await resolveDocAddress(payload, renderableDoc)
-        const envelope = await renderBlocks(collection, renderableDoc)
+        const theme = await resolveDocTheme(payload, renderableDoc.tenant)
+        const envelope = await renderBlocks(collection, renderableDoc, { theme })
         await putEnvelope(collection, address, envelope)
         count++
       }

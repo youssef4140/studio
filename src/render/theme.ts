@@ -1,3 +1,5 @@
+import type { Payload } from 'payload'
+
 import type { Folder } from '@/payload-types'
 
 /**
@@ -50,4 +52,30 @@ export function resolveTheme(tenant: Folder | null | undefined): ResolvedTheme |
   if (Object.keys(vars).length === 0 && !fontFamily) return null
 
   return { vars, fontFamily, googleFontsUrl }
+}
+
+/**
+ * Resolves a document's theme from its (possibly unpopulated) `tenant` value —
+ * shared by all three renderBlocks() callers so none of them hand-roll the
+ * lookup + shape differently.
+ */
+export async function resolveDocTheme(
+  payload: Payload,
+  tenantValue: unknown,
+): Promise<ResolvedTheme | null> {
+  const tenantId =
+    tenantValue && typeof tenantValue === 'object' ? (tenantValue as { id: unknown }).id : tenantValue
+  if (!tenantId) return null
+
+  try {
+    const tenant = await payload.findByID({
+      collection: 'folders',
+      id: tenantId as string | number,
+      depth: 0,
+      overrideAccess: true,
+    })
+    return resolveTheme(tenant)
+  } catch {
+    return null
+  }
 }

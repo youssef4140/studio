@@ -4,7 +4,9 @@
  *
  * Rules:
  *  - Design tokens (CSS custom properties) only, no raw values in component rules.
- *    Per-tenant themes override the :root tokens (step 18).
+ *    Per-tenant overrides for these same token names travel in the envelope's
+ *    `theme.vars` (src/render/theme.ts), not as a second stylesheet — consumers
+ *    merge them into their own :root.
  *  - Logical properties only: padding-inline, margin-block, inset-inline-start,
  *    border-inline-end, text-align: start. Never left/right/margin-left/etc.
  */

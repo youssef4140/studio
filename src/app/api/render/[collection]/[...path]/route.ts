@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import { renderBlocks } from '@/render/renderBlocks'
 import { isRenderableCollection } from '@/render/collections'
+import { resolveDocTheme } from '@/render/theme'
 import type { RenderableDoc } from '@/render/types'
 
 /**
@@ -80,6 +81,7 @@ export async function GET(
     return Response.json({ error: 'Not found or not published' }, { status: 404 })
   }
 
-  const envelope = await renderBlocks(collection, doc)
+  const theme = await resolveDocTheme(payload, doc.tenant)
+  const envelope = await renderBlocks(collection, doc, { theme })
   return Response.json(envelope, { headers: { 'cache-control': 'no-store' } })
 }

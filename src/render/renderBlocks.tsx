@@ -5,6 +5,7 @@ import { BlockList } from './Block'
 import { getRenderAssets } from './assets'
 import { buildHead } from './head'
 import { studioJSXConverters } from './richTextConverters'
+import type { ResolvedTheme } from './theme'
 import type { RenderEnvelope, RenderableDoc } from './types'
 
 /**
@@ -39,6 +40,7 @@ function Body({ doc }: { doc: RenderableDoc }): React.ReactElement {
 export async function renderBlocks(
   collection: string,
   doc: RenderableDoc,
+  options?: { theme?: ResolvedTheme | null },
 ): Promise<RenderEnvelope> {
   const assets = getRenderAssets()
 
@@ -52,6 +54,7 @@ export async function renderBlocks(
       js: assets.js,
     },
     head: buildHead(collection, doc),
+    theme: options?.theme ?? null,
     renderVersion: assets.version,
     renderedAt: new Date().toISOString(),
   }
