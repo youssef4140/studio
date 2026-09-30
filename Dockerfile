@@ -1,71 +1,67 @@
-# To use this Dockerfile, you have to set `output: 'standalone'` in your next.config.js file.
-# From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
+# Two runtime images from one build graph:
+#
+#   --target app     Next.js standalone server (admin, API, render + preview routes)
+#   --target tools   full source + node_modules, for the BullMQ publish worker
+#                    (default CMD) and one-shot `payload migrate`
+#
+# Both need the same runtime env (see .env.example). NEXT_PUBLIC_SERVER_URL is
+# inlined by `next build`, so it is a build arg as well as a runtime var.
 
+# 22.17 predates Node's default-on type stripping, which fights tsx/payload's loader.
 FROM node:22.17.0-alpine AS base
+RUN apk add --no-cache libc6-compat \
+  && corepack enable \
+  && corepack prepare pnpm@10.34.6 --activate
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+  pnpm install --frozen-lockfile
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-
-# Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ARG NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+ENV NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
+# Placeholders only: the build never connects to Postgres, but module-level
+# config (payload secret, publish S3 creds) must be present to import. Scoped to
+# this RUN so none of it lands in an image layer's env.
+RUN PAYLOAD_SECRET=build-placeholder \
+  DATABASE_URL=postgres://build:build@127.0.0.1:1/build \
+  S3_ACCESS_KEY_ID=build S3_SECRET_ACCESS_KEY=build \
+  pnpm run build
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# ─── Publish worker + migrations ───────────────────────────────────────────────
+FROM base AS tools
+ENV NODE_ENV=production \
+  NODE_OPTIONS="--no-deprecation --no-experimental-strip-types"
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node . .
+USER node
+# `payload migrate` is run by the compose `migrate` service with this image.
+CMD ["node_modules/.bin/tsx", "src/publish/worker.ts"]
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-# Production image, copy all the files and run next
-FROM base AS runner
+# ─── Next.js server ───────────────────────────────────────────────────────────
+FROM node:22.17.0-alpine AS app
 WORKDIR /app
+ENV NODE_ENV=production \
+  NEXT_TELEMETRY_DISABLED=1 \
+  PORT=3000 \
+  HOSTNAME=0.0.0.0
 
-ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Remove this line if you do not have this folder
-COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# Standalone output also carries src/render/assets (traced from render/assets.ts).
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Local-disk media uploads (when CLOUDINARY_URL is unset) and locally served
+# render bundles (when RENDER_ASSET_BASE_URL is unset) are written here.
+RUN mkdir -p public/media public/_render && chown -R nextjs:nodejs public
 
 USER nextjs
-
 EXPOSE 3000
-
-ENV PORT 3000
-
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["node", "server.js"]

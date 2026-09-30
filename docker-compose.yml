@@ -66,10 +66,98 @@ services:
       mc alias set local http://minio:9000 studio studio-secret &&
       mc mb --ignore-existing local/studio-render &&
       mc anonymous set download local/studio-render &&
-      echo 'studio-render bucket ready'
+      mc mb --ignore-existing local/studio-render-app &&
+      mc anonymous set download local/studio-render-app &&
+      echo 'studio-render buckets ready'
       "
     restart: 'no'
+
+  # ─── Containerized Studio (profile: app) ─────────────────────────────────────
+  # `docker compose up -d` stays infra-only for `pnpm dev`. The full stack:
+  #   docker compose --profile app up -d --build
+  #
+  # It shares the infra containers above but NOT their data: its own database
+  # (studio_app), Redis index (/1), and bucket (studio-render-app). The dev DB is
+  # schema-pushed, which `payload migrate` refuses to run over, and a shared
+  # queue would let this worker pick up jobs for dev-DB ids.
+
+  db-setup:
+    profiles: [app]
+    image: postgres:16-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: studio
+    entrypoint: >
+      /bin/sh -c "
+      psql -h postgres -U studio -d studio -tAc \"SELECT 1 FROM pg_database WHERE datname = 'studio_app'\" | grep -q 1 ||
+      psql -h postgres -U studio -d studio -c 'CREATE DATABASE studio_app'
+      "
+    restart: 'no'
+
+  migrate:
+    profiles: [app]
+    build: &studio-tools-build
+      context: .
+      target: tools
+    image: studio-tools
+    <<: &studio-runtime
+      env_file:
+        - path: .env
+          required: false
+      environment:
+        DATABASE_URL: postgres://studio:studio@postgres:5432/studio_app
+        REDIS_URL: redis://redis:6379/1
+        S3_ENDPOINT: http://minio:9000
+        S3_BUCKET: studio-render-app
+        # Fetched by browsers/consumers, so host-reachable, not in-network.
+        S3_PUBLIC_URL: http://localhost:9000/studio-render-app
+        RENDER_ASSET_BASE_URL: http://localhost:9000/studio-render-app
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+    command: ['node_modules/.bin/payload', 'migrate']
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+    restart: 'no'
+
+  app:
+    profiles: [app]
+    build:
+      context: .
+      target: app
+      args:
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+    image: studio-app
+    <<: *studio-runtime
+    ports:
+      - '3000:3000'
+    volumes:
+      - media_data:/app/public/media
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      minio-setup:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  worker:
+    profiles: [app]
+    build: *studio-tools-build
+    image: studio-tools
+    <<: *studio-runtime
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      minio-setup:
+        condition: service_completed_successfully
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   minio_data:
+  media_data:
