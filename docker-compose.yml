@@ -36,9 +36,14 @@ services:
   # S3-compatible object storage — stands in for Cloudflare R2 locally.
   # Console at http://localhost:9001 (studio / studio-secret).
   minio:
-    image: minio/minio:latest
+    # MinIO no longer publishes minio/minio on Docker Hub; Chainguard's build of
+    # the same server is used instead. It is a minimal image (no curl), so there
+    # is no in-container healthcheck: minio-setup below waits for it instead.
+    image: chainguard/minio:latest
     container_name: studio-minio
     restart: unless-stopped
+    # The image runs as a non-root user, which cannot write a root-owned volume.
+    user: '0:0'
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: studio
@@ -48,28 +53,33 @@ services:
       - '9001:9001'
     volumes:
       - minio_data:/data
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-      interval: 5s
-      timeout: 3s
-      retries: 20
 
   # One-shot: create the render bucket and make it publicly readable
   # (a CDN-fronted public bucket is what consumers fetch envelopes + assets from).
   minio-setup:
-    image: minio/mc:latest
+    # The -dev tag has a shell; the plain tag is the bare `mc` binary only.
+    image: chainguard/minio-client:latest-dev
     depends_on:
       minio:
-        condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set local http://minio:9000 studio studio-secret &&
-      mc mb --ignore-existing local/studio-render &&
-      mc anonymous set download local/studio-render &&
-      mc mb --ignore-existing local/studio-render-app &&
-      mc anonymous set download local/studio-render-app &&
-      echo 'studio-render buckets ready'
-      "
+        condition: service_started
+    user: '0:0'
+    environment:
+      MC_CONFIG_DIR: /tmp/.mc
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        n=0
+        until mc alias set local http://minio:9000 studio studio-secret >/dev/null 2>&1; do
+          n=$$((n + 1))
+          if [ "$$n" -ge 60 ]; then echo 'minio did not come up'; exit 1; fi
+          sleep 1
+        done
+        mc mb --ignore-existing local/studio-render &&
+        mc anonymous set download local/studio-render &&
+        mc mb --ignore-existing local/studio-render-app &&
+        mc anonymous set download local/studio-render-app &&
+        echo 'studio-render buckets ready'
     restart: 'no'
 
   # ─── Containerized Studio (profile: app) ─────────────────────────────────────
