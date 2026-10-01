@@ -17,6 +17,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { signPreviewToken } from '@/preview/token'
+import { TENANTS } from '@/tenants'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -35,6 +36,21 @@ export default buildConfig({
         Logo: '@/admin/components/graphics#Logo',
         Icon: '@/admin/components/graphics#Icon',
       },
+      // One list page per subfolder, plus one for media, under each tenant:
+      // /admin/<tenant>/<subfolder> and /admin/<tenant>/media.
+      views: Object.fromEntries(
+        TENANTS.flatMap((tenant) =>
+          [...tenant.subfolders, { slug: 'media', name: 'Media' }].map((section) => [
+            `${tenant.slug}-${section.slug}`,
+            {
+              Component: '@/admin/views/FolderList#FolderListView',
+              path: `/${tenant.slug}/${section.slug}` as const,
+              exact: true,
+              meta: { title: `${section.name} - ${tenant.name}` },
+            },
+          ]),
+        ),
+      ),
     },
     meta: {
       titleSuffix: '- Studio',

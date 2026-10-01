@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, PayloadRequest } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -12,6 +12,7 @@ import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { syncCloudinaryFolderOnMove } from '@/media/cloudinaryStorage'
 import { mediaRemoveHandler, mediaUsageHandler } from '@/media/usage'
+import { folderFromReferer } from '@/fields/folderFromReferer'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -57,6 +58,7 @@ export const Media: CollectionConfig = {
       name: 'folder',
       type: 'relationship',
       relationTo: 'folders',
+      defaultValue: ({ req }: { req: PayloadRequest }) => folderFromReferer(req, 'media'),
       admin: {
         position: 'sidebar',
         description:

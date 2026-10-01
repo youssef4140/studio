@@ -34,6 +34,7 @@ import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/
 import { Icon as Icon_9f3bc5e87c15183abac27468b04462c5 } from '@/admin/components/graphics'
 import { Logo as Logo_9f3bc5e87c15183abac27468b04462c5 } from '@/admin/components/graphics'
 import { TenantNavLinks as TenantNavLinks_8d3a7c57dbdee91d3532067a281283f4 } from '@/admin/components/TenantNavLinks'
+import { FolderListView as FolderListView_ce32ffcc959570dede6997f6272a5207 } from '@/admin/views/FolderList'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -74,5 +75,6 @@ export const importMap = {
   "@/admin/components/graphics#Icon": Icon_9f3bc5e87c15183abac27468b04462c5,
   "@/admin/components/graphics#Logo": Logo_9f3bc5e87c15183abac27468b04462c5,
   "@/admin/components/TenantNavLinks#TenantNavLinks": TenantNavLinks_8d3a7c57dbdee91d3532067a281283f4,
+  "@/admin/views/FolderList#FolderListView": FolderListView_ce32ffcc959570dede6997f6272a5207,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

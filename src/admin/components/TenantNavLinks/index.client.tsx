@@ -3,6 +3,7 @@
 import { Link, NavGroup, useConfig, usePreferences } from '@payloadcms/ui'
 import { ChevronIcon } from '@payloadcms/ui/icons/Chevron'
 import { formatAdminURL } from 'payload/shared'
+import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
 
 import { TENANT_NAV_PREFERENCE } from './preference'
@@ -15,10 +16,8 @@ export interface NavTenant {
   links: {
     key: string
     label: string
-    /** Collection slug whose list view the link opens. */
-    collection: string
-    /** Query string that filters that list to this folder. */
-    query: string
+    /** Admin path of the folder's own list page, e.g. `/ptofthecity/services`. */
+    path: string
     count: number
   }[]
 }
@@ -29,6 +28,8 @@ const TenantDropdown: React.FC<{
   open: boolean
   tenant: NavTenant
 }> = ({ adminRoute, onToggle, open, tenant }) => {
+  const pathname = usePathname()
+
   return (
     <div>
       <button
@@ -54,19 +55,26 @@ const TenantDropdown: React.FC<{
       </button>
       {open && (
         <div style={{ paddingInlineStart: '1.5rem' }}>
-          {tenant.links.map((link) => (
-            <Link
-              className={`${baseClass}__link`}
-              href={`${formatAdminURL({ adminRoute, path: `/collections/${link.collection}` })}?${link.query}`}
-              id={`nav-tenant-${tenant.slug}-${link.key}`}
-              key={link.key}
-              prefetch={false}
-            >
-              <span className={`${baseClass}__link-label`}>
-                {link.count > 0 ? `${link.label} (${link.count})` : link.label}
-              </span>
-            </Link>
-          ))}
+          {tenant.links.map((link) => {
+            const href = formatAdminURL({ adminRoute, path: link.path as `/${string}` })
+            const active = pathname === href
+            return (
+              <Link
+                aria-current={active ? 'page' : undefined}
+                className={`${baseClass}__link`}
+                href={href}
+                id={`nav-tenant-${tenant.slug}-${link.key}`}
+                key={link.key}
+                prefetch={false}
+                style={active ? { fontWeight: 600 } : undefined}
+              >
+                {active && <div className={`${baseClass}__link-indicator`} />}
+                <span className={`${baseClass}__link-label`}>
+                  {link.count > 0 ? `${link.label} (${link.count})` : link.label}
+                </span>
+              </Link>
+            )
+          })}
         </div>
       )}
     </div>

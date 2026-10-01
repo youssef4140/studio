@@ -11,7 +11,8 @@ const COLLECTION_FOR = { pages: 'pages', articles: 'textEditor' } as const
 /**
  * One dropdown per tenant in the nav. Opening it lists the tenant's
  * subfolders (in the order src/tenants.ts gives them) and a Media entry; each
- * is a plain link to that collection's list, filtered to the folder.
+ * links to its own page under the tenant, e.g. /admin/ptofthecity/services
+ * (src/admin/views/FolderList).
  *
  * Registered as admin.components.beforeNavLinks in src/payload.config.ts.
  */
@@ -67,8 +68,7 @@ export const TenantNavLinks = async ({ payload, user }: { payload: Payload; user
       links.push({
         key: subfolder.slug,
         label: subfolder.name,
-        collection,
-        query: `where[folder][equals]=${folderId}`,
+        path: `/${tenant.slug}/${subfolder.slug}`,
         count: totalDocs,
       })
     }
@@ -81,8 +81,7 @@ export const TenantNavLinks = async ({ payload, user }: { payload: Payload; user
     links.push({
       key: 'media',
       label: 'Media',
-      collection: 'media',
-      query: `where[folder][in]=${folderIds.join(',')}`,
+      path: `/${tenant.slug}/media`,
       count: mediaCount,
     })
 

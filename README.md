@@ -143,7 +143,7 @@ A media file's edit page lists every page and article that uses it. Deleting the
 
 ### Admin navigation
 
-Each tenant is a dropdown in the nav sidebar. Opening it lists that tenant's subfolders, in the order [src/tenants.ts](src/tenants.ts) gives them, followed by **Media**. Each entry is a direct link (with a count) to a list filtered to that folder: a subfolder marked `contains: 'articles'` opens the Articles list, one marked `contains: 'pages'` opens the Pages list, and Media opens the tenant's media. The folder picker on Pages and Articles only offers the subfolders meant for that kind of document.
+Each tenant is a dropdown in the nav sidebar (it stays open or closed per user). Opening it lists that tenant's subfolders, in the order [src/tenants.ts](src/tenants.ts) gives them, followed by **Media**. Each entry has its own page under the tenant, for example `/admin/ptofthecity/services` or `/admin/ptofthecity/media`, and the entry for the page you are on is highlighted. Those pages are the normal list (search, sort, columns) locked to that one folder: a subfolder marked `contains: 'articles'` lists Articles, one marked `contains: 'pages'` lists Pages. "Create New" from one of these pages starts the document already filed in that folder. The folder picker on Pages and Articles only offers the subfolders meant for that kind of document.
 
 ### SEO
 

@@ -1,6 +1,8 @@
-import type { CollectionBeforeValidateHook, Field } from 'payload'
+import type { CollectionBeforeValidateHook, Field, PayloadRequest } from 'payload'
 
 import { folderPathsFor, type SubfolderContent } from '@/tenants'
+
+import { folderFromReferer } from './folderFromReferer'
 
 /**
  * Shared by Pages and TextEditor: files a document into a (sub)folder and
@@ -21,6 +23,7 @@ export const folderScopeFields = (content: SubfolderContent): Field[] => [
     relationTo: 'folders',
     required: true,
     hasMany: false,
+    defaultValue: ({ req }: { req: PayloadRequest }) => folderFromReferer(req, content),
     filterOptions: {
       path: { in: folderPathsFor(content) },
     },
