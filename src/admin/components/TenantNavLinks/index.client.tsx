@@ -1,9 +1,11 @@
 'use client'
 
-import { Link, NavGroup, useConfig } from '@payloadcms/ui'
+import { Link, NavGroup, useConfig, usePreferences } from '@payloadcms/ui'
 import { ChevronIcon } from '@payloadcms/ui/icons/Chevron'
 import { formatAdminURL } from 'payload/shared'
 import React, { useState } from 'react'
+
+import { TENANT_NAV_PREFERENCE } from './preference'
 
 const baseClass = 'nav'
 
@@ -21,15 +23,18 @@ export interface NavTenant {
   }[]
 }
 
-const TenantDropdown: React.FC<{ adminRoute: string; tenant: NavTenant }> = ({ adminRoute, tenant }) => {
-  const [open, setOpen] = useState(false)
-
+const TenantDropdown: React.FC<{
+  adminRoute: string
+  onToggle: () => void
+  open: boolean
+  tenant: NavTenant
+}> = ({ adminRoute, onToggle, open, tenant }) => {
   return (
     <div>
       <button
         aria-expanded={open}
         id={`nav-tenant-${tenant.slug}`}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={onToggle}
         style={{
           alignItems: 'center',
           background: 'transparent',
@@ -68,16 +73,33 @@ const TenantDropdown: React.FC<{ adminRoute: string; tenant: NavTenant }> = ({ a
   )
 }
 
-export const TenantNavLinksClient: React.FC<{ tenants: NavTenant[] }> = ({ tenants }) => {
+export const TenantNavLinksClient: React.FC<{
+  initiallyOpen: Record<string, boolean>
+  tenants: NavTenant[]
+}> = ({ initiallyOpen, tenants }) => {
   const { config } = useConfig()
+  const { setPreference } = usePreferences()
+  const [open, setOpen] = useState(initiallyOpen)
   const adminRoute = config.routes.admin
+
+  const toggle = (slug: string) => {
+    const next = { ...open, [slug]: !open[slug] }
+    setOpen(next)
+    void setPreference(TENANT_NAV_PREFERENCE, { open: next })
+  }
 
   if (tenants.length === 0) return null
 
   return (
     <NavGroup label="Projects">
       {tenants.map((tenant) => (
-        <TenantDropdown adminRoute={adminRoute} key={tenant.slug} tenant={tenant} />
+        <TenantDropdown
+          adminRoute={adminRoute}
+          key={tenant.slug}
+          onToggle={() => toggle(tenant.slug)}
+          open={Boolean(open[tenant.slug])}
+          tenant={tenant}
+        />
       ))}
     </NavGroup>
   )

@@ -1,9 +1,10 @@
-import type { Payload } from 'payload'
+import type { Payload, TypedUser } from 'payload'
 import React from 'react'
 
 import { TENANTS } from '@/tenants'
 
 import { TenantNavLinksClient, type NavTenant } from './index.client'
+import { TENANT_NAV_PREFERENCE } from './preference'
 
 const COLLECTION_FOR = { pages: 'pages', articles: 'textEditor' } as const
 
@@ -14,7 +15,28 @@ const COLLECTION_FOR = { pages: 'pages', articles: 'textEditor' } as const
  *
  * Registered as admin.components.beforeNavLinks in src/payload.config.ts.
  */
-export const TenantNavLinks = async ({ payload }: { payload: Payload }) => {
+export const TenantNavLinks = async ({ payload, user }: { payload: Payload; user?: TypedUser }) => {
+  // Which dropdowns this user left open — read here so the nav renders in the
+  // right state straight away instead of opening after the page loads.
+  const savedOpen = user
+    ? await payload
+        .find({
+          collection: 'payload-preferences',
+          depth: 0,
+          limit: 1,
+          pagination: false,
+          overrideAccess: true,
+          where: {
+            and: [
+              { key: { equals: TENANT_NAV_PREFERENCE } },
+              { 'user.relationTo': { equals: user.collection } },
+              { 'user.value': { equals: user.id } },
+            ],
+          },
+        })
+        .then((res) => (res.docs[0]?.value as { open?: Record<string, boolean> } | undefined)?.open)
+    : undefined
+
   const { docs: folders } = await payload.find({
     collection: 'folders',
     depth: 0,
@@ -67,5 +89,5 @@ export const TenantNavLinks = async ({ payload }: { payload: Payload }) => {
     tenants.push({ slug: tenant.slug, name: tenant.name, links })
   }
 
-  return <TenantNavLinksClient tenants={tenants} />
+  return <TenantNavLinksClient initiallyOpen={savedOpen ?? {}} tenants={tenants} />
 }
