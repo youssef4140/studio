@@ -1,0 +1,5 @@
+// The account page always renders a language dropdown, even with English as the
+// only supported language, and Payload has no config option to remove it.
+.payload-settings__language {
+  display: none;
+}
