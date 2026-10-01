@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { blockStyles } from '@/fields/blockStyles'
+import type { TenantSlug } from '@/tenants'
 
 // allowedIn: page, article, layout
 // TNY's own FAQ variant — a genuinely separate config (not Faq re-themed), per
@@ -16,7 +17,7 @@ export const FaqTny: Block = {
     plural: 'FAQs (TNY)',
   },
   custom: {
-    studioTenant: 'tny',
+    studioTenant: 'tny' satisfies TenantSlug,
   },
   admin: {
     images: {

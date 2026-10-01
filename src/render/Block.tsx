@@ -38,7 +38,7 @@ export function Block({ block }: { block: PageBlock }): React.ReactElement {
     <section
       data-block={block.blockType}
       data-block-name={block.blockName || undefined}
-      className={appearanceClasses(block)}
+      className={appearanceClasses(block.blockType, block.hideOn)}
     >
       {inner(block)}
     </section>

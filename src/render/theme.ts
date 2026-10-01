@@ -1,12 +1,11 @@
 import type { Payload } from 'payload'
 
-import type { Folder } from '@/payload-types'
+import { getTenant, type FontFamily, type PaletteToken } from '@/tenants'
 
 /**
- * Maps a tenant (root) Folder's `theme` onto CSS custom-property overrides —
- * the same named tokens `src/render/assets/blocks.css` defines on `:root`
- * (`--studio-color-*`). Mirrors how `src/render/appearance.ts` maps block-style
- * tokens to classes. Used by renderBlocks()'s three callers (Phase 4) to
+ * Maps a tenant's hardcoded theme (src/tenants.ts) onto CSS custom-property
+ * overrides — the same named tokens `src/render/assets/blocks.css` defines on
+ * `:root` (`--studio-color-*`). Used by renderBlocks()'s three callers to
  * resolve a document's tenant theme before rendering.
  */
 
@@ -16,7 +15,7 @@ export interface ResolvedTheme {
   googleFontsUrl: string | null
 }
 
-const PALETTE_TOKEN_MAP: Record<string, string> = {
+const PALETTE_TOKEN_MAP: Record<PaletteToken, string> = {
   surface: '--studio-color-surface',
   muted: '--studio-color-muted',
   brand: '--studio-color-brand',
@@ -27,27 +26,29 @@ const PALETTE_TOKEN_MAP: Record<string, string> = {
   text: '--studio-color-text',
 }
 
-const GOOGLE_FONT_STACKS: Record<string, string> = {
+const GOOGLE_FONT_STACKS: Record<Exclude<FontFamily, 'system-ui'>, string> = {
   Inter: "'Inter', system-ui, sans-serif",
   Merriweather: "'Merriweather', Georgia, serif",
   Poppins: "'Poppins', system-ui, sans-serif",
   Lora: "'Lora', Georgia, serif",
 }
 
-export function resolveTheme(tenant: Folder | null | undefined): ResolvedTheme | null {
-  if (!tenant?.theme) return null
+/** `null` when the tenant is unknown or its theme changes nothing from the defaults. */
+export function resolveTheme(tenantSlug: string | null | undefined): ResolvedTheme | null {
+  const theme = getTenant(tenantSlug)?.theme
+  if (!theme) return null
 
   const vars: Record<string, string> = {}
-  for (const [key, cssVar] of Object.entries(PALETTE_TOKEN_MAP)) {
-    const value = tenant.theme.palette?.[key as keyof typeof tenant.theme.palette]
-    if (value) vars[cssVar] = value
+  for (const [token, value] of Object.entries(theme.palette) as [PaletteToken, string][]) {
+    if (value) vars[PALETTE_TOKEN_MAP[token]] = value
   }
 
-  const fontKey = tenant.theme.typography?.fontFamily
-  const fontFamily = fontKey && fontKey !== 'system-ui' ? (GOOGLE_FONT_STACKS[fontKey] ?? null) : null
-  const googleFontsUrl = fontKey && fontKey !== 'system-ui'
-    ? `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontKey)}:wght@400;600;700&display=swap`
-    : null
+  const font = theme.fontFamily
+  const fontFamily = font === 'system-ui' ? null : GOOGLE_FONT_STACKS[font]
+  const googleFontsUrl =
+    font === 'system-ui'
+      ? null
+      : `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;600;700&display=swap`
 
   if (Object.keys(vars).length === 0 && !fontFamily) return null
 
@@ -57,12 +58,17 @@ export function resolveTheme(tenant: Folder | null | undefined): ResolvedTheme |
 /**
  * Resolves a document's theme from its (possibly unpopulated) `tenant` value —
  * shared by all three renderBlocks() callers so none of them hand-roll the
- * lookup + shape differently.
+ * lookup differently. The folder row is only read for its slug; the theme
+ * itself comes from code.
  */
 export async function resolveDocTheme(
   payload: Payload,
   tenantValue: unknown,
 ): Promise<ResolvedTheme | null> {
+  if (tenantValue && typeof tenantValue === 'object' && 'slug' in tenantValue) {
+    return resolveTheme((tenantValue as { slug?: string }).slug)
+  }
+
   const tenantId =
     tenantValue && typeof tenantValue === 'object' ? (tenantValue as { id: unknown }).id : tenantValue
   if (!tenantId) return null
@@ -74,7 +80,7 @@ export async function resolveDocTheme(
       depth: 0,
       overrideAccess: true,
     })
-    return resolveTheme(tenant)
+    return resolveTheme(tenant.slug)
   } catch {
     return null
   }

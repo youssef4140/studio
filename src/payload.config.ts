@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
 import { Folders } from './collections/Folders'
+import { syncFolders } from './collections/Folders/sync'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { TextEditor } from './collections/TextEditor'
@@ -94,6 +95,11 @@ export default buildConfig({
   collections: [Pages, TextEditor, Media, Categories, Folders, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
+  // Tenants and subfolders are defined in src/tenants.ts; mirror them into the
+  // Folders collection on every boot.
+  onInit: async (payload) => {
+    await syncFolders(payload)
+  },
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

@@ -4,7 +4,7 @@ Content Studio is a self-hosted, multi-tenant Payload CMS backend for a family o
 
 - Postgres, not Mongo. Self-hosted, no vendor lock-in.
 - Rendering happens **at publish time**, in a background worker — never while a consumer is waiting on a request.
-- Design tokens, not freeform values: typography/color choices, block spacing, and text styling all come from a fixed set of options, not raw CSS/hex input, except where a tenant deliberately overrides its palette.
+- Structure and styling live in code, not in the admin: the tenants, their subfolders, each tenant's font and colours, and every block's background and padding are hardcoded. Editors write content; they don't change the design.
 
 ## A) Stack, install, and run
 
@@ -54,9 +54,8 @@ pnpm dev
 Two things every fresh checkout needs that a plain `pnpm dev` doesn't give you:
 
 ```bash
-# 6. Promote an account to superadmin — required to manage folders/tenants,
-#    tenant theming, and other admin accounts. There's no "first user is
-#    superadmin" special case.
+# 6. Promote an account to superadmin — required to manage other admin
+#    accounts. There's no "first user is superadmin" special case.
 pnpm seed:superadmin you@example.com
 
 # 7. Start the publish worker (separate terminal, separate long-lived process).
@@ -92,20 +91,22 @@ Optional: to route Media uploads to Cloudinary instead of local disk, set `CLOUD
 
 ### Multi-tenant content organization
 
-One self-referencing `Folders` collection is the whole tenant model — there's no separate Tenants collection. A **tenant is a root folder** (`ptofthecity`, `tny`); **subfolders** (`services`, `programs`, `articles`, ...) organize Pages and Articles underneath it, purely for organization. A folder's `path` (e.g. `ptofthecity/services`) is the *render/storage address* — not a real public URL, since Studio has no frontend of its own; each consumer app decides its own real routing and just fetches content by this address.
+Tenants and their subfolders are **defined in code**, in [src/tenants.ts](src/tenants.ts) — nobody can create, rename or delete them in the admin or over the API, not even a superadmin. To add or change one, edit that file and restart; on boot the list is mirrored into a read-only `Folders` collection so Pages, Articles and Media can be filed under a folder. The sync only adds and renames; a folder removed from the file stays in the database (and is logged) so nothing filed under it is orphaned.
+
+A **tenant is a root folder** (`ptofthecity`, `tny`); **subfolders** (`services`, `programs`, `articles`, ...) organize Pages and Articles underneath it. A folder's `path` (e.g. `ptofthecity/services`) is the *render/storage address* — not a real public URL, since Studio has no frontend of its own; each consumer app decides its own real routing and just fetches content by this address.
 
 Pages and Articles always live inside a subfolder, never directly in a tenant root, and their slugs are unique **within their folder**, not globally — `ptofthecity/services` and `tny/services` can both exist.
 
 ### Roles & access control
 
 - `admin` (default) and `superadmin` roles on Users.
-- **superadmin-only**: create/edit/delete folders, set tenant typography/palette, manage other admin accounts (a regular admin can't self-elevate, even via a raw API call — enforced at the field level).
+- **superadmin-only**: manage other admin accounts (a regular admin can't self-elevate, even via a raw API call — enforced at the field level).
 - **Any authenticated user**: create/edit Pages and Articles, upload Media.
 - **Public (unauthenticated)**: read access to published content only.
 
 ### Per-tenant theming
 
-Each tenant (root folder) gets its own typography (a curated font list) and an 8-token color palette, set either field-by-field in the admin UI or by pasting a `{ typography, palette }` JSON blob. This reaches the published output as **structured data** on the render envelope (`envelope.theme` — a CSS variable map + font info), not a raw CSS string — consumers merge it into their own `:root`.
+Each tenant's font (from a fixed list) and 8-token colour palette are hardcoded next to the tenant itself in [src/tenants.ts](src/tenants.ts); there are no theme fields in the admin. A palette token left out keeps the default from the shared stylesheet. This reaches the published output as **structured data** on the render envelope (`envelope.theme` — a CSS variable map + font info), not a raw CSS string — consumers merge it into their own `:root`.
 
 ### Tenant-scoped block variants
 
@@ -113,7 +114,7 @@ A block can be restricted to one tenant (e.g. `FaqTny`, a genuinely separate com
 
 ### Content blocks
 
-`Hero`, `Content` (rich prose), `FAQ` (+ its `FAQ (TNY)` variant), and `Entity List` — each a small Payload block config plus a plain React component. All of them render through **one shared `renderBlocks()` pipeline**, used identically by the render API, the publish worker, and the live-preview route, so there's exactly one implementation of "turn this document into HTML."
+`Hero`, `Content` (rich prose), `FAQ` (+ its `FAQ (TNY)` variant), and `Entity List` — each a small Payload block config plus a plain React component. A block's background and vertical padding are not editor choices: they are fixed per block type in [src/render/appearance.ts](src/render/appearance.ts). The only per-block display control left in the admin is "Visibility" (hide on mobile/tablet/desktop). All blocks render through **one shared `renderBlocks()` pipeline**, used identically by the render API, the publish worker, and the live-preview route, so there's exactly one implementation of "turn this document into HTML."
 
 ### Rich text editor (Lexical)
 

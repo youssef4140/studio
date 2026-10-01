@@ -212,36 +212,6 @@ export interface Folder {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  /**
-   * Typography and colour palette — set on the tenant (root folder) only.
-   */
-  theme?: {
-    typography?: {
-      fontFamily?: ('system-ui' | 'Inter' | 'Merriweather' | 'Poppins' | 'Lora') | null;
-    };
-    palette?: {
-      surface?: string | null;
-      muted?: string | null;
-      brand?: string | null;
-      onBrand?: string | null;
-      inverse?: string | null;
-      onInverse?: string | null;
-      border?: string | null;
-      text?: string | null;
-    };
-    /**
-     * Paste { "typography": {...}, "palette": {...} } to bulk-set the fields above. Cleared after import.
-     */
-    themeJSON?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-  };
   parent?: (number | null) | Folder;
   breadcrumbs?:
     | {
@@ -417,14 +387,6 @@ export interface HeroBlock {
     href?: string | null;
   };
   /**
-   * Surface token for the block background.
-   */
-  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
-  /**
-   * Vertical padding (block-start / block-end) token.
-   */
-  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
-  /**
    * Breakpoints where this block is hidden. Empty = visible everywhere.
    */
   hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
@@ -452,14 +414,6 @@ export interface ContentBlock {
     };
     [k: string]: unknown;
   };
-  /**
-   * Surface token for the block background.
-   */
-  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
-  /**
-   * Vertical padding (block-start / block-end) token.
-   */
-  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
   /**
    * Breakpoints where this block is hidden. Empty = visible everywhere.
    */
@@ -504,14 +458,6 @@ export interface FaqBlock {
       }[]
     | null;
   /**
-   * Surface token for the block background.
-   */
-  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
-  /**
-   * Vertical padding (block-start / block-end) token.
-   */
-  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
-  /**
    * Breakpoints where this block is hidden. Empty = visible everywhere.
    */
   hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
@@ -547,14 +493,6 @@ export interface FaqTnyBlock {
       }[]
     | null;
   /**
-   * Surface token for the block background.
-   */
-  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
-  /**
-   * Vertical padding (block-start / block-end) token.
-   */
-  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
-  /**
    * Breakpoints where this block is hidden. Empty = visible everywhere.
    */
   hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
@@ -573,14 +511,6 @@ export interface EntityListBlock {
    */
   field: 'symptoms' | 'treatments';
   style: 'bullets' | 'cards';
-  /**
-   * Surface token for the block background.
-   */
-  background?: ('none' | 'surface' | 'muted' | 'brand' | 'inverse') | null;
-  /**
-   * Vertical padding (block-start / block-end) token.
-   */
-  paddingY?: ('none' | 'sm' | 'md' | 'lg') | null;
   /**
    * Breakpoints where this block is hidden. Empty = visible everywhere.
    */
@@ -991,8 +921,6 @@ export interface HeroBlockSelect<T extends boolean = true> {
         label?: T;
         href?: T;
       };
-  background?: T;
-  paddingY?: T;
   hideOn?: T;
   id?: T;
   blockName?: T;
@@ -1003,8 +931,6 @@ export interface HeroBlockSelect<T extends boolean = true> {
  */
 export interface ContentBlockSelect<T extends boolean = true> {
   body?: T;
-  background?: T;
-  paddingY?: T;
   hideOn?: T;
   id?: T;
   blockName?: T;
@@ -1024,8 +950,6 @@ export interface FaqBlockSelect<T extends boolean = true> {
         featured?: T;
         id?: T;
       };
-  background?: T;
-  paddingY?: T;
   hideOn?: T;
   id?: T;
   blockName?: T;
@@ -1043,8 +967,6 @@ export interface FaqTnyBlockSelect<T extends boolean = true> {
         answer?: T;
         id?: T;
       };
-  background?: T;
-  paddingY?: T;
   hideOn?: T;
   id?: T;
   blockName?: T;
@@ -1057,8 +979,6 @@ export interface EntityListBlockSelect<T extends boolean = true> {
   heading?: T;
   field?: T;
   style?: T;
-  background?: T;
-  paddingY?: T;
   hideOn?: T;
   id?: T;
   blockName?: T;
@@ -1222,28 +1142,6 @@ export interface FoldersSelect<T extends boolean = true> {
   pages?: T;
   articles?: T;
   media?: T;
-  theme?:
-    | T
-    | {
-        typography?:
-          | T
-          | {
-              fontFamily?: T;
-            };
-        palette?:
-          | T
-          | {
-              surface?: T;
-              muted?: T;
-              brand?: T;
-              onBrand?: T;
-              inverse?: T;
-              onInverse?: T;
-              border?: T;
-              text?: T;
-            };
-        themeJSON?: T;
-      };
   parent?: T;
   breadcrumbs?:
     | T

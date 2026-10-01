@@ -1,4 +1,4 @@
-import { APIError, type CollectionBeforeValidateHook } from 'payload'
+import type { CollectionBeforeValidateHook } from 'payload'
 
 /**
  * Computes `path` (the full ancestor chain, e.g. `ptofthecity/services`) and
@@ -32,33 +32,5 @@ export const computeFolderPath: CollectionBeforeValidateHook = async ({
   })
   data.path = `${parent.path}/${slug}`
   data.isTenant = false
-  return data
-}
-
-/**
- * The JSON-paste theming path. Merges a pasted { typography, palette } object
- * into the structured fields, then clears themeJSON — the structured fields
- * (with their own per-field validators: select options, hex regex) stay the
- * single source of truth, and their normal validation runs right after this
- * (beforeValidate happens before field validation), so a malformed paste is
- * still caught, just by the same rules the GUI fields already enforce.
- */
-export const applyThemeJSON: CollectionBeforeValidateHook = ({ data }) => {
-  const raw = data?.theme?.themeJSON
-  if (!raw) return data
-
-  let parsed: { typography?: Record<string, unknown>; palette?: Record<string, unknown> }
-  try {
-    parsed = typeof raw === 'string' ? JSON.parse(raw) : (raw as typeof parsed)
-  } catch {
-    throw new APIError('Theme JSON is not valid JSON.', 400, undefined, true)
-  }
-
-  data.theme = {
-    ...data.theme,
-    typography: { ...data.theme?.typography, ...parsed.typography },
-    palette: { ...data.theme?.palette, ...parsed.palette },
-    themeJSON: null,
-  }
   return data
 }
