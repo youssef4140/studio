@@ -1,0 +1,1272 @@
+/*
+ * ptofthecity design tokens — the colours and type scale its blocks are built
+ * from. Appended to blocks.css in the one versioned bundle (src/render/assets.ts),
+ * so every name is prefixed `ptoc` to stay out of other tenants' way.
+ *
+ * Copied as-is from the PtOfTheCity-V2 site (assets/css/_colors.scss and
+ * _typography.scss): same token names, same values, same comments. Do not add,
+ * rename or adjust a value here; change it in the source design system first.
+ *
+ * Fonts are not loaded by this file. Switzer (Fontshare), Poppins and Inter
+ * (Google Fonts; Inter is for the drop cap layout only) are listed as `fontStylesheets` on the tenant in src/tenants.ts: the
+ * preview links them, and consumers get them on the envelope's `theme`.
+ */
+
+:root {
+  --ptoc-primary-700: #011417; /* body text on light backgrounds */
+  --ptoc-primary-600: #03292e; /* headings on light backgrounds */
+  --ptoc-primary-400: #15707c; /* primary buttons/accents */
+  --ptoc-primary-300: #2097a7; /* borders on dark sections */
+  --ptoc-primary-base: #2bc0d4; /* bright teal */
+
+  --ptoc-white: #ffffff;
+
+  --ptoc-accent-cyan: #66e8fd; /* overline labels + active dot on dark backgrounds */
+  --ptoc-surface-cream: #f9f7f4; /* section background */
+  --ptoc-surface-sand: #f5f2ed; /* warm editorial card background (About page) */
+  --ptoc-surface-mint: #f0fbfc; /* featured card background */
+  --ptoc-surface-teal-pale: #d5f2f6; /* pale teal surface/hover tint */
+  --ptoc-surface-gray: #f3f4f6; /* light grey panel (About programs on mobile) */
+  --ptoc-border-gray: #d1d5db;
+
+  /* Specialty-program card accent strips, cycled per card in this order */
+  --ptoc-accent-blue: #255bf0;
+  --ptoc-accent-magenta: #cb38e8;
+  --ptoc-accent-purple: #7f26ec;
+  --ptoc-accent-violet: #912ec3;
+  --ptoc-accent-blue-2: #2b7ad4;
+  --ptoc-accent-teal-dark: #0e899a;
+
+  --ptoc-font-poppins: 'Poppins', sans-serif;
+  --ptoc-font-switzer: 'Switzer', sans-serif;
+}
+
+/*
+ * Type scale. Font-size and line-height scale fluidly between the mobile value
+ * (at a 390px viewport) and the desktop value (at 1440px). Weight, letter-spacing
+ * and text-transform switch once at 800px instead of interpolating.
+ *
+ * Sizes are px on purpose, as in the source.
+ */
+
+/* mobile: 44/48/0%, Switzer Extrabold(800) · desktop: 88/96/-2%, Switzer Bold(700) */
+.ptoc-type-display {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 800;
+  font-size: clamp(44px, calc(44px + (88 - 44) * (100vw - 390px) / (1440 - 390)), 88px);
+  line-height: clamp(48px, calc(48px + (96 - 48) * (100vw - 390px) / (1440 - 390)), 96px);
+  letter-spacing: 0em;
+}
+
+/* mobile: 32/38/0%, Bold(700) · desktop: 64/72/-2%, Bold(700) */
+.ptoc-type-h1 {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  font-size: clamp(32px, calc(32px + (64 - 32) * (100vw - 390px) / (1440 - 390)), 64px);
+  line-height: clamp(38px, calc(38px + (72 - 38) * (100vw - 390px) / (1440 - 390)), 72px);
+  letter-spacing: 0em;
+}
+
+/* mobile: 36/44/-0.5%, Semibold(600) · desktop: 48/56/-1%, Bold(700) */
+.ptoc-type-h2 {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 600;
+  font-size: clamp(36px, calc(36px + (48 - 36) * (100vw - 390px) / (1440 - 390)), 48px);
+  line-height: clamp(44px, calc(44px + (56 - 44) * (100vw - 390px) / (1440 - 390)), 56px);
+  letter-spacing: -0.005em;
+}
+
+/* mobile: 22/28/0%, Semibold(600) · desktop: 36/44/-0.5%, Semibold(600) */
+.ptoc-type-h3 {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 600;
+  font-size: clamp(22px, calc(22px + (36 - 22) * (100vw - 390px) / (1440 - 390)), 36px);
+  line-height: clamp(28px, calc(28px + (44 - 28) * (100vw - 390px) / (1440 - 390)), 44px);
+  letter-spacing: 0em;
+}
+
+/* mobile only: 20/auto/0%, Bold(700) - no desktop value in the guide, held fixed */
+.ptoc-type-h4 {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: normal;
+  letter-spacing: 0em;
+}
+
+/* mobile "Body Large": 18/30/0% · desktop "Large": 20/36/0%, both Poppins Regular(400) */
+.ptoc-type-large {
+  font-family: var(--ptoc-font-poppins);
+  font-weight: 400;
+  font-size: clamp(18px, calc(18px + (20 - 18) * (100vw - 390px) / (1440 - 390)), 20px);
+  line-height: clamp(30px, calc(30px + (36 - 30) * (100vw - 390px) / (1440 - 390)), 36px);
+  letter-spacing: 0em;
+}
+
+/* mobile: 16/26/0% · desktop: 18/30/0%, both Poppins Regular(400) */
+.ptoc-type-body {
+  font-family: var(--ptoc-font-poppins);
+  font-weight: 400;
+  font-size: clamp(16px, calc(16px + (18 - 16) * (100vw - 390px) / (1440 - 390)), 18px);
+  line-height: clamp(26px, calc(26px + (30 - 26) * (100vw - 390px) / (1440 - 390)), 30px);
+  letter-spacing: 0em;
+}
+
+/* 18/24/0.5% on both mobile and desktop, Poppins SemiBold(600) */
+.ptoc-type-button {
+  font-family: var(--ptoc-font-poppins);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0.005em;
+}
+
+/* mobile: 16/auto/4%, SemiBold(600) · desktop: 16/18/8%, Medium(500) */
+.ptoc-type-overline {
+  font-family: var(--ptoc-font-poppins);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* mobile only: 16/auto/0%, Medium(500) - no desktop value in the guide, held fixed */
+.ptoc-type-label {
+  font-family: var(--ptoc-font-poppins);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: normal;
+  letter-spacing: 0em;
+}
+
+/* 14/22/0.5% on both mobile and desktop, Poppins Regular(400) */
+.ptoc-type-caption {
+  font-family: var(--ptoc-font-poppins);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.005em;
+}
+
+@media screen and (min-width: 800px) {
+  .ptoc-type-display {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .ptoc-type-h1 {
+    letter-spacing: -0.02em;
+  }
+  .ptoc-type-h2 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .ptoc-type-h3 {
+    letter-spacing: -0.005em;
+  }
+  .ptoc-type-overline {
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* ==========================================================================
+ * Article blocks — the "PTOC articles" section of the Figma `components` file
+ * (configs in src/blocks/ptoc, markup in src/blocks/components/ptoc).
+ *
+ * Everything below is fixed: editors supply text and images, never type,
+ * colour or spacing.
+ * ========================================================================== */
+
+/*
+ * Values the Figma file uses that the imported tokens above do not have.
+ * Figma gives them no variable names, so these names are Studio's.
+ */
+:root {
+  --ptoc-text-muted: #6b7280; /* meta lines, captions, attributions on light */
+  --ptoc-on-dark-muted: #b4c8cd; /* supporting text on dark panels */
+  --ptoc-on-dark-subtle: #8ca5aa; /* meta lines and attributions on dark panels */
+  --ptoc-divider: #e5e7eb; /* hairline dividers */
+  --ptoc-avatar-on-dark: #143c46; /* empty avatar on a dark panel */
+  --ptoc-accent-orange: #ff9b37; /* checklist marker (the colour inside ptoc-check.svg) */
+  --ptoc-drop-cap-ink: #1a1a1a; /* the drop cap letter */
+  --ptoc-drop-cap-text: #4a4a4a; /* text in the drop cap layout */
+  --ptoc-font-inter: 'Inter', sans-serif; /* the drop cap layout only */
+
+  /*
+   * Type sizes, named by their desktop px value in Figma. Each scales down to
+   * a mobile value on the same 390px -> 1440px interpolation as the type scale
+   * above. 64/48/36/20/18 use that scale's own mobile values; the rest have
+   * none there, so their mobile values are Studio's. 16px and below are fixed.
+   */
+  --ptoc-size-120: clamp(72px, calc(72px + (120 - 72) * (100vw - 390px) / (1440 - 390)), 120px);
+  --ptoc-size-64: clamp(32px, calc(32px + (64 - 32) * (100vw - 390px) / (1440 - 390)), 64px);
+  --ptoc-size-48: clamp(36px, calc(36px + (48 - 36) * (100vw - 390px) / (1440 - 390)), 48px);
+  --ptoc-size-36: clamp(22px, calc(22px + (36 - 22) * (100vw - 390px) / (1440 - 390)), 36px);
+  --ptoc-size-32: clamp(24px, calc(24px + (32 - 24) * (100vw - 390px) / (1440 - 390)), 32px);
+  --ptoc-size-28: clamp(22px, calc(22px + (28 - 22) * (100vw - 390px) / (1440 - 390)), 28px);
+  --ptoc-size-24: clamp(20px, calc(20px + (24 - 20) * (100vw - 390px) / (1440 - 390)), 24px);
+  --ptoc-size-22: clamp(18px, calc(18px + (22 - 18) * (100vw - 390px) / (1440 - 390)), 22px);
+  --ptoc-size-20: clamp(18px, calc(18px + (20 - 18) * (100vw - 390px) / (1440 - 390)), 20px);
+  --ptoc-size-18: clamp(16px, calc(16px + (18 - 16) * (100vw - 390px) / (1440 - 390)), 18px);
+  --ptoc-size-17: clamp(16px, calc(16px + (17 - 16) * (100vw - 390px) / (1440 - 390)), 17px);
+
+  /* Section padding, named by its desktop px value; tighter on small screens. */
+  --ptoc-space-120: clamp(64px, calc(64px + (120 - 64) * (100vw - 390px) / (1440 - 390)), 120px);
+  --ptoc-space-96: clamp(56px, calc(56px + (96 - 56) * (100vw - 390px) / (1440 - 390)), 96px);
+  --ptoc-space-80: clamp(48px, calc(48px + (80 - 48) * (100vw - 390px) / (1440 - 390)), 80px);
+  --ptoc-space-64: clamp(40px, calc(40px + (64 - 40) * (100vw - 390px) / (1440 - 390)), 64px);
+  --ptoc-space-60: clamp(32px, calc(32px + (60 - 32) * (100vw - 390px) / (1440 - 390)), 60px);
+  --ptoc-space-56: clamp(40px, calc(40px + (56 - 40) * (100vw - 390px) / (1440 - 390)), 56px);
+  --ptoc-space-48: clamp(32px, calc(32px + (48 - 32) * (100vw - 390px) / (1440 - 390)), 48px);
+  --ptoc-space-40: clamp(28px, calc(28px + (40 - 28) * (100vw - 390px) / (1440 - 390)), 40px);
+}
+
+/* ---- shared ---- */
+
+/* These blocks run edge to edge and set their own gutters. */
+.block > .ptoc {
+  max-inline-size: none;
+  padding-inline: 0;
+}
+
+.ptoc {
+  position: relative;
+  background: var(--ptoc-white);
+  color: var(--ptoc-primary-700);
+  font-family: var(--ptoc-font-poppins);
+}
+.ptoc :where(h1, h2, h3, h4, p, figure, blockquote, ul, ol) {
+  margin: 0;
+  padding: 0;
+}
+.ptoc :where(ul, ol) {
+  list-style: none;
+}
+
+/*
+ * The content column. Figma draws every block in a 1200px frame with side
+ * padding; `--ptoc-col` is what is left between that padding (800 / 960 /
+ * 1040...). Below that width the column fills the screen less a 24px gutter.
+ */
+.ptoc-wrap {
+  inline-size: 100%;
+  max-inline-size: calc(var(--ptoc-col, 800px) + 48px);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* A dark panel, optionally with an editor-uploaded image washed out behind it. */
+.ptoc-dark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--ptoc-primary-600);
+  color: var(--ptoc-white);
+}
+.ptoc-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.ptoc-bg img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  opacity: 0.2;
+}
+
+/* An editor-uploaded image in a fixed-shape frame; dark teal while empty. */
+.ptoc-media {
+  overflow: hidden;
+  background: var(--ptoc-primary-600);
+}
+.ptoc-media img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.ptoc-eyebrow {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ptoc-primary-base);
+}
+.ptoc-dark .ptoc-eyebrow {
+  color: var(--ptoc-accent-cyan);
+}
+
+.ptoc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ptoc-text-muted);
+}
+.ptoc-meta__author {
+  font-weight: 500;
+}
+.ptoc-dark .ptoc-meta {
+  color: var(--ptoc-on-dark-subtle);
+}
+
+.ptoc-button {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 6px;
+  background: var(--ptoc-primary-400);
+  color: var(--ptoc-white);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.ptoc-button--outline {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ptoc-white);
+}
+
+.ptoc-rule {
+  display: block;
+  background: var(--ptoc-primary-base);
+}
+
+/* ---- Hero ---- */
+
+.ptoc-hero__title {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  font-size: var(--ptoc-size-48);
+  line-height: 1.4;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-hero__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+.ptoc-hero__stack > * {
+  max-inline-size: 800px;
+}
+
+.ptoc-hero--image {
+  --ptoc-col: 1040px;
+  padding-block: var(--ptoc-space-120);
+  background: var(--ptoc-primary-700);
+}
+.ptoc-hero--image .ptoc-hero__title {
+  font-size: var(--ptoc-size-64);
+  color: var(--ptoc-white);
+}
+.ptoc-hero--image .ptoc-hero__subtitle {
+  max-inline-size: 700px;
+  font-size: var(--ptoc-size-20);
+  line-height: 1.4;
+  color: var(--ptoc-on-dark-muted);
+}
+
+.ptoc-hero--text {
+  --ptoc-col: 800px;
+  padding-block: var(--ptoc-space-96);
+}
+.ptoc-hero--text .ptoc-hero__subtitle {
+  max-inline-size: 680px;
+  font-size: var(--ptoc-size-20);
+  line-height: 1.4;
+}
+.ptoc-rule--hero {
+  inline-size: 80px;
+  block-size: 3px;
+  border-radius: 2px;
+}
+
+.ptoc-hero--split {
+  --ptoc-col: 1040px;
+  padding-block: var(--ptoc-space-64);
+}
+.ptoc-hero__columns {
+  display: flex;
+  align-items: center;
+  gap: var(--ptoc-space-64);
+}
+.ptoc-hero--image-left .ptoc-hero__columns {
+  flex-direction: row-reverse;
+}
+.ptoc-hero__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+.ptoc-hero--split .ptoc-hero__subtitle {
+  font-size: var(--ptoc-size-18);
+  line-height: 1.4;
+}
+.ptoc-hero--split .ptoc-button {
+  line-height: 1.4;
+}
+.ptoc-hero__media {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  aspect-ratio: 488 / 420;
+}
+
+/* ---- Blockquote ---- */
+
+.ptoc-quote__text {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 600;
+  font-size: var(--ptoc-size-22);
+  line-height: 1.55;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-quote__attribution {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ptoc-text-muted);
+}
+.ptoc-quote__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.ptoc-quote--simple {
+  --ptoc-col: 720px;
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-quote--simple .ptoc-quote__body {
+  position: relative;
+  gap: 12px;
+  padding-inline-start: 28px;
+}
+.ptoc-quote--simple .ptoc-quote__body::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 4px;
+  border-radius: 2px;
+  background: var(--ptoc-primary-base);
+}
+
+.ptoc-quote--box {
+  --ptoc-col: 800px;
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-quote--box .ptoc-quote__body {
+  gap: 16px;
+  padding: var(--ptoc-space-40);
+  border-inline-start: 4px solid var(--ptoc-primary-base);
+  border-radius: 8px;
+  background: var(--ptoc-white);
+}
+
+.ptoc-quote--pull {
+  --ptoc-col: 960px;
+  padding-block: var(--ptoc-space-60);
+}
+.ptoc-quote__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+.ptoc-quote__mark {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  font-size: var(--ptoc-size-120);
+  line-height: 1.55;
+  color: var(--ptoc-primary-base);
+}
+.ptoc-quote--pull .ptoc-quote__text {
+  max-inline-size: 700px;
+  font-size: var(--ptoc-size-28);
+  color: var(--ptoc-white);
+}
+.ptoc-quote--pull .ptoc-quote__attribution {
+  color: var(--ptoc-on-dark-subtle);
+}
+.ptoc-rule--quote {
+  inline-size: 48px;
+  block-size: 2px;
+}
+
+/* ---- Image Block ---- */
+
+.ptoc-image {
+  --ptoc-col: 960px;
+  padding-block: 32px;
+}
+.ptoc-image__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ptoc-image__full {
+  aspect-ratio: 960 / 540;
+}
+.ptoc-image__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 24px);
+}
+.ptoc-image__half {
+  aspect-ratio: 468 / 360;
+}
+.ptoc-image__caption {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ptoc-text-muted);
+}
+
+.ptoc-image--text {
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-image__columns {
+  display: flex;
+  align-items: center;
+  gap: var(--ptoc-space-48);
+}
+.ptoc-image--image-right .ptoc-image__columns {
+  flex-direction: row-reverse;
+}
+.ptoc-image__media {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  aspect-ratio: 456 / 380;
+}
+.ptoc-image__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ptoc-image__heading {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  font-size: var(--ptoc-size-28);
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-image__text {
+  font-size: var(--ptoc-size-17);
+  line-height: 1.5;
+}
+
+/* ---- Section Header ---- */
+
+.ptoc-header {
+  --ptoc-col: 800px;
+}
+.ptoc-header .ptoc-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.ptoc-header__heading {
+  font-family: var(--ptoc-font-switzer);
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-header__sub {
+  line-height: 1.5;
+}
+
+.ptoc-header--large,
+.ptoc-header--label {
+  padding-block: var(--ptoc-space-56) 24px;
+}
+.ptoc-header--large .ptoc-wrap {
+  gap: 16px;
+}
+.ptoc-header--large .ptoc-header__heading,
+.ptoc-header--label .ptoc-header__heading {
+  font-weight: 700;
+  font-size: var(--ptoc-size-48);
+}
+.ptoc-header--large .ptoc-header__sub {
+  font-size: var(--ptoc-size-18);
+}
+
+.ptoc-header--medium {
+  padding-block: var(--ptoc-space-40) 16px;
+}
+.ptoc-header--medium .ptoc-wrap,
+.ptoc-header--label .ptoc-wrap {
+  gap: 12px;
+}
+.ptoc-header--medium .ptoc-header__heading {
+  font-weight: 600;
+  font-size: var(--ptoc-size-36);
+}
+.ptoc-header--medium .ptoc-header__sub {
+  font-size: var(--ptoc-size-17);
+}
+
+.ptoc-header--small {
+  padding-block: 32px 12px;
+}
+.ptoc-header--small .ptoc-header__heading {
+  font-weight: 600;
+  font-size: var(--ptoc-size-22);
+}
+
+.ptoc-header--label .ptoc-eyebrow {
+  line-height: 1.5;
+}
+.ptoc-header__rule {
+  display: block;
+  block-size: 2px;
+  background: var(--ptoc-primary-base);
+}
+
+/* ---- Call to Action ---- */
+
+.ptoc-cta__heading {
+  font-family: var(--ptoc-font-switzer);
+  line-height: 1.5;
+}
+
+.ptoc-cta--banner {
+  --ptoc-col: 960px;
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-cta__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-block: var(--ptoc-space-60);
+  padding-inline: clamp(24px, 8vw, 120px);
+  text-align: center;
+}
+.ptoc-cta--banner .ptoc-cta__heading {
+  max-inline-size: 16em; /* two lines at full size, as drawn */
+  font-weight: 700;
+  font-size: var(--ptoc-size-32);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.ptoc-cta--banner .ptoc-cta__text {
+  max-inline-size: 600px;
+  font-size: var(--ptoc-size-18);
+  line-height: 1.5;
+  color: var(--ptoc-on-dark-muted);
+}
+.ptoc-cta__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.ptoc-cta--inline {
+  --ptoc-col: 800px;
+  padding-block: var(--ptoc-space-40);
+}
+.ptoc-cta__row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.ptoc-cta__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ptoc-cta--inline .ptoc-cta__heading {
+  font-weight: 600;
+  font-size: var(--ptoc-size-22);
+  color: var(--ptoc-primary-600);
+}
+.ptoc-cta--inline .ptoc-cta__text {
+  font-size: 16px;
+  line-height: 1.5;
+}
+.ptoc-cta--inline .ptoc-button {
+  flex: none;
+}
+
+.ptoc-cta--minimal {
+  --ptoc-col: 800px;
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-cta__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+.ptoc-rule--cta {
+  inline-size: 80px;
+  block-size: 2px;
+}
+.ptoc-cta__label {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ptoc-text-muted);
+}
+.ptoc-cta__link {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 600;
+  font-size: var(--ptoc-size-20);
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+  text-decoration: none;
+}
+
+/* ---- List ---- */
+
+.ptoc-list {
+  --ptoc-col: 760px;
+  padding-block: 32px;
+}
+.ptoc-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ptoc-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.ptoc-list__item::before {
+  flex: none;
+}
+.ptoc-list__text {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  font-size: var(--ptoc-size-17);
+  line-height: 1.5;
+}
+
+.ptoc-list--bullets .ptoc-list__item::before {
+  content: '•';
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ptoc-primary-base);
+}
+
+.ptoc-list--numbered .ptoc-list__items {
+  gap: 16px;
+  counter-reset: ptoc-list;
+}
+.ptoc-list--numbered .ptoc-list__item {
+  counter-increment: ptoc-list;
+}
+.ptoc-list--numbered .ptoc-list__item::before {
+  content: counter(ptoc-list);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  background: var(--ptoc-primary-base);
+  color: var(--ptoc-white);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ptoc-list--checklist .ptoc-list__items {
+  gap: 14px;
+}
+.ptoc-list--checklist .ptoc-list__item {
+  align-items: center;
+  gap: 14px;
+}
+.ptoc-list--checklist .ptoc-list__item::before {
+  content: '';
+  inline-size: 22px;
+  block-size: 22px;
+  background: url('ptoc-check.__RENDER_VERSION__.svg') center / contain no-repeat;
+}
+
+/* ---- Divider ---- */
+
+.ptoc-divider {
+  --ptoc-col: 800px;
+}
+.ptoc-divider__line {
+  display: block;
+  block-size: 1px;
+  background: var(--ptoc-divider);
+}
+.ptoc-divider--line,
+.ptoc-divider--accent {
+  padding-block: var(--ptoc-space-40);
+}
+.ptoc-divider__accent {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.ptoc-divider__accent .ptoc-divider__line {
+  flex: 1 1 0;
+}
+.ptoc-divider__mark {
+  flex: none;
+  inline-size: 40px;
+  block-size: 3px;
+  border-radius: 2px;
+  background: var(--ptoc-primary-base);
+}
+.ptoc-divider--band {
+  padding-block: 24px;
+}
+.ptoc-divider--band .ptoc-divider__line {
+  block-size: 4px;
+  border-radius: 2px;
+  background: var(--ptoc-primary-base);
+}
+.ptoc-divider--space {
+  block-size: var(--ptoc-space-80);
+}
+
+/* ---- Author Card ---- */
+
+.ptoc-author {
+  --ptoc-col: 800px;
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-author__avatar {
+  flex: none;
+  inline-size: 72px;
+  block-size: 72px;
+  border-radius: 50%;
+}
+.ptoc-author__name {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  font-size: var(--ptoc-size-22);
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-author__bio {
+  max-inline-size: 500px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ptoc-text-muted);
+}
+.ptoc-author__row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.ptoc-author__info {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ptoc-author__label {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ptoc-primary-base);
+}
+
+.ptoc-author__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-block: var(--ptoc-space-60);
+  padding-inline: clamp(24px, 8vw, 120px);
+  text-align: center;
+}
+.ptoc-author--card .ptoc-author__avatar {
+  inline-size: 80px;
+  block-size: 80px;
+  background: var(--ptoc-avatar-on-dark);
+}
+.ptoc-author--card .ptoc-author__name {
+  font-size: var(--ptoc-size-24);
+  color: var(--ptoc-white);
+}
+.ptoc-author--card .ptoc-author__bio {
+  max-inline-size: 600px;
+  color: var(--ptoc-on-dark-muted);
+}
+
+/* ---- Related Articles ---- */
+
+.ptoc-related {
+  padding-block: var(--ptoc-space-56);
+}
+.ptoc-related .ptoc-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.ptoc-related__heading {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-related__title {
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 600;
+  font-size: var(--ptoc-size-18);
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-related__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.ptoc-related__excerpt {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ptoc-related__read {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ptoc-text-muted);
+}
+
+.ptoc-related--grid {
+  --ptoc-col: 960px;
+}
+.ptoc-related--grid .ptoc-wrap {
+  gap: 32px;
+}
+.ptoc-related--grid .ptoc-eyebrow {
+  line-height: 1.5;
+}
+.ptoc-related--grid .ptoc-related__heading {
+  font-size: var(--ptoc-size-36);
+}
+.ptoc-related__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.ptoc-related__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ptoc-related__card .ptoc-related__thumb {
+  aspect-ratio: 304 / 180;
+}
+.ptoc-related__category {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ptoc-primary-base);
+}
+
+.ptoc-related--list {
+  --ptoc-col: 800px;
+}
+.ptoc-related--list .ptoc-wrap {
+  gap: 24px;
+}
+.ptoc-related--list .ptoc-related__heading {
+  font-size: var(--ptoc-size-28);
+}
+.ptoc-related__row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.ptoc-related__row + .ptoc-related__row {
+  margin-block-start: 24px;
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--ptoc-divider);
+}
+.ptoc-related__row .ptoc-related__thumb {
+  flex: none;
+  inline-size: 100px;
+  block-size: 80px;
+}
+.ptoc-related__info {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---- Text Editor (Figma "Body Text") ---- */
+
+/*
+ * Rich text in the tenant's type. Figma draws paragraphs only; headings, lists,
+ * links and quotes typed into the editor borrow the Section Header, List and
+ * Blockquote styles above so they stay on-brand.
+ */
+.ptoc-prose {
+  font-size: var(--ptoc-size-18);
+  line-height: 1.55;
+  color: var(--ptoc-primary-700);
+}
+.ptoc-prose > * + * {
+  margin-block-start: 28px;
+}
+.ptoc-prose :where(h2, h3, h4) {
+  font-family: var(--ptoc-font-switzer);
+  line-height: 1.5;
+  color: var(--ptoc-primary-600);
+}
+.ptoc-prose > :where(h2, h3, h4):not(:first-child) {
+  margin-block-start: var(--ptoc-space-40);
+}
+.ptoc-prose h2 {
+  font-weight: 700;
+  font-size: var(--ptoc-size-48);
+}
+.ptoc-prose h3 {
+  font-weight: 600;
+  font-size: var(--ptoc-size-36);
+}
+.ptoc-prose h4 {
+  font-weight: 600;
+  font-size: var(--ptoc-size-22);
+}
+.ptoc-prose a {
+  color: var(--ptoc-primary-400);
+}
+.ptoc-prose :where(strong, b) {
+  font-weight: 600;
+}
+.ptoc-prose :where(ul, ol) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ptoc-prose li {
+  position: relative;
+  padding-inline-start: 28px;
+}
+.ptoc-prose .list-bullet > li:not(.nestedListItem)::before {
+  content: '•';
+  position: absolute;
+  inset-inline-start: 0;
+  font-weight: 600;
+  color: var(--ptoc-primary-base);
+}
+.ptoc-prose .list-number {
+  gap: 16px;
+  counter-reset: ptoc-prose-list;
+}
+.ptoc-prose .list-number > li {
+  padding-inline-start: 44px;
+  counter-increment: ptoc-prose-list;
+}
+.ptoc-prose .list-number > li:not(.nestedListItem)::before {
+  content: counter(ptoc-prose-list);
+  position: absolute;
+  inset-inline-start: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  background: var(--ptoc-primary-base);
+  color: var(--ptoc-white);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ptoc-prose .list-check > li {
+  padding-inline-start: 0;
+}
+.ptoc-prose .list-check input {
+  margin-inline: 0 12px;
+}
+.ptoc-prose li > :where(ul, ol) {
+  margin-block-start: 12px;
+}
+.ptoc-prose blockquote {
+  padding-inline-start: 24px;
+  border-inline-start: 4px solid var(--ptoc-primary-base);
+  font-family: var(--ptoc-font-switzer);
+  font-weight: 600;
+  font-size: var(--ptoc-size-22);
+  color: var(--ptoc-primary-600);
+}
+.ptoc-prose hr {
+  block-size: 1px;
+  border: 0;
+  background: var(--ptoc-divider);
+}
+
+.ptoc-body {
+  --ptoc-col: 800px;
+  padding-block: var(--ptoc-space-48);
+}
+.ptoc-body__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ptoc-body__lead {
+  font-weight: 300;
+  font-size: var(--ptoc-size-22);
+  line-height: 1.636; /* 22 / 36 */
+  color: var(--ptoc-primary-600);
+}
+
+.ptoc-body--two-col,
+.ptoc-body--sidebar {
+  --ptoc-col: 960px;
+}
+.ptoc-body__columns {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ptoc-space-48);
+}
+.ptoc-body__column {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  font-size: var(--ptoc-size-17);
+}
+
+.ptoc-body__callout {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border-inline-start: 3px solid var(--ptoc-primary-base);
+  border-radius: 8px;
+  background: var(--ptoc-surface-cream);
+}
+.ptoc-body__callout-label {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ptoc-primary-base);
+}
+.ptoc-body__callout .ptoc-prose {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ptoc-primary-600);
+}
+
+.ptoc-body__main {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+.ptoc-body__main > * + * {
+  margin-block-start: 24px;
+}
+/* Figma: a 2px rule, 24px inset and a 236px text column. */
+.ptoc-body__side {
+  flex: none;
+  inline-size: 262px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-inline-start: 24px;
+  border-inline-start: 2px solid var(--ptoc-primary-base);
+}
+.ptoc-body__side-label {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.55;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ptoc-primary-base);
+}
+.ptoc-body__side .ptoc-prose {
+  font-size: 14px;
+  color: var(--ptoc-text-muted);
+}
+
+/*
+ * Drop cap. Figma draws this one layout in Inter and neutral greys rather than
+ * the tenant's own type and colours; kept as drawn.
+ */
+.ptoc-body--drop-cap .ptoc-prose {
+  font-family: var(--ptoc-font-inter);
+  font-size: var(--ptoc-size-18);
+  line-height: 1.5;
+  color: var(--ptoc-drop-cap-text);
+}
+.ptoc-body--drop-cap .ptoc-prose > * + * {
+  margin-block-start: 24px;
+}
+/* Holds the floated letter inside a paragraph shorter than the letter is tall. */
+.ptoc-body--drop-cap .ptoc-prose > p:first-child {
+  display: flow-root;
+}
+.ptoc-body--drop-cap .ptoc-prose > p:first-child::first-letter {
+  float: inline-start;
+  margin-inline-end: 16px;
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 81px; /* three lines of the 18/27 text beside it */
+  color: var(--ptoc-drop-cap-ink);
+}
+
+/* ---- Small screens: side-by-side layouts stack ---- */
+
+@media (max-width: 799px) {
+  .ptoc-hero__columns,
+  .ptoc-image__columns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ptoc-hero--image-left .ptoc-hero__columns {
+    flex-direction: column-reverse;
+  }
+  .ptoc-image--image-right .ptoc-image__columns {
+    flex-direction: column;
+  }
+  .ptoc-hero__media,
+  .ptoc-image__media,
+  .ptoc-hero__content,
+  .ptoc-image__content {
+    flex: none;
+  }
+  .ptoc-cta__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .ptoc-related__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ptoc-body__columns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ptoc-body__column,
+  .ptoc-body__main {
+    flex: none;
+  }
+  .ptoc-body__side {
+    inline-size: auto;
+  }
+}
