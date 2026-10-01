@@ -46,6 +46,8 @@ const nextConfig: NextConfig = {
 
     return webpackConfig
   },
+  // Also stops withPayload adding its own "X-Powered-By: Next.js, Payload" header.
+  poweredByHeader: false,
   reactStrictMode: true,
   redirects,
   turbopack: {

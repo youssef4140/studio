@@ -30,6 +30,22 @@ export default buildConfig({
       // Each tenant (root Folder) as its own nav link, above the generic
       // collections list — see src/admin/components/TenantNavLinks.
       beforeNavLinks: ['@/admin/components/TenantNavLinks#TenantNavLinks'],
+      graphics: {
+        Logo: '@/admin/components/graphics#Logo',
+        Icon: '@/admin/components/graphics#Icon',
+      },
+    },
+    meta: {
+      titleSuffix: '- Studio',
+      description: 'Studio content management',
+      icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' }],
+      // The generated/static OG images carry the Payload logo.
+      defaultOGImageType: 'off',
+      openGraph: {
+        title: 'Studio',
+        siteName: 'Studio',
+        description: 'Studio content management',
+      },
     },
     livePreview: {
       // One-way live preview (step 10): the iframe loads our preview route, which
@@ -60,6 +76,12 @@ export default buildConfig({
           height: 900,
         },
       ],
+    },
+  },
+  i18n: {
+    translations: {
+      // The account page heading is "Payload Settings" by default.
+      en: { general: { payloadSettings: 'Settings' } },
     },
   },
   // This config helps us configure global or default features that the other editors can inherit
