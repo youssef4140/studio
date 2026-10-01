@@ -163,11 +163,21 @@ export interface Page {
    * Computed from folder — the root (tenant) folder.
    */
   tenant?: (number | null) | Folder;
-  layout?: (HeroBlock | ContentBlock | FaqBlock | FaqTnyBlock | EntityListBlock)[] | null;
+  layout?: ContentBlock[] | null;
   seo?: {
     title?: string | null;
     description?: string | null;
     image?: (number | null) | Media;
+    /**
+     * Extra name/value pairs passed to the site, e.g. robots = noindex.
+     */
+    custom?:
+      | {
+          name: string;
+          value: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -243,28 +253,1289 @@ export interface TextEditor {
    * Computed from folder — the root (tenant) folder.
    */
   tenant?: (number | null) | Folder;
-  excerpt?: string | null;
-  featuredImage?: (number | null) | Media;
   publishedAt?: string | null;
+  layout?:
+    | (
+        | {
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocBodySingle';
+          }
+        | {
+            lead?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocBodyLead';
+          }
+        | {
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            body2?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocBodyTwoCol';
+          }
+        | {
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            calloutLabel?: string | null;
+            callout?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            bodyAfter?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocBodyCallout';
+          }
+        | {
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            sideLabel?: string | null;
+            side?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocBodySidebar';
+          }
+        | {
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocBodyDropCap';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            bgImage?: (number | null) | Media;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeroImage';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeroSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeroSplitLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeroText';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocQuoteSimple';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            bgImage?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocQuotePull';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocQuoteBox';
+          }
+        | {
+            image?: (number | null) | Media;
+            caption?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocImageFull';
+          }
+        | {
+            image?: (number | null) | Media;
+            image2?: (number | null) | Media;
+            caption?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocImageTwoUp';
+          }
+        | {
+            image?: (number | null) | Media;
+            heading?: string | null;
+            text?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocImageText';
+          }
+        | {
+            image?: (number | null) | Media;
+            heading?: string | null;
+            text?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocTextImage';
+          }
+        | {
+            heading: string;
+            subheading?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeaderLarge';
+          }
+        | {
+            heading: string;
+            subheading?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeaderMedium';
+          }
+        | {
+            heading: string;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeaderSmall';
+          }
+        | {
+            label?: string | null;
+            heading: string;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocHeaderLabel';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            bgImage?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocCtaBanner';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocCtaInline';
+          }
+        | {
+            label?: string | null;
+            link?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocCtaMinimal';
+          }
+        | {
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocListBullets';
+          }
+        | {
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocListNumbered';
+          }
+        | {
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocListChecklist';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocDividerLine';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocDividerAccent';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocDividerBand';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocDividerSpace';
+          }
+        | {
+            avatar?: (number | null) | Media;
+            label?: string | null;
+            name: string;
+            bio?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocAuthorRow';
+          }
+        | {
+            avatar?: (number | null) | Media;
+            name: string;
+            bio?: string | null;
+            bgImage?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocAuthorCard';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  image?: (number | null) | Media;
+                  category?: string | null;
+                  title: string;
+                  excerpt?: string | null;
+                  readTime?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocRelGrid';
+          }
+        | {
+            heading?: string | null;
+            items?:
+              | {
+                  image?: (number | null) | Media;
+                  title: string;
+                  description?: string | null;
+                  readTime?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocRelList';
+          }
+        | {
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyBodySingle';
+          }
+        | {
+            lead?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyBodyLead';
+          }
+        | {
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            body2?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyBodyTwoCol';
+          }
+        | {
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            calloutLabel?: string | null;
+            callout?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            bodyAfter?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyBodyCallout';
+          }
+        | {
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            sideLabel?: string | null;
+            side?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyBodySidebar';
+          }
+        | {
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyBodyDropCap';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            bgImage?: (number | null) | Media;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeroImage';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            image?: (number | null) | Media;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeroSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            image?: (number | null) | Media;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeroSplitLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            author?: string | null;
+            /**
+             * As it should read, e.g. Sep 29, 2026.
+             */
+            date?: string | null;
+            /**
+             * e.g. 8 min read
+             */
+            readTime?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeroText';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyQuoteSimple';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyQuotePull';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyQuoteBox';
+          }
+        | {
+            image?: (number | null) | Media;
+            caption?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyImageFull';
+          }
+        | {
+            image?: (number | null) | Media;
+            image2?: (number | null) | Media;
+            caption?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyImageTwoUp';
+          }
+        | {
+            image?: (number | null) | Media;
+            heading?: string | null;
+            text?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyImageText';
+          }
+        | {
+            image?: (number | null) | Media;
+            heading?: string | null;
+            text?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyTextImage';
+          }
+        | {
+            heading: string;
+            subheading?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeaderLarge';
+          }
+        | {
+            heading: string;
+            subheading?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeaderMedium';
+          }
+        | {
+            heading: string;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeaderSmall';
+          }
+        | {
+            label?: string | null;
+            heading: string;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyHeaderLabel';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyCtaBanner';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyCtaInline';
+          }
+        | {
+            label?: string | null;
+            link?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyCtaMinimal';
+          }
+        | {
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyListBullets';
+          }
+        | {
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyListNumbered';
+          }
+        | {
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyListChecklist';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyDividerLine';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyDividerAccent';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyDividerBand';
+          }
+        | {
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyDividerSpace';
+          }
+        | {
+            avatar?: (number | null) | Media;
+            label?: string | null;
+            name: string;
+            bio?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyAuthorRow';
+          }
+        | {
+            avatar?: (number | null) | Media;
+            name: string;
+            bio?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyAuthorCard';
+          }
+        | {
+            heading?: string | null;
+            items?:
+              | {
+                  image?: (number | null) | Media;
+                  category?: string | null;
+                  title: string;
+                  excerpt?: string | null;
+                  readTime?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyRelGrid';
+          }
+        | {
+            heading?: string | null;
+            items?:
+              | {
+                  image?: (number | null) | Media;
+                  title: string;
+                  description?: string | null;
+                  readTime?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyRelList';
+          }
+      )[]
+    | null;
   seo?: {
     title?: string | null;
     description?: string | null;
     image?: (number | null) | Media;
-  };
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
+    /**
+     * Extra name/value pairs passed to the site, e.g. robots = noindex.
+     */
+    custom?:
+      | {
+          name: string;
+          value: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -376,26 +1647,6 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeroBlock".
- */
-export interface HeroBlock {
-  heading: string;
-  subheading?: string | null;
-  image?: (number | null) | Media;
-  cta?: {
-    label?: string | null;
-    href?: string | null;
-  };
-  /**
-   * Breakpoints where this block is hidden. Empty = visible everywhere.
-   */
-  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'hero';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
@@ -421,103 +1672,6 @@ export interface ContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FaqBlock".
- */
-export interface FaqBlock {
-  heading?: string | null;
-  /**
-   * Optional note shown above the questions.
-   */
-  note?: string | null;
-  items?:
-    | {
-        question: string;
-        answer?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        /**
-         * Surface this question above the rest.
-         */
-        featured?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Breakpoints where this block is hidden. Empty = visible everywhere.
-   */
-  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'faq';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FaqTnyBlock".
- */
-export interface FaqTnyBlock {
-  heading?: string | null;
-  items?:
-    | {
-        question: string;
-        answer?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Breakpoints where this block is hidden. Empty = visible everywhere.
-   */
-  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'faqTny';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "EntityListBlock".
- */
-export interface EntityListBlock {
-  heading?: string | null;
-  /**
-   * Which array field on the bound entity to iterate.
-   */
-  field: 'symptoms' | 'treatments';
-  style: 'bullets' | 'cards';
-  /**
-   * Breakpoints where this block is hidden. Empty = visible everywhere.
-   */
-  hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'entityList';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -890,11 +2044,7 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        hero?: T | HeroBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
-        faq?: T | FaqBlockSelect<T>;
-        faqTny?: T | FaqTnyBlockSelect<T>;
-        entityList?: T | EntityListBlockSelect<T>;
       };
   seo?:
     | T
@@ -902,28 +2052,17 @@ export interface PagesSelect<T extends boolean = true> {
         title?: T;
         description?: T;
         image?: T;
+        custom?:
+          | T
+          | {
+              name?: T;
+              value?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeroBlock_select".
- */
-export interface HeroBlockSelect<T extends boolean = true> {
-  heading?: T;
-  subheading?: T;
-  image?: T;
-  cta?:
-    | T
-    | {
-        label?: T;
-        href?: T;
-      };
-  hideOn?: T;
-  id?: T;
-  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -937,54 +2076,6 @@ export interface ContentBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FaqBlock_select".
- */
-export interface FaqBlockSelect<T extends boolean = true> {
-  heading?: T;
-  note?: T;
-  items?:
-    | T
-    | {
-        question?: T;
-        answer?: T;
-        featured?: T;
-        id?: T;
-      };
-  hideOn?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FaqTnyBlock_select".
- */
-export interface FaqTnyBlockSelect<T extends boolean = true> {
-  heading?: T;
-  items?:
-    | T
-    | {
-        question?: T;
-        answer?: T;
-        id?: T;
-      };
-  hideOn?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "EntityListBlock_select".
- */
-export interface EntityListBlockSelect<T extends boolean = true> {
-  heading?: T;
-  field?: T;
-  style?: T;
-  hideOn?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "textEditor_select".
  */
 export interface TextEditorSelect<T extends boolean = true> {
@@ -992,17 +2083,813 @@ export interface TextEditorSelect<T extends boolean = true> {
   slug?: T;
   folder?: T;
   tenant?: T;
-  excerpt?: T;
-  featuredImage?: T;
   publishedAt?: T;
+  layout?:
+    | T
+    | {
+        ptocBodySingle?:
+          | T
+          | {
+              body?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocBodyLead?:
+          | T
+          | {
+              lead?: T;
+              body?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocBodyTwoCol?:
+          | T
+          | {
+              body?: T;
+              body2?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocBodyCallout?:
+          | T
+          | {
+              body?: T;
+              calloutLabel?: T;
+              callout?: T;
+              bodyAfter?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocBodySidebar?:
+          | T
+          | {
+              body?: T;
+              sideLabel?: T;
+              side?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocBodyDropCap?:
+          | T
+          | {
+              body?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeroImage?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              bgImage?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeroSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeroSplitLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeroText?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocQuoteSimple?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocQuotePull?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              bgImage?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocQuoteBox?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocImageFull?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocImageTwoUp?:
+          | T
+          | {
+              image?: T;
+              image2?: T;
+              caption?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocImageText?:
+          | T
+          | {
+              image?: T;
+              heading?: T;
+              text?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocTextImage?:
+          | T
+          | {
+              image?: T;
+              heading?: T;
+              text?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeaderLarge?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeaderMedium?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeaderSmall?:
+          | T
+          | {
+              heading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocHeaderLabel?:
+          | T
+          | {
+              label?: T;
+              heading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocCtaBanner?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              bgImage?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocCtaInline?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocCtaMinimal?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocListBullets?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocListNumbered?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocListChecklist?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocDividerLine?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocDividerAccent?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocDividerBand?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocDividerSpace?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocAuthorRow?:
+          | T
+          | {
+              avatar?: T;
+              label?: T;
+              name?: T;
+              bio?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocAuthorCard?:
+          | T
+          | {
+              avatar?: T;
+              name?: T;
+              bio?: T;
+              bgImage?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocRelGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    category?: T;
+                    title?: T;
+                    excerpt?: T;
+                    readTime?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocRelList?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    description?: T;
+                    readTime?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyBodySingle?:
+          | T
+          | {
+              body?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyBodyLead?:
+          | T
+          | {
+              lead?: T;
+              body?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyBodyTwoCol?:
+          | T
+          | {
+              body?: T;
+              body2?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyBodyCallout?:
+          | T
+          | {
+              body?: T;
+              calloutLabel?: T;
+              callout?: T;
+              bodyAfter?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyBodySidebar?:
+          | T
+          | {
+              body?: T;
+              sideLabel?: T;
+              side?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyBodyDropCap?:
+          | T
+          | {
+              body?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeroImage?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              bgImage?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeroSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              image?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeroSplitLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              image?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeroText?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              author?: T;
+              date?: T;
+              readTime?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyQuoteSimple?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyQuotePull?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyQuoteBox?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyImageFull?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyImageTwoUp?:
+          | T
+          | {
+              image?: T;
+              image2?: T;
+              caption?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyImageText?:
+          | T
+          | {
+              image?: T;
+              heading?: T;
+              text?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyTextImage?:
+          | T
+          | {
+              image?: T;
+              heading?: T;
+              text?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeaderLarge?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeaderMedium?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeaderSmall?:
+          | T
+          | {
+              heading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyHeaderLabel?:
+          | T
+          | {
+              label?: T;
+              heading?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyCtaBanner?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyCtaInline?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyCtaMinimal?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyListBullets?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyListNumbered?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyListChecklist?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyDividerLine?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyDividerAccent?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyDividerBand?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyDividerSpace?:
+          | T
+          | {
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyAuthorRow?:
+          | T
+          | {
+              avatar?: T;
+              label?: T;
+              name?: T;
+              bio?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyAuthorCard?:
+          | T
+          | {
+              avatar?: T;
+              name?: T;
+              bio?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyRelGrid?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    category?: T;
+                    title?: T;
+                    excerpt?: T;
+                    readTime?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyRelList?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    description?: T;
+                    readTime?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   seo?:
     | T
     | {
         title?: T;
         description?: T;
         image?: T;
+        custom?:
+          | T
+          | {
+              name?: T;
+              value?: T;
+              id?: T;
+            };
       };
-  content?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
