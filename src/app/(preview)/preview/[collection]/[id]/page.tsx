@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import { renderBlocks } from '@/render/renderBlocks'
 import { isRenderableCollection } from '@/render/collections'
+import { resolveDocTheme } from '@/render/theme'
 import type { RenderableDoc } from '@/render/types'
 import { getServerSideURL } from '@/utilities/getURL'
 import { verifyPreviewToken } from '@/preview/token'
@@ -41,10 +42,15 @@ export default async function PreviewPage({
   }
 
   // Initial paint: same renderBlocks() the publish job uses.
-  const envelope = await renderBlocks(collection, doc)
+  const theme = await resolveDocTheme(payload, doc.tenant)
+  const envelope = await renderBlocks(collection, doc, { theme, placeholders: true })
 
   return (
     <>
+      {/* The tenant's fonts. `precedence` makes React hoist these into <head>. */}
+      {envelope.theme?.fontStylesheets.map((href) => (
+        <link key={href} rel="stylesheet" href={href} precedence="default" />
+      ))}
       {envelope.head.jsonLd.map((obj, i) => (
         <script
           // eslint-disable-next-line react/no-danger

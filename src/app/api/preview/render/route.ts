@@ -37,7 +37,7 @@ export async function POST(req: Request): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
   const theme = await resolveDocTheme(payload, data.tenant)
 
-  const envelope = await renderBlocks(collection, data, { theme })
+  const envelope = await renderBlocks(collection, data, { theme, placeholders: true })
   return Response.json(
     { html: envelope.html, head: envelope.head, theme: envelope.theme },
     { headers: { 'cache-control': 'no-store' } },
