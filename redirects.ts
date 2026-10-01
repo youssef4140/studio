@@ -14,5 +14,13 @@ export const redirects: NextConfig['redirects'] = async () => {
     source: '/:path((?!ie-incompatible.html$).*)', // all pages except the incompatibility page
   }
 
-  return [internetExplorerRedirect]
+  // Studio has no public frontend: the root goes to the admin, which itself
+  // sends unauthenticated visitors on to /admin/login.
+  const rootToAdmin = {
+    destination: '/admin',
+    permanent: false,
+    source: '/',
+  }
+
+  return [internetExplorerRedirect, rootToAdmin]
 }
