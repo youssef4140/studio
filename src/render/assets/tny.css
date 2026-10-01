@@ -1,0 +1,1109 @@
+/*
+ * TNY design tokens and article blocks. Appended to blocks.css in the one
+ * versioned bundle (src/render/assets.ts), so every name is prefixed `tny` to
+ * stay out of other tenants' way.
+ *
+ * Every colour, font, size and spacing here is the raw value from the "TNY
+ * articles" section of the Figma `components` file (node 13:2). That file has
+ * no variables for TNY, so the token names are ours; the values are Figma's.
+ * Do not adjust a value here; change it in Figma first.
+ *
+ * Fonts are not loaded by this file. Montserrat, DM Sans, Poppins and Inter
+ * (Google Fonts) are listed as `fontStylesheets` on the tenant in
+ * src/tenants.ts: the preview links them, and consumers get them on the
+ * envelope's `theme`.
+ */
+
+:root {
+  --tny-navy: #0f2b3d; /* headings on light, dark panels, empty image frames */
+  --tny-orange: #ff9b37; /* labels, rules, bullets, primary buttons */
+  --tny-blue: #24a8e0; /* numbered badges, checkboxes, highlighted-quote and label rules */
+  --tny-white: #ffffff;
+
+  --tny-text-muted: #6b7280; /* body copy, captions, meta lines on light */
+  --tny-on-dark-muted: #c8d2dc; /* hero subtitle on the navy panel */
+  --tny-on-dark-soft: #b4c3d2; /* supporting text on the navy CTA and author cards */
+  --tny-on-dark-subtle: #a0afbe; /* meta lines and attributions on navy */
+  --tny-divider: #e8eaed; /* hairline dividers */
+  --tny-surface-warm: #faf9f7; /* highlighted-quote box */
+  --tny-avatar-on-dark: #245064; /* empty avatar on the navy author card */
+  --tny-drop-cap-ink: #1a1a1a; /* the drop cap letter */
+  --tny-drop-cap-text: #4a4a4a; /* text in the drop cap layout */
+
+  --tny-font-montserrat: 'Montserrat', sans-serif;
+  --tny-font-dm-sans: 'DM Sans', sans-serif;
+  --tny-font-poppins: 'Poppins', sans-serif;
+  --tny-font-inter: 'Inter', sans-serif;
+
+  /*
+   * Text sizes, named by their Figma (desktop) px value. Each scales fluidly
+   * from a smaller value at a 390px viewport up to the Figma value at 1440px.
+   */
+  --tny-size-120: clamp(72px, calc(72px + (120 - 72) * (100vw - 390px) / (1440 - 390)), 120px);
+  --tny-size-48: clamp(32px, calc(32px + (48 - 32) * (100vw - 390px) / (1440 - 390)), 48px);
+  --tny-size-44: clamp(30px, calc(30px + (44 - 30) * (100vw - 390px) / (1440 - 390)), 44px);
+  --tny-size-36: clamp(26px, calc(26px + (36 - 26) * (100vw - 390px) / (1440 - 390)), 36px);
+  --tny-size-32: clamp(24px, calc(24px + (32 - 24) * (100vw - 390px) / (1440 - 390)), 32px);
+  --tny-size-28: clamp(22px, calc(22px + (28 - 22) * (100vw - 390px) / (1440 - 390)), 28px);
+  --tny-size-24: clamp(20px, calc(20px + (24 - 20) * (100vw - 390px) / (1440 - 390)), 24px);
+  --tny-size-22: clamp(18px, calc(18px + (22 - 18) * (100vw - 390px) / (1440 - 390)), 22px);
+  --tny-size-20: clamp(18px, calc(18px + (20 - 18) * (100vw - 390px) / (1440 - 390)), 20px);
+  --tny-size-18: clamp(16px, calc(16px + (18 - 16) * (100vw - 390px) / (1440 - 390)), 18px);
+  --tny-size-17: clamp(16px, calc(16px + (17 - 16) * (100vw - 390px) / (1440 - 390)), 17px);
+
+  /* Section padding, named by its Figma px value; tighter on small screens. */
+  --tny-space-120: clamp(64px, calc(64px + (120 - 64) * (100vw - 390px) / (1440 - 390)), 120px);
+  --tny-space-96: clamp(56px, calc(56px + (96 - 56) * (100vw - 390px) / (1440 - 390)), 96px);
+  --tny-space-80: clamp(48px, calc(48px + (80 - 48) * (100vw - 390px) / (1440 - 390)), 80px);
+  --tny-space-64: clamp(40px, calc(40px + (64 - 40) * (100vw - 390px) / (1440 - 390)), 64px);
+  --tny-space-56: clamp(40px, calc(40px + (56 - 40) * (100vw - 390px) / (1440 - 390)), 56px);
+  --tny-space-48: clamp(32px, calc(32px + (48 - 32) * (100vw - 390px) / (1440 - 390)), 48px);
+  --tny-space-40: clamp(28px, calc(28px + (40 - 28) * (100vw - 390px) / (1440 - 390)), 40px);
+}
+
+/* ---- shared ---- */
+
+/* These blocks run edge to edge and set their own gutters. */
+.block > .tny {
+  max-inline-size: none;
+  padding-inline: 0;
+}
+
+.tny {
+  position: relative;
+  background: var(--tny-white);
+  color: var(--tny-text-muted);
+  font-family: var(--tny-font-poppins);
+  font-weight: 400;
+}
+.tny :where(h1, h2, h3, h4, p, figure, blockquote, ul, ol) {
+  margin: 0;
+  padding: 0;
+}
+.tny :where(ul, ol) {
+  list-style: none;
+}
+
+/*
+ * The content column. Figma draws every block in a 1200px frame with side
+ * padding; `--tny-col` is what is left between that padding (720 / 800 / 960 /
+ * 1040). Below that width the column fills the screen less a 24px gutter.
+ */
+.tny-wrap {
+  inline-size: 100%;
+  max-inline-size: calc(var(--tny-col, 800px) + 48px);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* A navy panel, optionally with an editor-uploaded image washed out behind it. */
+.tny-dark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--tny-navy);
+  color: var(--tny-white);
+}
+.tny-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.tny-bg img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  opacity: 0.2;
+}
+
+/* An editor-uploaded image in a fixed-shape frame; navy while empty. */
+.tny-media {
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--tny-navy);
+}
+.tny-media img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* The small orange uppercase label: DM Sans Bold at optical size 14. */
+.tny-eyebrow,
+.tny-header__label,
+.tny-author__label,
+.tny-related__category,
+.tny-cta__label {
+  font-family: var(--tny-font-dm-sans);
+  font-variation-settings: 'opsz' 14;
+  font-weight: 700;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--tny-orange);
+}
+.tny-eyebrow {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+
+.tny-meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  font-family: var(--tny-font-inter);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tny-text-muted);
+}
+.tny-meta__author {
+  font-weight: 500;
+}
+.tny-dark .tny-meta {
+  color: var(--tny-on-dark-subtle);
+}
+
+.tny-button {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 60px;
+  background: var(--tny-orange);
+  color: var(--tny-white);
+  font-family: var(--tny-font-montserrat);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.tny-button--outline {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--tny-white);
+}
+
+.tny-rule {
+  display: block;
+  background: var(--tny-orange);
+}
+
+/* ---- Hero ---- */
+
+.tny-hero__title {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: var(--tny-size-48);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-hero__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+.tny-hero__stack > * {
+  max-inline-size: 800px;
+}
+
+.tny-hero--image {
+  --tny-col: 1040px;
+  padding-block: var(--tny-space-120);
+}
+.tny-hero--image .tny-hero__title {
+  color: var(--tny-white);
+}
+.tny-hero--image .tny-hero__subtitle {
+  max-inline-size: 700px;
+  font-size: var(--tny-size-20);
+  line-height: 1.5;
+  color: var(--tny-on-dark-muted);
+}
+
+.tny-hero--text {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-96);
+}
+.tny-hero--text .tny-hero__subtitle {
+  max-inline-size: 680px;
+  font-size: var(--tny-size-20);
+  line-height: 1.5;
+}
+.tny-rule--hero {
+  inline-size: 80px;
+  block-size: 3px;
+  border-radius: 2px;
+}
+
+.tny-hero--split {
+  --tny-col: 1040px;
+  padding-block: var(--tny-space-64);
+}
+.tny-hero__columns {
+  display: flex;
+  align-items: center;
+  gap: var(--tny-space-64);
+}
+.tny-hero--image-left .tny-hero__columns {
+  flex-direction: row-reverse;
+}
+.tny-hero__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+.tny-hero--split .tny-hero__title {
+  max-inline-size: 480px;
+  font-size: var(--tny-size-44);
+}
+.tny-hero--split .tny-hero__subtitle {
+  max-inline-size: 480px;
+  font-size: var(--tny-size-18);
+  line-height: 1.5;
+}
+.tny-hero__media {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  aspect-ratio: 488 / 400;
+}
+
+/* ---- Blockquote ---- */
+
+.tny-quote__text {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 600;
+  font-size: var(--tny-size-22);
+  line-height: 1.6;
+  color: var(--tny-navy);
+}
+.tny-quote__attribution {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--tny-text-muted);
+}
+.tny-quote__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.tny-quote--simple {
+  --tny-col: 720px;
+  padding-block: var(--tny-space-48);
+}
+.tny-quote--simple .tny-quote__body {
+  position: relative;
+  gap: 12px;
+  padding-inline-start: 28px;
+}
+.tny-quote--simple .tny-quote__body::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 4px;
+  border-radius: 2px;
+  background: var(--tny-orange);
+}
+
+.tny-quote--box {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-48);
+}
+.tny-quote--box .tny-quote__body {
+  gap: 16px;
+  padding: var(--tny-space-40);
+  border-inline-start: 4px solid var(--tny-blue);
+  border-radius: 8px;
+  background: var(--tny-surface-warm);
+}
+
+.tny-quote--pull {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-64);
+}
+.tny-quote__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+.tny-quote__mark {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: var(--tny-size-120);
+  line-height: 1.6;
+  color: var(--tny-orange);
+}
+.tny-quote--pull .tny-quote__text {
+  max-inline-size: 700px;
+  font-size: var(--tny-size-28);
+  color: var(--tny-white);
+}
+.tny-quote--pull .tny-quote__attribution {
+  color: var(--tny-on-dark-subtle);
+}
+.tny-rule--quote {
+  inline-size: 48px;
+  block-size: 2px;
+}
+
+/* ---- Image Block ---- */
+
+.tny-image {
+  --tny-col: 960px;
+  padding-block: 32px;
+}
+.tny-image__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tny-image__full {
+  aspect-ratio: 960 / 540;
+}
+.tny-image__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 24px);
+}
+.tny-image__half {
+  aspect-ratio: 468 / 360;
+}
+.tny-image__caption {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tny-image--text {
+  padding-block: var(--tny-space-48);
+}
+.tny-image__columns {
+  display: flex;
+  align-items: center;
+  gap: var(--tny-space-48);
+}
+.tny-image--image-right .tny-image__columns {
+  flex-direction: row-reverse;
+}
+.tny-image__media {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  aspect-ratio: 456 / 380;
+}
+.tny-image__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tny-image__content > * {
+  max-inline-size: 400px;
+}
+.tny-image__heading {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: var(--tny-size-28);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-image__text {
+  font-size: var(--tny-size-17);
+  line-height: 1.5;
+}
+
+/* ---- Section Header ---- */
+
+.tny-header {
+  --tny-col: 800px;
+}
+.tny-header .tny-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.tny-header__heading {
+  font-family: var(--tny-font-montserrat);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-header__sub {
+  line-height: 1.5;
+}
+
+.tny-header--large,
+.tny-header--label {
+  padding-block: var(--tny-space-56) 24px;
+}
+.tny-header--large .tny-wrap {
+  gap: 16px;
+}
+.tny-header--large .tny-header__heading,
+.tny-header--label .tny-header__heading {
+  font-weight: 700;
+  font-size: var(--tny-size-36);
+}
+.tny-header--large .tny-header__sub {
+  font-size: var(--tny-size-18);
+}
+
+.tny-header--medium {
+  padding-block: var(--tny-space-40) 16px;
+}
+.tny-header--medium .tny-wrap,
+.tny-header--label .tny-wrap {
+  gap: 12px;
+}
+.tny-header--medium .tny-header__heading {
+  font-weight: 700;
+  font-size: var(--tny-size-28);
+}
+.tny-header--medium .tny-header__sub {
+  font-size: var(--tny-size-17);
+}
+
+.tny-header--small {
+  padding-block: 32px 12px;
+}
+.tny-header--small .tny-header__heading {
+  font-weight: 600;
+  font-size: var(--tny-size-22);
+}
+
+.tny-header__label {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+}
+.tny-header__rule {
+  display: block;
+  block-size: 2px;
+  background: var(--tny-blue);
+}
+
+/* ---- Call to Action ---- */
+
+.tny-cta__heading {
+  font-family: var(--tny-font-montserrat);
+  line-height: 1.5;
+}
+
+.tny-cta--banner {
+  --tny-col: 960px;
+  padding-block: var(--tny-space-48);
+}
+.tny-cta__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-block: var(--tny-space-56);
+  padding-inline: clamp(24px, 6vw, 80px);
+  border-radius: 12px;
+  text-align: center;
+}
+.tny-cta--banner .tny-cta__heading {
+  font-weight: 700;
+  font-size: var(--tny-size-32);
+}
+.tny-cta--banner .tny-cta__text {
+  max-inline-size: 600px;
+  font-size: var(--tny-size-18);
+  line-height: 1.5;
+  color: var(--tny-on-dark-soft);
+}
+.tny-cta__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.tny-cta--inline {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-40);
+}
+.tny-cta__row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.tny-cta__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tny-cta__content > * {
+  max-inline-size: 500px;
+}
+.tny-cta--inline .tny-cta__heading {
+  font-weight: 600;
+  font-size: var(--tny-size-22);
+  color: var(--tny-navy);
+}
+.tny-cta--inline .tny-cta__text {
+  font-size: 16px;
+  line-height: 1.5;
+}
+.tny-cta--inline .tny-button {
+  flex: none;
+}
+
+.tny-cta--minimal {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-48);
+}
+.tny-cta__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+.tny-rule--cta {
+  inline-size: 80px;
+  block-size: 2px;
+}
+.tny-cta__label {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--tny-text-muted);
+}
+.tny-cta__link {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 600;
+  font-size: var(--tny-size-20);
+  line-height: 1.5;
+  color: var(--tny-navy);
+  text-decoration: none;
+}
+
+/* ---- List ---- */
+
+.tny-list {
+  --tny-col: 760px;
+  padding-block: 32px;
+}
+.tny-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tny-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.tny-list__item::before {
+  flex: none;
+}
+.tny-list__text {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  font-size: var(--tny-size-17);
+  line-height: 1.5;
+}
+
+.tny-list--bullets .tny-list__item::before {
+  content: '•';
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--tny-orange);
+}
+
+.tny-list--numbered .tny-list__items {
+  gap: 16px;
+  counter-reset: tny-list;
+}
+.tny-list--numbered .tny-list__item {
+  counter-increment: tny-list;
+}
+.tny-list--numbered .tny-list__item::before {
+  content: counter(tny-list);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  background: var(--tny-blue);
+  color: var(--tny-white);
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tny-list--checklist .tny-list__item {
+  align-items: center;
+  gap: 14px;
+}
+.tny-list--checklist .tny-list__item::before {
+  content: '';
+  inline-size: 20px;
+  block-size: 20px;
+  border: 1.5px solid var(--tny-blue);
+  border-radius: 4px;
+}
+
+/* ---- Divider ---- */
+
+.tny-divider {
+  --tny-col: 800px;
+}
+.tny-divider__line {
+  display: block;
+  block-size: 1px;
+  background: var(--tny-divider);
+}
+.tny-divider--line,
+.tny-divider--accent {
+  padding-block: var(--tny-space-40);
+}
+.tny-divider__accent {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.tny-divider__accent .tny-divider__line {
+  flex: 1 1 0;
+}
+.tny-divider__mark {
+  flex: none;
+  inline-size: 40px;
+  block-size: 3px;
+  border-radius: 2px;
+  background: var(--tny-orange);
+}
+.tny-divider--band {
+  padding-block: 24px;
+}
+.tny-divider--band .tny-divider__line {
+  block-size: 4px;
+  border-radius: 2px;
+  background: var(--tny-navy);
+}
+.tny-divider--space {
+  block-size: var(--tny-space-80);
+}
+
+/* ---- Author Card ---- */
+
+.tny-author {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-48);
+}
+.tny-author__avatar {
+  flex: none;
+  inline-size: 72px;
+  block-size: 72px;
+  border-radius: 50%;
+}
+.tny-author__name {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: var(--tny-size-22);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-author__bio {
+  max-inline-size: 500px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.tny-author__row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.tny-author__info {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tny-author__label {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.tny-author__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: var(--tny-space-40);
+  border-radius: 12px;
+  text-align: center;
+}
+.tny-author--card .tny-author__avatar {
+  inline-size: 80px;
+  block-size: 80px;
+  background: var(--tny-avatar-on-dark);
+}
+.tny-author--card .tny-author__name {
+  font-size: var(--tny-size-24);
+  color: var(--tny-white);
+}
+.tny-author--card .tny-author__bio {
+  max-inline-size: 600px;
+  color: var(--tny-on-dark-soft);
+}
+
+/* ---- Related Articles ---- */
+
+.tny-related {
+  padding-block: var(--tny-space-56);
+}
+.tny-related .tny-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.tny-related__heading {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: var(--tny-size-28);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-related__title {
+  font-family: var(--tny-font-montserrat);
+  font-weight: 600;
+  font-size: var(--tny-size-18);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-related__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.tny-related__excerpt {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.tny-related__read {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tny-related--grid {
+  --tny-col: 960px;
+}
+.tny-related--grid .tny-wrap {
+  gap: 32px;
+}
+.tny-related__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.tny-related__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tny-related__card .tny-related__thumb {
+  aspect-ratio: 304 / 180;
+}
+.tny-related__category {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.tny-related--list {
+  --tny-col: 800px;
+}
+.tny-related--list .tny-wrap {
+  gap: 24px;
+}
+.tny-related__row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.tny-related__row + .tny-related__row {
+  margin-block-start: 24px;
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--tny-divider);
+}
+.tny-related__row .tny-related__thumb {
+  flex: none;
+  inline-size: 100px;
+  block-size: 80px;
+}
+.tny-related__info {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---- Text Editor (Figma "Body Text") ---- */
+
+/*
+ * Rich text in the tenant's type. Figma draws paragraphs only; headings, lists,
+ * links and quotes typed into the editor borrow the Section Header, List and
+ * Blockquote styles above so they stay on-brand.
+ */
+.tny-prose {
+  font-size: var(--tny-size-18);
+  line-height: 1.6;
+  color: var(--tny-text-muted);
+}
+.tny-prose > * + * {
+  margin-block-start: 28px;
+}
+.tny-prose :where(h2, h3, h4) {
+  font-family: var(--tny-font-montserrat);
+  line-height: 1.5;
+  color: var(--tny-navy);
+}
+.tny-prose > :where(h2, h3, h4):not(:first-child) {
+  margin-block-start: var(--tny-space-40);
+}
+.tny-prose h2 {
+  font-weight: 700;
+  font-size: var(--tny-size-36);
+}
+.tny-prose h3 {
+  font-weight: 700;
+  font-size: var(--tny-size-28);
+}
+.tny-prose h4 {
+  font-weight: 600;
+  font-size: var(--tny-size-22);
+}
+.tny-prose a {
+  color: var(--tny-blue);
+}
+.tny-prose :where(strong, b) {
+  font-weight: 600;
+}
+.tny-prose :where(ul, ol) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tny-prose li {
+  position: relative;
+  padding-inline-start: 28px;
+}
+.tny-prose .list-bullet > li:not(.nestedListItem)::before {
+  content: '•';
+  position: absolute;
+  inset-inline-start: 0;
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  color: var(--tny-orange);
+}
+.tny-prose .list-number {
+  gap: 16px;
+  counter-reset: tny-prose-list;
+}
+.tny-prose .list-number > li {
+  padding-inline-start: 44px;
+  counter-increment: tny-prose-list;
+}
+.tny-prose .list-number > li:not(.nestedListItem)::before {
+  content: counter(tny-prose-list);
+  position: absolute;
+  inset-inline-start: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  background: var(--tny-blue);
+  color: var(--tny-white);
+  font-family: var(--tny-font-montserrat);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.tny-prose .list-check > li {
+  padding-inline-start: 0;
+}
+.tny-prose .list-check input {
+  margin-inline: 0 12px;
+}
+.tny-prose li > :where(ul, ol) {
+  margin-block-start: 12px;
+}
+.tny-prose blockquote {
+  padding-inline-start: 24px;
+  border-inline-start: 4px solid var(--tny-orange);
+  font-family: var(--tny-font-montserrat);
+  font-weight: 600;
+  font-size: var(--tny-size-22);
+  color: var(--tny-navy);
+}
+.tny-prose hr {
+  block-size: 1px;
+  border: 0;
+  background: var(--tny-divider);
+}
+
+.tny-body {
+  --tny-col: 800px;
+  padding-block: var(--tny-space-48);
+}
+.tny-body__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tny-body__lead {
+  font-weight: 300;
+  font-size: var(--tny-size-22);
+  line-height: 1.636; /* 22 / 36 */
+  color: var(--tny-navy);
+}
+
+.tny-body--two-col,
+.tny-body--sidebar {
+  --tny-col: 960px;
+}
+.tny-body__columns {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--tny-space-48);
+}
+.tny-body__column {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  font-size: var(--tny-size-17);
+}
+
+.tny-body__callout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px;
+  border-inline-start: 3px solid var(--tny-blue);
+  border-radius: 8px;
+  background: var(--tny-surface-warm);
+}
+.tny-body__callout-label {
+  font-family: var(--tny-font-dm-sans);
+  font-variation-settings: 'opsz' 14;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tny-blue);
+}
+.tny-body__callout .tny-prose {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--tny-navy);
+}
+
+.tny-body__main {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+.tny-body__main > * + * {
+  margin-block-start: 24px;
+}
+/* Figma: a 2px rule, 24px inset and a 236px text column. */
+.tny-body__side {
+  flex: none;
+  inline-size: 262px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-inline-start: 24px;
+  border-inline-start: 2px solid var(--tny-orange);
+}
+.tny-body__side-label {
+  font-family: var(--tny-font-dm-sans);
+  font-variation-settings: 'opsz' 14;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tny-orange);
+}
+.tny-body__side .tny-prose {
+  font-size: 14px;
+  color: var(--tny-text-muted);
+}
+
+/*
+ * Drop cap. Figma draws this one layout in Inter and neutral greys rather than
+ * the tenant's own type and colours; kept as drawn.
+ */
+.tny-body--drop-cap .tny-prose {
+  font-family: var(--tny-font-inter);
+  font-size: var(--tny-size-18);
+  line-height: 1.5;
+  color: var(--tny-drop-cap-text);
+}
+.tny-body--drop-cap .tny-prose > * + * {
+  margin-block-start: 24px;
+}
+/* Holds the floated letter inside a paragraph shorter than the letter is tall. */
+.tny-body--drop-cap .tny-prose > p:first-child {
+  display: flow-root;
+}
+.tny-body--drop-cap .tny-prose > p:first-child::first-letter {
+  float: inline-start;
+  margin-inline-end: 16px;
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 81px; /* three lines of the 18/27 text beside it */
+  color: var(--tny-drop-cap-ink);
+}
+
+/* ---- Small screens: side-by-side layouts stack ---- */
+
+@media (max-width: 799px) {
+  .tny-hero__columns,
+  .tny-image__columns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tny-hero--image-left .tny-hero__columns {
+    flex-direction: column-reverse;
+  }
+  .tny-image--image-right .tny-image__columns {
+    flex-direction: column;
+  }
+  .tny-hero__media,
+  .tny-image__media,
+  .tny-hero__content,
+  .tny-image__content {
+    flex: none;
+  }
+  .tny-cta__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .tny-related__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tny-body__columns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tny-body__column,
+  .tny-body__main {
+    flex: none;
+  }
+  .tny-body__side {
+    inline-size: auto;
+  }
+}
