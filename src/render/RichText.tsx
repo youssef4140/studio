@@ -9,7 +9,7 @@ type LexicalData = Parameters<typeof LexicalRichText>[0]['data']
  * Server-side Lexical -> HTML for the render pipeline. Same converters as the
  * top-level Article content (studioJSXConverters) — image sizing, text-state
  * tokens, and embedded blocks behave identically everywhere rich text appears
- * (Faq answers, the Content block). No container wrapper — styling comes from
+ * (the Content block). No container wrapper — styling comes from
  * the versioned block stylesheet. Synchronous, so it is safe under
  * renderToStaticMarkup.
  */

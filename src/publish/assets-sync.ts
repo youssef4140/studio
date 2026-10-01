@@ -10,13 +10,14 @@ import { putAsset, readJson, writeJson } from './storage'
  * (the signal to re-render every page).
  */
 export async function syncAssets(): Promise<{ version: string; changed: boolean }> {
-  const { version, css, js } = readAssetSources()
+  const { version, css, js, files } = readAssetSources()
 
   const previous = await readJson<{ renderVersion: string }>(keys.meta)
   const changed = previous?.renderVersion !== version
 
   await putAsset(`blocks.${version}.css`, css, 'text/css; charset=utf-8')
   await putAsset(`blocks.${version}.js`, js, 'application/javascript; charset=utf-8')
+  for (const file of files) await putAsset(file.name, file.body, file.contentType)
 
   return { version, changed }
 }

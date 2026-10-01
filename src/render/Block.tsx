@@ -1,10 +1,8 @@
 import React from 'react'
 
-import { Hero } from '@/blocks/components/Hero'
-import { Faq } from '@/blocks/components/Faq'
-import { FaqTny } from '@/blocks/components/FaqTny'
-import { EntityList } from '@/blocks/components/EntityList'
 import { Content } from '@/blocks/components/Content'
+import { renderPtocBlock } from '@/blocks/components/ptoc'
+import { renderTnyBlock } from '@/blocks/components/tny'
 
 import { appearanceClasses } from './appearance'
 import type { PageBlock } from './types'
@@ -18,18 +16,11 @@ import type { PageBlock } from './types'
 
 function inner(block: PageBlock): React.ReactNode {
   switch (block.blockType) {
-    case 'hero':
-      return <Hero {...block} />
-    case 'faq':
-      return <Faq {...block} />
-    case 'faqTny':
-      return <FaqTny {...block} />
-    case 'entityList':
-      return <EntityList {...block} />
     case 'content':
       return <Content {...block} />
     default:
-      return null
+      // Tenant article sets render themselves; null for anything unknown.
+      return renderPtocBlock(block) ?? renderTnyBlock(block)
   }
 }
 

@@ -13,6 +13,8 @@ export interface ResolvedTheme {
   vars: Record<string, string>
   fontFamily: string | null
   googleFontsUrl: string | null
+  /** Stylesheet URLs to link so the tenant's block fonts load. */
+  fontStylesheets: string[]
 }
 
 const PALETTE_TOKEN_MAP: Record<PaletteToken, string> = {
@@ -50,9 +52,11 @@ export function resolveTheme(tenantSlug: string | null | undefined): ResolvedThe
       ? null
       : `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;600;700&display=swap`
 
-  if (Object.keys(vars).length === 0 && !fontFamily) return null
+  const fontStylesheets = [...theme.fontStylesheets]
 
-  return { vars, fontFamily, googleFontsUrl }
+  if (Object.keys(vars).length === 0 && !fontFamily && fontStylesheets.length === 0) return null
+
+  return { vars, fontFamily, googleFontsUrl, fontStylesheets }
 }
 
 /**

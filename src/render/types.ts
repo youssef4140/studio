@@ -1,7 +1,12 @@
-import type { Page } from '@/payload-types'
+import type { Page, TextEditor } from '@/payload-types'
 
-/** A block as it appears in a document's `layout` array. */
-export type PageBlock = NonNullable<Page['layout']>[number]
+/**
+ * A block as it appears in a document's `layout` array: any block a Page or
+ * an Article can hold (src/blocks/layoutBlocks.ts).
+ */
+export type PageBlock =
+  | NonNullable<Page['layout']>[number]
+  | NonNullable<TextEditor['layout']>[number]
 
 /**
  * The published artifact (§3). An envelope, never a naked HTML string:
@@ -19,6 +24,8 @@ export interface RenderEnvelope {
     title: string | null
     description: string | null
     canonical: string | null
+    /** Editor-added name/value pairs from the SEO popup. */
+    meta: { name: string; value: string }[]
     jsonLd: Record<string, unknown>[]
   }
   /**
@@ -29,6 +36,8 @@ export interface RenderEnvelope {
     vars: Record<string, string>
     fontFamily: string | null
     googleFontsUrl: string | null
+    /** Stylesheet URLs the consumer must link for the tenant's block fonts. */
+    fontStylesheets: string[]
   } | null
   /** Global render-logic hash. Changes on any block/CSS/JS change; invalidates every cached page. */
   renderVersion: string
@@ -39,22 +48,16 @@ interface SeoGroup {
   title?: string | null
   description?: string | null
   image?: unknown
+  custom?: { name?: string | null; value?: string | null }[] | null
 }
 
-/**
- * Minimum shape renderBlocks() needs from a document. A doc carries EITHER a
- * `layout` blocks array (Pages) OR a `content` Lexical doc (Articles) — the
- * renderer branches on which is present.
- */
+/** Minimum shape renderBlocks() needs from a document (a Page or an Article). */
 export interface RenderableDoc {
   id: number | string
   slug?: string | null
   title?: string | null
-  excerpt?: string | null
   seo?: SeoGroup | null
   layout?: PageBlock[] | null
-  /** Lexical SerializedEditorState — validated structurally by the renderer. */
-  content?: unknown
   /** Folder relationship — id or populated Folder. Used to resolve the render address/tenant. */
   folder?: unknown
   tenant?: unknown

@@ -7,20 +7,17 @@ function idOf(value: unknown): number | undefined {
 }
 
 /**
- * Recursively walks a Lexical editor-state tree collecting referenced media
- * ids — both direct inline uploads (UploadFeature) and uploads nested inside
- * embedded blocks (Hero's `image`, Faq items' `answer` richText). Mirrors the
- * same known-shape-walking approach as src/blocks/tenantScope.ts's
- * collectFromLexical — deliberately NOT a generic structural walk, since that
- * would risk picking up unrelated relationship ids (e.g. `folder`/`tenant`)
- * that happen to collide with a media id in another table.
+ * Recursively walks a Lexical editor-state tree collecting inline uploads
+ * (UploadFeature) — the Rich Text Editor block's body. Walks
+ * only the known node shape, deliberately NOT a generic structural search,
+ * since that would risk picking up unrelated relationship ids (e.g.
+ * `folder`/`tenant`) that happen to collide with a media id in another table.
  */
 function collectUploadsFromLexical(node: unknown, acc: Set<number>): void {
   if (!node || typeof node !== 'object') return
   const n = node as {
     type?: string
     value?: unknown
-    fields?: { blockType?: string; image?: unknown; items?: Array<{ answer?: unknown }> }
     children?: unknown[]
     root?: unknown
   }
@@ -30,21 +27,12 @@ function collectUploadsFromLexical(node: unknown, acc: Set<number>): void {
     if (id !== undefined) acc.add(id)
   }
 
-  if (n.type === 'block' && n.fields) {
-    if (n.fields.blockType === 'hero') {
-      const id = idOf(n.fields.image)
-      if (id !== undefined) acc.add(id)
-    }
-    if (n.fields.blockType === 'faq' && Array.isArray(n.fields.items)) {
-      for (const item of n.fields.items) collectUploadsFromLexical(item?.answer, acc)
-    }
-  }
-
-  if (Array.isArray(n.children)) for (const child of n.children) collectUploadsFromLexical(child, acc)
+  if (Array.isArray(n.children))
+    for (const child of n.children) collectUploadsFromLexical(child, acc)
   if (n.root) collectUploadsFromLexical(n.root, acc)
 }
 
-/** Same block-shape knowledge as above, for Pages' flat `layout` array. */
+/** Same block-shape knowledge as above, for a document's flat `layout` array. */
 function collectUploadsFromLayout(layout: unknown, acc: Set<number>): void {
   if (!Array.isArray(layout)) return
   for (const block of layout) {
@@ -52,37 +40,46 @@ function collectUploadsFromLayout(layout: unknown, acc: Set<number>): void {
     const b = block as {
       blockType?: string
       image?: unknown
+      image2?: unknown
+      bgImage?: unknown
+      avatar?: unknown
       body?: unknown
-      items?: Array<{ answer?: unknown }>
+      body2?: unknown
+      bodyAfter?: unknown
+      lead?: unknown
+      callout?: unknown
+      side?: unknown
+      items?: Array<{ answer?: unknown; image?: unknown }>
     }
-    if (b.blockType === 'hero') {
-      const id = idOf(b.image)
-      if (id !== undefined) acc.add(id)
+    // The tenant article sets (src/blocks/ptoc, src/blocks/tny): every upload field they use.
+    if (b.blockType?.startsWith('ptoc') || b.blockType?.startsWith('tny')) {
+      for (const value of [b.image, b.image2, b.bgImage, b.avatar]) {
+        const id = idOf(value)
+        if (id !== undefined) acc.add(id)
+      }
+      if (Array.isArray(b.items)) {
+        for (const item of b.items) {
+          const id = idOf(item?.image)
+          if (id !== undefined) acc.add(id)
+        }
+      }
+      // Images placed inside their "Text Editor" blocks' rich text.
+      for (const value of [b.body, b.body2, b.bodyAfter, b.lead, b.callout, b.side]) {
+        collectUploadsFromLexical(value, acc)
+      }
     }
     if (b.blockType === 'content') collectUploadsFromLexical(b.body, acc)
-    if (b.blockType === 'faq' && Array.isArray(b.items)) {
-      for (const item of b.items) collectUploadsFromLexical(item?.answer, acc)
-    }
   }
 }
 
 /** Known upload-bearing locations on a Page or Article doc. */
-export function collectDocMediaIds(doc: {
-  seo?: { image?: unknown }
-  featuredImage?: unknown
-  layout?: unknown
-  content?: unknown
-}): number[] {
+export function collectDocMediaIds(doc: { seo?: { image?: unknown }; layout?: unknown }): number[] {
   const acc = new Set<number>()
 
   const seoId = idOf(doc.seo?.image)
   if (seoId !== undefined) acc.add(seoId)
 
-  const featuredId = idOf(doc.featuredImage)
-  if (featuredId !== undefined) acc.add(featuredId)
-
   collectUploadsFromLayout(doc.layout, acc)
-  if (doc.content) collectUploadsFromLexical(doc.content, acc)
 
   return [...acc]
 }

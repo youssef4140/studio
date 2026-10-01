@@ -1,26 +1,19 @@
 import type { CollectionConfig } from 'payload'
-import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import { Hero } from '@/blocks/Hero'
-import { Faq } from '@/blocks/Faq'
-import { FaqTny } from '@/blocks/FaqTny'
-import { EntityList } from '@/blocks/EntityList'
-import { validateBlockTenants } from '@/blocks/tenantScope'
+import { ARTICLE_LAYOUT_BLOCKS } from '@/blocks/layoutBlocks'
+import { tenantBlockFilter, validateBlockTenants } from '@/blocks/tenantScope'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { compoundUniqueSlug } from '@/fields/compoundUnique'
 import { folderScopeFields, syncTenant } from '@/fields/folderScope'
 import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
-import { studioLexicalFeatures } from '@/fields/studioLexical'
+import { seoField } from '@/fields/seo'
 import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
 
 /**
- * Articles (§1.3): long-form prose with blocks embedded in the flow.
- *
- * Unlike Pages (a `layout` blocks array), the body here is one `content` Lexical
- * field. Hero / Faq / EntityList are embeddable inline via BlocksFeature and
- * render through the exact same React components as layout blocks — renderBlocks()
- * has a single code path (see src/render/renderBlocks.tsx).
+ * Articles (§1.3): the same shape as Pages — title, a `layout` blocks array,
+ * SEO. Long-form prose is the Rich Text Editor block (src/blocks/Content.ts),
+ * so renderBlocks() has a single code path (see src/render/renderBlocks.tsx).
  */
 export const TextEditor: CollectionConfig<'textEditor'> = {
   slug: 'textEditor',
@@ -34,12 +27,13 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'folder', 'slug', 'publishedAt', 'updatedAt'],
+    // Out of the nav and dashboard (routes stay): reached through the tenant
+    // dropdowns instead — src/admin/components/TenantNavLinks.
+    group: false,
   },
   defaultPopulate: {
     title: true,
     slug: true,
-    excerpt: true,
-    featuredImage: true,
   },
   fields: [
     {
@@ -60,15 +54,6 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
     },
     ...folderScopeFields('articles'),
     {
-      name: 'excerpt',
-      type: 'textarea',
-    },
-    {
-      name: 'featuredImage',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
       name: 'publishedAt',
       type: 'date',
       admin: {
@@ -77,26 +62,17 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
       },
     },
     {
-      name: 'seo',
-      type: 'group',
-      fields: [
-        { name: 'title', type: 'text' },
-        { name: 'description', type: 'textarea' },
-        { name: 'image', type: 'upload', relationTo: 'media' },
-      ],
+      name: 'layout',
+      type: 'blocks',
+      // Payload builds the button as "Add {singular}", so this reads "Add a component".
+      labels: { singular: 'a component', plural: 'Components' },
+      blocks: ARTICLE_LAYOUT_BLOCKS,
+      filterOptions: tenantBlockFilter(ARTICLE_LAYOUT_BLOCKS),
+      admin: {
+        initCollapsed: true,
+      },
     },
-    {
-      name: 'content',
-      type: 'richText',
-      required: true,
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...studioLexicalFeatures({ defaultFeatures, headingSizes: ['h2', 'h3', 'h4'] }),
-          // Same Block configs as Pages.layout — one definition, both surfaces.
-          BlocksFeature({ blocks: [Hero, Faq, FaqTny, EntityList] }),
-        ],
-      }),
-    },
+    seoField,
   ],
   versions: {
     drafts: true,

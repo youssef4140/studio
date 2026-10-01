@@ -27,6 +27,12 @@ export interface TenantTheme {
   fontFamily: FontFamily
   /** Hex colours. A token left out keeps the default from src/render/assets/blocks.css. */
   palette: Partial<Record<PaletteToken, string>>
+  /**
+   * Font stylesheets the tenant's blocks need (the families its tokens in
+   * src/render/assets/<tenant>.css name). Linked by the preview and passed to
+   * consumers on the envelope's `theme`.
+   */
+  fontStylesheets: readonly string[]
 }
 
 /** What a subfolder holds: Pages (block layouts) or Articles (long-form text). */
@@ -59,6 +65,12 @@ export const TENANTS = [
     theme: {
       fontFamily: 'system-ui',
       palette: {},
+      fontStylesheets: [
+        // Switzer (headings) — Fontshare, as the ptofthecity site loads it.
+        'https://api.fontshare.com/v2/css?f[]=switzer@600,700,800&display=swap',
+        // Poppins (body and UI) — Google Fonts, the weights the site loads.
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap',
+      ],
     },
   },
   {
@@ -68,6 +80,11 @@ export const TENANTS = [
     theme: {
       fontFamily: 'system-ui',
       palette: {},
+      fontStylesheets: [
+        // Montserrat (headings, buttons), DM Sans (labels), Poppins (body) and
+        // Inter (meta lines) — Google Fonts, only the weights the Figma blocks use.
+        'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,700&family=Inter:wght@400;500;700&family=Montserrat:wght@600;700&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap',
+      ],
     },
   },
 ] as const satisfies readonly TenantConfig[]

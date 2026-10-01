@@ -5,19 +5,24 @@ import { blockStyles } from '@/fields/blockStyles'
 import { studioLexicalFeatures } from '@/fields/studioLexical'
 
 // allowedIn: page, layout
-// Plain prose — an intro paragraph, explanatory body copy, the kind of
-// substantive text search engines actually read. No BlocksFeature here: a block
-// embedding blocks would break the brief's no-arbitrary-nesting rule (§6).
+// The rich text editor, as a block — an intro paragraph, explanatory body copy,
+// the kind of substantive text search engines actually read. Used in Pages and
+// Articles alike. No BlocksFeature here: a block embedding blocks would break
+// the brief's no-arbitrary-nesting rule (§6).
+//
+// Only the label is "Rich Text Editor". The slug stays `content`: it is stored
+// in the database and keyed on in Block.tsx, BLOCK_APPEARANCE and the tenant
+// tags, so renaming it would need a data migration for no gain.
 export const Content: Block = {
   slug: 'content',
   interfaceName: 'ContentBlock',
   labels: {
-    singular: 'Content',
-    plural: 'Content',
+    singular: 'Rich Text Editor',
+    plural: 'Rich Text Editors',
   },
   admin: {
     images: {
-      thumbnail: { url: '/block-thumbnails/content.svg', alt: 'Content block preview' },
+      thumbnail: { url: '/block-thumbnails/content.svg', alt: 'Rich Text Editor block preview' },
     },
   },
   fields: [

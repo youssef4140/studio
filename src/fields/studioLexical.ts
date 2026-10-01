@@ -7,8 +7,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 /**
- * The prose editor shared by Articles (TextEditor.content) and the Content
- * block (Content.body) — one feature set, so both surfaces behave the same way.
+ * The prose editor used by the Rich Text Editor block (Content.body).
  *
  * `...defaultFeatures` already ships bold/italic/underline/strikethrough,
  * links, lists, alignment, blockquote, and a floating (inline) toolbar — those

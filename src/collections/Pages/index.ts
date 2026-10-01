@@ -1,14 +1,11 @@
 import type { CollectionConfig } from 'payload'
 
-import { Hero } from '@/blocks/Hero'
-import { Faq } from '@/blocks/Faq'
-import { FaqTny } from '@/blocks/FaqTny'
-import { EntityList } from '@/blocks/EntityList'
-import { Content } from '@/blocks/Content'
-import { validateBlockTenants } from '@/blocks/tenantScope'
+import { LAYOUT_BLOCKS } from '@/blocks/layoutBlocks'
+import { tenantBlockFilter, validateBlockTenants } from '@/blocks/tenantScope'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { compoundUniqueSlug } from '@/fields/compoundUnique'
 import { folderScopeFields, syncTenant } from '@/fields/folderScope'
+import { seoField } from '@/fields/seo'
 import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
@@ -26,6 +23,9 @@ export const Pages: CollectionConfig<'pages'> = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'folder', 'slug', 'updatedAt'],
+    // Out of the nav and dashboard (routes stay): reached through the tenant
+    // dropdowns instead — src/admin/components/TenantNavLinks.
+    group: false,
   },
   defaultPopulate: {
     title: true,
@@ -52,20 +52,15 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'layout',
       type: 'blocks',
-      blocks: [Hero, Content, Faq, FaqTny, EntityList],
+      // Payload builds the button as "Add {singular}", so this reads "Add a component".
+      labels: { singular: 'a component', plural: 'Components' },
+      blocks: LAYOUT_BLOCKS,
+      filterOptions: tenantBlockFilter(LAYOUT_BLOCKS),
       admin: {
         initCollapsed: true,
       },
     },
-    {
-      name: 'seo',
-      type: 'group',
-      fields: [
-        { name: 'title', type: 'text' },
-        { name: 'description', type: 'textarea' },
-        { name: 'image', type: 'upload', relationTo: 'media' },
-      ],
-    },
+    seoField,
   ],
   versions: {
     drafts: true,
