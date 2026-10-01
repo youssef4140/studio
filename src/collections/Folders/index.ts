@@ -40,6 +40,8 @@ export const Folders: CollectionConfig = {
     // picker on Pages/TextEditor, in breadcrumbs, and in the doc header.
     useAsTitle: 'path',
     defaultColumns: ['name', 'path', 'isTenant'],
+    // Out of the nav and dashboard (routes stay): read-only, nothing to do here.
+    group: false,
   },
   fields: [
     {

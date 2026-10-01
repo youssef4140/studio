@@ -25,6 +25,9 @@ export const Users: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'email', 'roles'],
+    // The only collection left in the nav, and only for superadmins. A regular
+    // admin still edits their own account at /admin/account.
+    hidden: ({ user }) => !user?.roles?.includes('superadmin'),
     useAsTitle: 'name',
   },
   auth: true,

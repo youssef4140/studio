@@ -26,6 +26,9 @@ export const Media: CollectionConfig = {
   // join field) can list everything that belongs to it.
   admin: {
     defaultColumns: ['filename', 'folder', 'alt', 'updatedAt'],
+    // Out of the nav and dashboard (routes stay): reached through the tenant
+    // dropdowns instead — src/admin/components/TenantNavLinks.
+    group: false,
     components: {
       edit: {
         editMenuItems: ['@/admin/components/MediaSafety#MediaDeleteMenuItem'],
