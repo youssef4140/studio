@@ -11,12 +11,19 @@ import type { RenderEnvelope } from '@/render/types'
 let client: S3Client | null = null
 function s3(): S3Client {
   if (!client) {
-    const { endpoint, region, accessKeyId, secretAccessKey, forcePathStyle } = publishConfig.s3
+    const { endpoint, region, credentials, forcePathStyle } = publishConfig.s3
+    // Said once, so a forgotten key shows up here rather than as a failed publish.
+    console.info(
+      credentials
+        ? '[publish] storage: using the static key from S3_ACCESS_KEY_ID'
+        : '[publish] storage: no S3 key set, using the IAM role (AWS credential chain)',
+    )
     client = new S3Client({
-      endpoint,
-      region,
+      ...(endpoint ? { endpoint } : {}),
+      ...(region ? { region } : {}),
       forcePathStyle,
-      credentials: { accessKeyId, secretAccessKey },
+      // Left out under a role, so the SDK resolves and refreshes credentials itself.
+      ...(credentials ? { credentials } : {}),
     })
   }
   return client

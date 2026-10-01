@@ -103,7 +103,7 @@ Copy [.env.example](.env.example) and set every variable for production:
 - `DATABASE_URL`, `REDIS_URL`
 - `PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET`, `CONSUMER_WEBHOOK_SECRET`. Generate each one with `openssl rand -hex 24`.
 - `NEXT_PUBLIC_SERVER_URL`: the public origin of the Studio app, with no trailing slash.
-- `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`.
+- `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`. On AWS, leave both key variables (and `S3_ENDPOINT`) unset to use the IAM role Studio runs under; see [AWS.md](AWS.md).
 - `S3_PUBLIC_URL` and `RENDER_ASSET_BASE_URL`: the public CDN URL of the bucket. For R2, set `S3_FORCE_PATH_STYLE=false` unless your endpoint needs path-style addressing.
 - `CDN_PURGE_PROVIDER=cloudflare` with `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_API_TOKEN`, or `none`.
 - `CONSUMER_WEBHOOK_URLS`: comma-separated URLs of the consumer apps.
