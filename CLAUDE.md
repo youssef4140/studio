@@ -43,16 +43,32 @@ The Dockerfile has two targets: `app`, a Next standalone server (`output: 'stand
 - `/preview/[collection]/[id]`: the admin's live-preview iframe, rendering draft data behind a signed token ([src/preview/token.ts](src/preview/token.ts))
 - the publish worker
 
-It supports two doc shapes. **Pages** have a `layout` blocks array. **Articles** (collection slug `textEditor`) have a `content` Lexical field with blocks embedded through `BlocksFeature`. Both go through the same `<Block>` switch in [src/render/Block.tsx](src/render/Block.tsx): Lexical block nodes reach it via [src/render/richTextConverters.tsx](src/render/richTextConverters.tsx). `RENDERABLE_COLLECTIONS` in [src/render/collections.ts](src/render/collections.ts) is the shared list of collections that get rendered.
+Pages and **Articles** (collection slug `textEditor`) have the same shape: title, a `layout` blocks array, and an `seo` group. On Pages, prose is the "Rich Text Editor" block (slug `content`; only its label was renamed); on Articles it is the tenant's "Text Editor" blocks. Every doc renders through the `<Block>` switch in [src/render/Block.tsx](src/render/Block.tsx); [src/render/richTextConverters.tsx](src/render/richTextConverters.tsx) is only for the rich text inside blocks. `seo` ([src/fields/seo.ts](src/fields/seo.ts)) shows as a button that opens a drawer ([SeoPopup](src/admin/components/SeoPopup/)); its `custom` name/value pairs reach consumers as `head.meta` on the envelope. `RENDERABLE_COLLECTIONS` in [src/render/collections.ts](src/render/collections.ts) is the shared list of collections that get rendered.
+
+The two preview callers pass `placeholders: true`: an empty text or rich text field then renders as its hint (`admin.placeholder`; for rich text, `custom.studioHint`), and an empty list as three sample rows ([src/render/placeholders.ts](src/render/placeholders.ts)). The hint styling and the "IMAGE HERE" filler for empty image frames are preview-only CSS in [src/app/(preview)/layout.tsx](src/app/(preview)/layout.tsx). The publish worker never sets the option, so empty fields publish empty. To give a field a hint, set its `admin.placeholder` (for the tenant article blocks, `HINTS` in `src/blocks/articleFields.ts`).
 
 ### Adding or changing a block
 A block has a config in `src/blocks/<Name>.ts`, which holds its fields, `...blockStyles` (a per-block "Visibility" control only), a picker thumbnail under `public/block-thumbnails/` and an optional `custom.studioTenant`. Its React component lives in `src/blocks/components/<Name>.tsx` and must be static-markup-safe. A new block has to be registered in every one of these places:
-- the `layout` blocks list in `collections/Pages/index.ts` and/or the `BlocksFeature` list in `collections/TextEditor.ts`
+- `LAYOUT_BLOCKS` in `src/blocks/layoutBlocks.ts` (Pages; currently only the Rich Text Editor), or `ARTICLE_LAYOUT_BLOCKS` for an Articles block. `ALL_LAYOUT_BLOCKS` joins the two for lookups by slug. `BLOCK_TENANT_TAGS` in `src/blocks/tenantScope.ts` is built from these, and `tenantBlockFilter` there hides other tenants' blocks from the picker.
 - the switch in `src/render/Block.tsx`
-- `BLOCK_TENANT_TAGS` in `src/blocks/tenantScope.ts`
 - `BLOCK_APPEARANCE` in `src/render/appearance.ts` (the block's fixed background and padding; not editable in the admin)
 
 Then run `pnpm generate:types`. Shared block CSS/JS lives in [src/render/assets/](src/render/assets/). `renderVersion` is a hash of those files, so any edit there changes the version. When the worker boots and sees a new version, it re-renders every published doc.
+
+### Tenant article blocks (ptofthecity, TNY)
+Each tenant has 35 Articles-only blocks built from its section of the Figma `components` file ("PTOC articles", "TNY articles"): one block per Figma variant, grouped in the picker by `admin.group`, each with its Figma image as thumbnail (`public/block-thumbnails/<ptoc|tny>/<slug>.png`). Editors supply text and images only; type, colour and spacing are fixed in the tenant stylesheet, which also holds that tenant's design tokens and is appended to the CSS bundle in `src/render/assets.ts`.
+
+| | ptofthecity | TNY |
+|---|---|---|
+| Configs | [src/blocks/ptoc/](src/blocks/ptoc/) | [src/blocks/tny/](src/blocks/tny/) |
+| Markup | [src/blocks/components/ptoc/](src/blocks/components/ptoc/) | [src/blocks/components/tny/](src/blocks/components/tny/) |
+| Stylesheet | [ptofthecity.css](src/render/assets/ptofthecity.css) (`--ptoc-*`, tokens copied from the PtOfTheCity-V2 site) | [tny.css](src/render/assets/tny.css) (`--tny-*`, raw Figma values) |
+
+The first picker group, "Text Editor" (Figma "Body Text": Single Column, Lead Paragraph, Two Columns, With Callout, With Sidebar, Drop Cap), is where article prose goes: its fields are rich text (`richText()` in `articleFields.ts`, the same Lexical setup as the plain Rich Text Editor), rendered inside a `<ns>-prose` wrapper that styles headings, lists, links and quotes in the tenant's type. Articles no longer have the plain `content` block; only Pages do.
+
+Both sets are built from the shared helpers in [src/blocks/articleFields.ts](src/blocks/articleFields.ts) (`tenantBlock`, field helpers, placeholder `HINTS`) and [src/blocks/components/articleParts.tsx](src/blocks/components/articleParts.tsx) (`Media`, `Background`, `Button`, `Meta`, bound to a class prefix). Markup is reached from the `default` case in `Block.tsx`; any slug starting `ptoc` or `tny` skips `BLOCK_APPEARANCE`. Keep slugs and field names short: Postgres caps identifiers at 63 characters and Payload derives table, enum and foreign-key names from them. A new upload field name must be added to the tenant-set branch in `src/media/autoAssignFolder.ts`.
+
+When a migration both removes and adds blocks, `payload migrate:create` stops on an interactive "created or renamed?" question. Generate it as two migrations instead: the removal first (with the new blocks temporarily unregistered), then the addition.
 
 ### Tenants and folders are hardcoded
 [src/tenants.ts](src/tenants.ts) is the source of truth for tenants, their subfolders (each marked `contains: 'pages' | 'articles'`) and each tenant's theme (font and palette). Nothing here is editable in the admin. On boot, `onInit` runs [src/collections/Folders/sync.ts](src/collections/Folders/sync.ts), which mirrors the list into the read-only `folders` collection (create/update/delete are denied for everyone). The sync adds and renames but never deletes. A few things follow from this:

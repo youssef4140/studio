@@ -180,15 +180,17 @@ Each tenant's font (from a fixed list) and 8-token colour palette are hardcoded 
 
 ### Tenant-scoped block variants
 
-A block can be restricted to one tenant (e.g. `FaqTny`, a genuinely separate component from the plain `Faq`) via server-only metadata (`custom.studioTenant`) right on the block's own config file. A save-time hook rejects a document that mixes a tenant-tagged block with the wrong tenant. Every block also carries its own preview picture for the block-picker UI (`admin.images.thumbnail`), defined the same way — right alongside the tenant tag, in the block's own file.
+A block can be restricted to one tenant (every block in the two tenant article sets is) via server-only metadata (`custom.studioTenant`) right on the block's own config file. A save-time hook rejects a document that mixes a tenant-tagged block with the wrong tenant. Every block also carries its own preview picture for the block-picker UI (`admin.images.thumbnail`), defined the same way — right alongside the tenant tag, in the block's own file.
 
 ### Content blocks
 
-`Hero`, `Content` (rich prose), `FAQ` (+ its `FAQ (TNY)` variant), and `Entity List` — each a small Payload block config plus a plain React component. A block's background and vertical padding are not editor choices: they are fixed per block type in [src/render/appearance.ts](src/render/appearance.ts). The only per-block display control left in the admin is "Visibility" (hide on mobile/tablet/desktop). All blocks render through **one shared `renderBlocks()` pipeline**, used identically by the render API, the publish worker, and the live-preview route, so there's exactly one implementation of "turn this document into HTML."
+`Rich Text Editor` (prose, on Pages) for every tenant, plus the tenant article sets below — each a small Payload block config plus a plain React component. A block's background and vertical padding are not editor choices: they are fixed per block type in [src/render/appearance.ts](src/render/appearance.ts). The only per-block display control left in the admin is "Visibility" (hide on mobile/tablet/desktop). All blocks render through **one shared `renderBlocks()` pipeline**, used identically by the render API, the publish worker, and the live-preview route, so there's exactly one implementation of "turn this document into HTML."
+
+Articles for `ptofthecity` and for `tny` each get 35 branded blocks built from that tenant's Figma components, grouped in the picker as Text Editor (six rich text layouts that take the plain editor's place in Articles), Hero, Blockquote, Image Block, Section Header, Call to Action, List, Divider, Author Card and Related Articles. Each picker entry shows the Figma image of that exact layout. Editors fill in the text and upload the images; fonts, colours and spacing are fixed. The picker only offers a tenant's own blocks.
 
 ### Rich text editor (Lexical)
 
-Fixed toolbar, inline links and formatting mixed within a single paragraph, headings, an upload feature with per-image size/alignment controls (and real CSS constraints, so images can't overflow), and token-driven color/emphasis text states — not a freeform color or font-size picker.
+The Rich Text Editor block, available in Pages and Articles alike. Fixed toolbar, inline links and formatting mixed within a single paragraph, headings, an upload feature with per-image size/alignment controls (and real CSS constraints, so images can't overflow), and token-driven color/emphasis text states — not a freeform color or font-size picker.
 
 ### Render-at-publish pipeline
 
@@ -217,4 +219,4 @@ Each tenant is a dropdown in the nav sidebar (it stays open or closed per user).
 
 ### SEO
 
-A per-document SEO group (title, description, image) on Pages and Articles, carried into the render envelope's `head` data for consumers to use however they render `<head>`.
+A per-document SEO group on Pages and Articles, opened from an "SEO" button in the edit form as a popup: title, description, OG image, and editor-added custom name/value pairs. It is carried into the render envelope's `head` data (`title`, `description`, `meta`) for consumers to use however they render `<head>`.
