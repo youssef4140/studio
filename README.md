@@ -81,11 +81,81 @@ Optional: to route Media uploads to Cloudinary instead of local disk, set `CLOUD
 | `pnpm lint` / `pnpm lint:fix` | ESLint |
 | `pnpm test` | Integration (Vitest) + e2e (Playwright) tests |
 
-### Production notes
+### Schema changes
 
-- **Schema management**: this project currently uses Payload's `db push` (automatic schema sync on boot), not migrations — `payload migrate:create` has never been run here. That's fine for active development, but `db push` can occasionally hit an ambiguous rename it has to resolve without asking (no interactive TTY in a background process), which can silently drop and recreate tables. Adopt real migrations before deploying anywhere the data matters.
-- **The worker is a separate deployable**: `pnpm worker` needs to run as its own long-lived process (its own container/service) in production, independent of the Next.js server — it's what actually renders and uploads content after a publish.
-- **Object storage**: swap the `S3_*` env vars for real Cloudflare R2 (or any S3-compatible) credentials — MinIO is a local stand-in only.
+`pnpm dev` pushes schema changes straight to the dev database. Production never does: it only gets schema from [src/migrations/](src/migrations/). After changing any collection, block or field, run `pnpm payload migrate:create <name>` with `CLOUDINARY_URL` set (any value) and commit the generated files. Don't run `payload migrate` against the push-built dev database.
+
+## Production setup
+
+### 1. Provision infrastructure
+
+| Service | Used for |
+| --- | --- |
+| Postgres 16 | Payload database |
+| Redis | BullMQ publish queue |
+| S3-compatible bucket (e.g. Cloudflare R2), publicly readable through a CDN | Published envelopes and versioned CSS/JS bundles |
+| Cloudinary (optional) | Media uploads. Without it, uploads go to local disk. |
+
+### 2. Configure the environment
+
+Copy [.env.example](.env.example) and set every variable for production:
+
+- `DATABASE_URL`, `REDIS_URL`
+- `PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET`, `CONSUMER_WEBHOOK_SECRET`. Generate each one with `openssl rand -hex 24`.
+- `NEXT_PUBLIC_SERVER_URL`: the public origin of the Studio app, with no trailing slash.
+- `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`.
+- `S3_PUBLIC_URL` and `RENDER_ASSET_BASE_URL`: the public CDN URL of the bucket. For R2, set `S3_FORCE_PATH_STYLE=false` unless your endpoint needs path-style addressing.
+- `CDN_PURGE_PROVIDER=cloudflare` with `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_API_TOKEN`, or `none`.
+- `CONSUMER_WEBHOOK_URLS`: comma-separated URLs of the consumer apps.
+- `CLOUDINARY_URL` (optional): enables Cloudinary media storage.
+
+### 3. Build the images
+
+`NEXT_PUBLIC_SERVER_URL` is fixed into the build, so pass it as a build arg. Changing it later means rebuilding the image.
+
+```bash
+docker build --target app   --build-arg NEXT_PUBLIC_SERVER_URL=https://studio.example.com -t studio-app .
+docker build --target tools -t studio-tools .
+```
+
+- `studio-app`: the Next.js server (admin, API, render and preview routes). It listens on port 3000.
+- `studio-tools`: the publish worker (its default command), also used to run migrations and scripts.
+
+### 4. Run migrations (on every deploy, before starting the app)
+
+```bash
+docker run --rm --env-file .env studio-tools node_modules/.bin/payload migrate
+```
+
+Production never auto-pushes schema. Tables come only from [src/migrations/](src/migrations/).
+
+### 5. Start the app and the worker
+
+```bash
+docker run -d --env-file .env -p 3000:3000 -v studio_media:/app/public/media studio-app
+docker run -d --env-file .env studio-tools
+```
+
+- Mount a persistent volume at `/app/public/media` if you are **not** using Cloudinary. Otherwise uploads are lost when the container is replaced.
+- The worker must be running for publishes to reach storage. On boot it uploads the current CSS/JS bundle. If block CSS/JS changed since the last deploy, it also re-renders every published document automatically.
+
+### 6. Create the first superadmin
+
+1. Open `https://<your-studio>/admin` and create the first user.
+2. Promote that user to superadmin. Only superadmins can manage other users.
+
+```bash
+docker run --rm --env-file .env studio-tools node_modules/.bin/tsx scripts/seedSuperadmin.ts you@example.com
+```
+
+### Try the full stack locally
+
+```bash
+cp .env.example .env
+docker compose --profile app up -d --build
+```
+
+This command runs Postgres, Redis, MinIO (standing in for R2), migrations, the app on http://localhost:3000, and the worker. The Docker stack uses its own database (`studio_app`), Redis index and bucket, separate from the ones `pnpm dev` uses.
 
 ## B) Feature overview
 

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-"Studio": a headless content studio on Payload CMS 3 + Next.js 16 + Postgres. It has **no public website frontend**. The website-template frontend was removed, and `README.md` is still the stock Payload template README, so don't rely on it: Posts, the search plugin and the public pages it describes are gone. Studio renders documents into JSON "envelopes" and publishes them to S3/R2 behind a CDN. Separate consumer apps fetch those envelopes. Code comments cite a build plan (`§3`, `step 9`, `Phase 5`) that isn't in the repo; read those comments as design intent.
+"Studio": a headless content studio on Payload CMS 3 + Next.js 16 + Postgres. It has **no public website frontend**. The website-template frontend was removed (Posts, the search plugin and the public pages are gone). Studio renders documents into JSON "envelopes" and publishes them to S3/R2 behind a CDN. Separate consumer apps fetch those envelopes. Code comments cite a build plan (`§3`, `step 9`, `Phase 5`) that isn't in the repo; read those comments as design intent.
 
 ## Commands
 
@@ -46,23 +46,26 @@ The Dockerfile has two targets: `app`, a Next standalone server (`output: 'stand
 It supports two doc shapes. **Pages** have a `layout` blocks array. **Articles** (collection slug `textEditor`) have a `content` Lexical field with blocks embedded through `BlocksFeature`. Both go through the same `<Block>` switch in [src/render/Block.tsx](src/render/Block.tsx): Lexical block nodes reach it via [src/render/richTextConverters.tsx](src/render/richTextConverters.tsx). `RENDERABLE_COLLECTIONS` in [src/render/collections.ts](src/render/collections.ts) is the shared list of collections that get rendered.
 
 ### Adding or changing a block
-A block has a config in `src/blocks/<Name>.ts`, which holds its fields, `...blockStyles` appearance tokens, a picker thumbnail under `public/block-thumbnails/` and an optional `custom.studioTenant`. Its React component lives in `src/blocks/components/<Name>.tsx` and must be static-markup-safe. A new block has to be registered in every one of these places:
+A block has a config in `src/blocks/<Name>.ts`, which holds its fields, `...blockStyles` (a per-block "Visibility" control only), a picker thumbnail under `public/block-thumbnails/` and an optional `custom.studioTenant`. Its React component lives in `src/blocks/components/<Name>.tsx` and must be static-markup-safe. A new block has to be registered in every one of these places:
 - the `layout` blocks list in `collections/Pages/index.ts` and/or the `BlocksFeature` list in `collections/TextEditor.ts`
 - the switch in `src/render/Block.tsx`
 - `BLOCK_TENANT_TAGS` in `src/blocks/tenantScope.ts`
+- `BLOCK_APPEARANCE` in `src/render/appearance.ts` (the block's fixed background and padding; not editable in the admin)
 
 Then run `pnpm generate:types`. Shared block CSS/JS lives in [src/render/assets/](src/render/assets/). `renderVersion` is a hash of those files, so any edit there changes the version. When the worker boots and sees a new version, it re-renders every published doc.
 
-### Folders = tenants
-[src/collections/Folders/](src/collections/Folders/) is a tree built with nestedDocsPlugin. A **root folder is a tenant**; there is no separate Tenants collection. Tenants carry a `theme` (palette and font). Subfolders exist only for organisation. A few things follow from this:
-- Pages and Articles must live in a **non-root** folder (`folderScopeFields` in [src/fields/folderScope.ts](src/fields/folderScope.ts)).
+### Tenants and folders are hardcoded
+[src/tenants.ts](src/tenants.ts) is the source of truth for tenants, their subfolders (each marked `contains: 'pages' | 'articles'`) and each tenant's theme (font and palette). Nothing here is editable in the admin. On boot, `onInit` runs [src/collections/Folders/sync.ts](src/collections/Folders/sync.ts), which mirrors the list into the read-only `folders` collection (create/update/delete are denied for everyone). The sync adds and renames but never deletes. A few things follow from this:
+- A **root folder is a tenant**; subfolders hold the documents. Adding or changing either means editing `src/tenants.ts` and restarting.
+- Pages and Articles must live in a subfolder of the matching kind (`folderScopeFields('pages' | 'articles')` in [src/fields/folderScope.ts](src/fields/folderScope.ts)). A new document's folder defaults to the folder page it was created from ([src/fields/folderFromReferer.ts](src/fields/folderFromReferer.ts)).
 - The `tenant` field is denormalized by the `syncTenant` beforeValidate hook.
 - A folder's `path` (e.g. `ptofthecity/services`) is computed by a hook.
 - A doc's **address** is `folder.path/slug` ([src/publish/address.ts](src/publish/address.ts)). It is a storage and render key, not a public URL.
 - Slugs are unique only within their scope (`compoundUniqueSlug`), so don't put `unique: true` on slug fields.
+- The envelope's `theme` is resolved from `src/tenants.ts` by tenant slug ([src/render/theme.ts](src/render/theme.ts)).
 - A block with `custom.studioTenant` can only be saved on docs of that tenant. `validateBlockTenants` enforces this and must run **after** `syncTenant` in `beforeValidate`.
 
-Access: `users.roles` includes `superadmin` ([src/access/superadmin.ts](src/access/superadmin.ts)). Only superadmins can create or modify folders and users.
+Access: `users.roles` includes `superadmin` ([src/access/superadmin.ts](src/access/superadmin.ts)). Only superadmins can create or modify users.
 
 ### Publish pipeline ([src/publish/](src/publish/))
 1. A collection `afterChange`/`afterDelete` hook calls `enqueuePublish`/`enqueueUnpublish`.
@@ -72,10 +75,10 @@ Access: `users.roles` includes `superadmin` ([src/access/superadmin.ts](src/acce
 Without the worker running, publishes only take the inline fallback if enqueue fails. Otherwise jobs just sit in Redis.
 
 ### Admin customisation
-Custom admin components live in [src/admin/components/](src/admin/components/). They are referenced by string path (e.g. `'@/admin/components/TenantNavLinks#TenantNavLinks'`) in the Payload config, and those references need `pnpm generate:importmap`. Examples are the tenant nav accordion and the tenant content tree on root-folder edit views. Unused plugin collections (Forms, Redirects, Categories, Header/Footer globals) are **hidden, not removed**, because they are slated for later steps.
+Custom admin components live in [src/admin/components/](src/admin/components/). They are referenced by string path (e.g. `'@/admin/components/TenantNavLinks#TenantNavLinks'`) in the Payload config, and those references need `pnpm generate:importmap`. The nav has one dropdown per tenant ([TenantNavLinks](src/admin/components/TenantNavLinks/)); its entries open `/admin/<tenant>/<subfolder>` and `/admin/<tenant>/media`, custom views registered from `src/tenants.ts` that render the stock list locked to one folder ([src/admin/views/FolderList/](src/admin/views/FolderList/)). Payload branding is replaced by an S mark ([graphics](src/admin/components/graphics/)). Unused plugin collections (Forms, Redirects, Categories, Header/Footer globals) are **hidden, not removed**, because they are slated for later steps.
 
 ### Media
-`media` is folder-scoped. `autoAssignMediaFolder` files media into the folder of the doc that uses it. When `CLOUDINARY_URL` is set, uploads go to Cloudinary through the cloud-storage plugin ([src/media/cloudinaryStorage.ts](src/media/cloudinaryStorage.ts)); otherwise they go to local disk.
+`media` is folder-scoped. `autoAssignMediaFolder` files media into the folder of the doc that uses it. When `CLOUDINARY_URL` is set, uploads go to Cloudinary through the cloud-storage plugin ([src/media/cloudinaryStorage.ts](src/media/cloudinaryStorage.ts)); otherwise they go to local disk. The stock delete is disabled for media (`access.delete` is false): the admin deletes through `DELETE /api/media/:id/remove` after showing which pages use the file ([src/media/usage.ts](src/media/usage.ts), [MediaSafety](src/admin/components/MediaSafety/)).
 
 ## Conventions
 - Commits use conventional style with a scope: `feat(blocks): ...`, `fix(admin): ...`.
