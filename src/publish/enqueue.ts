@@ -5,7 +5,8 @@
  * eagerly; BullMQ and the handlers come in via dynamic import so the Next server
  * bundle doesn't carry the worker stack. Fire-and-forget — a publish save must
  * never block on Redis. If enqueue fails (Redis down) the work runs inline so a
- * publish is never silently dropped.
+ * publish is never silently dropped; the producer queue fails fast for exactly
+ * that reason (see getProducerQueue in ./queue).
  *
  * No job coalescing here: publishes are deliberate actions today, and each job
  * re-reads current state so redundant jobs are harmless. When autosave lands on
@@ -17,8 +18,8 @@ import type { RenderableCollection } from '@/render/collections'
 export function enqueuePublish(collection: RenderableCollection, id: string | number): void {
   void (async () => {
     try {
-      const { getQueue } = await import('./queue')
-      await getQueue().add('publish-doc', { collection, id })
+      const { getProducerQueue } = await import('./queue')
+      await (await getProducerQueue()).add('publish-doc', { collection, id })
     } catch (err) {
       console.error('[publish] enqueue publish-doc failed; running inline', err)
       const { publishDoc } = await import('./handlers')
@@ -32,8 +33,8 @@ export function enqueuePublish(collection: RenderableCollection, id: string | nu
 export function enqueueUnpublish(collection: RenderableCollection, address: string): void {
   void (async () => {
     try {
-      const { getQueue } = await import('./queue')
-      await getQueue().add('unpublish-doc', { collection, address })
+      const { getProducerQueue } = await import('./queue')
+      await (await getProducerQueue()).add('unpublish-doc', { collection, address })
     } catch (err) {
       console.error('[publish] enqueue unpublish-doc failed; running inline', err)
       const { unpublishDoc } = await import('./handlers')
