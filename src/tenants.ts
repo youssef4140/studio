@@ -54,12 +54,7 @@ export const TENANTS = [
   {
     slug: 'tny',
     name: 'TNY',
-    subfolders: [
-      { slug: 'articles', name: 'Articles' },
-      { slug: 'conditions', name: 'Conditions' },
-      { slug: 'programs', name: 'Programs' },
-      { slug: 'services', name: 'Services' },
-    ],
+    subfolders: [{ slug: 'articles', name: 'Articles' }],
     theme: {
       fontFamily: 'system-ui',
       palette: {},
