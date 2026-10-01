@@ -1,78 +1,71 @@
 import type { Payload } from 'payload'
 import React from 'react'
 
-import { TenantNavLinksClient, type TreeTenant } from './index.client'
+import { TENANTS } from '@/tenants'
 
-const BUCKET_DEFS = [
-  { label: 'Pages', collection: 'pages' as const, titleField: 'title' },
-  { label: 'Articles', collection: 'textEditor' as const, titleField: 'title' },
-  { label: 'Media', collection: 'media' as const, titleField: 'filename' },
-]
+import { TenantNavLinksClient, type NavTenant } from './index.client'
+
+const COLLECTION_FOR = { pages: 'pages', articles: 'textEditor' } as const
 
 /**
- * Surfaces the whole content tree in the nav itself, as an accordion:
- * tenant -> Pages/Articles/Media -> every subfolder (services, programs,
- * ...), each with a doc count for that content type. Fetched once,
- * server-side, so the accordion is pure client-side expand/collapse over
- * data that's already there — no per-click loading state.
- *
- * Deliberately does NOT hide a subfolder from a bucket just because it has
- * zero docs of that type yet — a subfolder isn't restricted to one content
- * type (nothing stops "services" from holding an article too), and hiding
- * it would mean there's no way to navigate to a brand-new subfolder before
- * it has its first page/article/media in it.
+ * One dropdown per tenant in the nav. Opening it lists the tenant's
+ * subfolders (in the order src/tenants.ts gives them) and a Media entry; each
+ * is a plain link to that collection's list, filtered to the folder.
  *
  * Registered as admin.components.beforeNavLinks in src/payload.config.ts.
  */
 export const TenantNavLinks = async ({ payload }: { payload: Payload }) => {
-  const { docs: tenants } = await payload.find({
+  const { docs: folders } = await payload.find({
     collection: 'folders',
-    where: { isTenant: { equals: true } },
-    sort: 'name',
     depth: 0,
-    limit: 100,
+    limit: 1000,
     overrideAccess: true,
   })
+  const idByPath = new Map(folders.map((folder) => [folder.path, folder.id]))
 
-  const tree: TreeTenant[] = await Promise.all(
-    tenants.map(async (tenant) => {
-      const { docs: subfolders } = await payload.find({
-        collection: 'folders',
-        where: { parent: { equals: tenant.id } },
-        sort: 'name',
-        depth: 0,
-        limit: 100,
+  const tenants: NavTenant[] = []
+  for (const tenant of TENANTS) {
+    const tenantId = idByPath.get(tenant.slug)
+    if (!tenantId) continue
+
+    const links: NavTenant['links'] = []
+    const folderIds = [tenantId]
+
+    for (const subfolder of tenant.subfolders) {
+      const folderId = idByPath.get(`${tenant.slug}/${subfolder.slug}`)
+      if (!folderId) continue
+      folderIds.push(folderId)
+
+      const collection = COLLECTION_FOR[subfolder.contains]
+      const { totalDocs } = await payload.count({
+        collection,
+        where: { folder: { equals: folderId } },
         overrideAccess: true,
       })
+      links.push({
+        key: subfolder.slug,
+        label: subfolder.name,
+        collection,
+        query: `where[folder][equals]=${folderId}`,
+        count: totalDocs,
+      })
+    }
 
-      const buckets = await Promise.all(
-        BUCKET_DEFS.map(async ({ label, collection, titleField }) => {
-          const subfolderEntries = await Promise.all(
-            subfolders.map(async (folder) => {
-              const { docs } = await payload.find({
-                collection,
-                where: { folder: { equals: folder.id } },
-                sort: titleField,
-                depth: 0,
-                limit: 100,
-                overrideAccess: true,
-              })
-              return {
-                folder: { id: folder.id, name: folder.name, slug: folder.slug },
-                docs: docs.map((doc) => ({
-                  id: doc.id as number,
-                  title: ((doc as unknown as Record<string, unknown>)[titleField] as string) || `#${doc.id}`,
-                })),
-              }
-            }),
-          )
-          return { label, collection, subfolders: subfolderEntries }
-        }),
-      )
+    const { totalDocs: mediaCount } = await payload.count({
+      collection: 'media',
+      where: { folder: { in: folderIds } },
+      overrideAccess: true,
+    })
+    links.push({
+      key: 'media',
+      label: 'Media',
+      collection: 'media',
+      query: `where[folder][in]=${folderIds.join(',')}`,
+      count: mediaCount,
+    })
 
-      return { id: tenant.id, name: tenant.name, slug: tenant.slug, buckets }
-    }),
-  )
+    tenants.push({ slug: tenant.slug, name: tenant.name, links })
+  }
 
-  return <TenantNavLinksClient tenants={tree} />
+  return <TenantNavLinksClient tenants={tenants} />
 }

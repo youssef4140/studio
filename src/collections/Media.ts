@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url'
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { syncCloudinaryFolderOnMove } from '@/media/cloudinaryStorage'
+import { mediaRemoveHandler, mediaUsageHandler } from '@/media/usage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,14 +25,34 @@ export const Media: CollectionConfig = {
   // join field) can list everything that belongs to it.
   admin: {
     defaultColumns: ['filename', 'folder', 'alt', 'updatedAt'],
+    components: {
+      edit: {
+        editMenuItems: ['@/admin/components/MediaSafety#MediaDeleteMenuItem'],
+        SaveButton: '@/admin/components/MediaSafety#MediaSaveButton',
+      },
+    },
   },
   access: {
     create: authenticated,
-    delete: authenticated,
+    // Off on purpose: the stock delete (edit view and list bulk-delete) has no
+    // way to warn that the file is in use. Deleting goes through the
+    // /:id/remove endpoint below, behind the admin's usage confirmation.
+    delete: () => false,
     read: anyone,
     update: authenticated,
   },
+  endpoints: [
+    { path: '/:id/usage', method: 'get', handler: mediaUsageHandler },
+    { path: '/:id/remove', method: 'delete', handler: mediaRemoveHandler },
+  ],
   fields: [
+    {
+      name: 'usage',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/admin/components/MediaSafety#MediaUsageField' },
+      },
+    },
     {
       name: 'folder',
       type: 'relationship',

@@ -1,5 +1,7 @@
 import type { CollectionBeforeValidateHook, Field } from 'payload'
 
+import { folderPathsFor, type SubfolderContent } from '@/tenants'
+
 /**
  * Shared by Pages and TextEditor: files a document into a (sub)folder and
  * derives which tenant (root folder) it belongs to. `tenant` is denormalized
@@ -7,8 +9,12 @@ import type { CollectionBeforeValidateHook, Field } from 'payload'
  * because Phase 5's block-tenant validation hook needs it synchronously on
  * every save, and because it mirrors this codebase's existing pattern of
  * doing lookup work in hooks rather than at read time.
+ *
+ * `content` limits the picker to the subfolders src/tenants.ts marks as
+ * holding that kind of document, so a Page can't be filed where only the
+ * Articles list would show it (and vice versa).
  */
-export const folderScopeFields: Field[] = [
+export const folderScopeFields = (content: SubfolderContent): Field[] => [
   {
     name: 'folder',
     type: 'relationship',
@@ -16,11 +22,11 @@ export const folderScopeFields: Field[] = [
     required: true,
     hasMany: false,
     filterOptions: {
-      isTenant: { equals: false },
+      path: { in: folderPathsFor(content) },
     },
     admin: {
       position: 'sidebar',
-      description: 'The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).',
+      description: 'The subfolder this lives in.',
     },
   },
   {

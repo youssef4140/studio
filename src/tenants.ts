@@ -29,10 +29,20 @@ export interface TenantTheme {
   palette: Partial<Record<PaletteToken, string>>
 }
 
+/** What a subfolder holds: Pages (block layouts) or Articles (long-form text). */
+export type SubfolderContent = 'pages' | 'articles'
+
+export interface SubfolderConfig {
+  slug: string
+  name: string
+  contains: SubfolderContent
+}
+
 export interface TenantConfig {
   slug: string
   name: string
-  subfolders: readonly { slug: string; name: string }[]
+  /** Listed in the order they appear in the admin nav. */
+  subfolders: readonly SubfolderConfig[]
   theme: TenantTheme
 }
 
@@ -41,10 +51,10 @@ export const TENANTS = [
     slug: 'ptofthecity',
     name: 'PT of the City',
     subfolders: [
-      { slug: 'articles', name: 'Articles' },
-      { slug: 'conditions', name: 'Conditions' },
-      { slug: 'programs', name: 'Programs' },
-      { slug: 'services', name: 'Services' },
+      { slug: 'articles', name: 'Articles', contains: 'articles' },
+      { slug: 'programs', name: 'Programs', contains: 'pages' },
+      { slug: 'conditions', name: 'Conditions', contains: 'pages' },
+      { slug: 'services', name: 'Services', contains: 'pages' },
     ],
     theme: {
       fontFamily: 'system-ui',
@@ -54,7 +64,7 @@ export const TENANTS = [
   {
     slug: 'tny',
     name: 'TNY',
-    subfolders: [{ slug: 'articles', name: 'Articles' }],
+    subfolders: [{ slug: 'articles', name: 'Articles', contains: 'articles' }],
     theme: {
       fontFamily: 'system-ui',
       palette: {},
@@ -66,4 +76,13 @@ export type TenantSlug = (typeof TENANTS)[number]['slug']
 
 export function getTenant(slug: string | null | undefined): TenantConfig | undefined {
   return TENANTS.find((tenant) => tenant.slug === slug)
+}
+
+/** Folder paths (`<tenant>/<subfolder>`) that hold the given kind of content. */
+export function folderPathsFor(content: SubfolderContent): string[] {
+  return TENANTS.flatMap((tenant) =>
+    tenant.subfolders
+      .filter((subfolder) => subfolder.contains === content)
+      .map((subfolder) => `${tenant.slug}/${subfolder.slug}`),
+  )
 }

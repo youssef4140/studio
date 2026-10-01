@@ -139,9 +139,11 @@ Draft preview and one-way live preview in the admin — the preview pane runs th
 
 Local disk by default. Set `CLOUDINARY_URL` and Media uploads switch to Cloudinary instead — organized under `studio/<tenant>/<subfolder>` (mirroring the Folders tree exactly), stored as webp with automatic quality. Any authenticated user can upload; a Media document's folder is auto-assigned the first time it's actually used on a Page or Article ("assign on first use"), and if Cloudinary is active, the underlying asset is physically moved to match.
 
+A media file's edit page lists every page and article that uses it. Deleting the file, or saving a replacement file over it, first shows that list and asks for confirmation. Deletion only exists in that guarded form: the ordinary delete (including bulk delete from the list and `DELETE /api/media/:id`) is switched off.
+
 ### Admin navigation
 
-Each tenant appears directly in the nav sidebar as an accordion — expand a tenant to see **Pages / Articles / Media**, expand one of those to see the subfolders holding that content type (with a doc count per subfolder), and click through straight to that collection's list, pre-filtered to the folder. The same breakdown also appears inline on a tenant's own edit page.
+Each tenant is a dropdown in the nav sidebar. Opening it lists that tenant's subfolders, in the order [src/tenants.ts](src/tenants.ts) gives them, followed by **Media**. Each entry is a direct link (with a count) to a list filtered to that folder: a subfolder marked `contains: 'articles'` opens the Articles list, one marked `contains: 'pages'` opens the Pages list, and Media opens the tenant's media. The folder picker on Pages and Articles only offers the subfolders meant for that kind of document.
 
 ### SEO
 

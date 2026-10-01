@@ -58,7 +58,7 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
         description: 'Unique within its folder — two tenants can both use the same slug.',
       },
     },
-    ...folderScopeFields,
+    ...folderScopeFields('articles'),
     {
       name: 'excerpt',
       type: 'textarea',

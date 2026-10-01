@@ -48,7 +48,7 @@ export const Pages: CollectionConfig<'pages'> = {
         description: 'Unique within its folder — two tenants can both use the same slug.',
       },
     },
-    ...folderScopeFields,
+    ...folderScopeFields('pages'),
     {
       name: 'layout',
       type: 'blocks',

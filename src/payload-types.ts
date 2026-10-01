@@ -156,7 +156,7 @@ export interface Page {
    */
   slug: string;
   /**
-   * The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).
+   * The subfolder this lives in.
    */
   folder: number | Folder;
   /**
@@ -236,7 +236,7 @@ export interface TextEditor {
    */
   slug: string;
   /**
-   * The subfolder this lives in (pages sit in a subfolder, not directly in a tenant).
+   * The subfolder this lives in.
    */
   folder: number | Folder;
   /**
