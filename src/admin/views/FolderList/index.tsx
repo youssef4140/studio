@@ -7,6 +7,8 @@ import React from 'react'
 
 import { getTenant } from '@/tenants'
 
+import { FolderListFrame } from './Frame'
+
 const COLLECTION_FOR = { pages: 'pages', articles: 'textEditor' } as const
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -57,17 +59,20 @@ export const FolderListView = async (props: AdminViewServerProps) => {
 
   let collection: CollectionSlug
   let clause: Where
+  let title: string
   if (section === 'media') {
     const ids = [tenant.slug, ...tenant.subfolders.map((sub) => `${tenant.slug}/${sub.slug}`)]
       .map((path) => idByPath.get(path))
       .filter((id): id is number => typeof id === 'number')
     collection = 'media'
+    title = 'Media'
     clause = { folder: { in: ids } }
   } else {
     const subfolder = tenant.subfolders.find((sub) => sub.slug === section)
     const folderId = idByPath.get(`${tenant.slug}/${section}`)
     if (!subfolder || !folderId) notFound()
     collection = COLLECTION_FOR[subfolder.contains]
+    title = subfolder.name
     clause = { folder: { equals: folderId } }
   }
 
@@ -99,7 +104,9 @@ export const FolderListView = async (props: AdminViewServerProps) => {
       viewType="list"
       visibleEntities={visibleEntities}
     >
-      {List}
+      <FolderListFrame collection={collection} crumbs={[tenant.name, title]} title={title}>
+        {List}
+      </FolderListFrame>
     </DefaultTemplate>
   )
 }
