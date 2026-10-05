@@ -163,7 +163,420 @@ export interface Page {
    * Computed from folder — the root (tenant) folder.
    */
   tenant?: (number | null) | Folder;
-  layout?: ContentBlock[] | null;
+  layout?:
+    | (
+        | ContentBlock
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgHeroRight';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgHeroLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgHeroCenter';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  icon?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgFeat4';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  icon?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgFeat3';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  icon?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgFeatList';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgAboutRight';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgAboutLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgAboutText';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  quote: string;
+                  avatar?: (number | null) | Media;
+                  name?: string | null;
+                  role?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgTesti3';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  quote: string;
+                  avatar?: (number | null) | Media;
+                  name?: string | null;
+                  role?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgTesti2';
+          }
+        | {
+            eyebrow?: string | null;
+            quote: string;
+            avatar?: (number | null) | Media;
+            name?: string | null;
+            role?: string | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgTestiOne';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            bgImage?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgCtaDark';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgCtaLight';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            bgImage?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgCtaBanner';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            listLabel?: string | null;
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            bgImage?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgProgDark';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            listLabel?: string | null;
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgProgLight';
+          }
+        | {
+            heading?: string | null;
+            text?: string | null;
+            items?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgInfoList';
+          }
+        | {
+            heading?: string | null;
+            items?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgInfoSteps';
+          }
+        | {
+            heading?: string | null;
+            items?:
+              | {
+                  question: string;
+                  answer?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgInfoFaq';
+          }
+        | {
+            heading?: string | null;
+            text?: string | null;
+            items?:
+              | {
+                  question: string;
+                  answer?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ptocPgFaq';
+          }
+      )[]
+    | null;
   seo?: {
     title?: string | null;
     description?: string | null;
@@ -2045,6 +2458,393 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         content?: T | ContentBlockSelect<T>;
+        ptocPgHeroRight?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgHeroLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgHeroCenter?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgFeat4?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgFeat3?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgFeatList?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgAboutRight?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgAboutLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgAboutText?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgTesti3?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    quote?: T;
+                    avatar?: T;
+                    name?: T;
+                    role?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgTesti2?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    quote?: T;
+                    avatar?: T;
+                    name?: T;
+                    role?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgTestiOne?:
+          | T
+          | {
+              eyebrow?: T;
+              quote?: T;
+              avatar?: T;
+              name?: T;
+              role?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgCtaDark?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              bgImage?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgCtaLight?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgCtaBanner?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              bgImage?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgProgDark?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              listLabel?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              image?: T;
+              bgImage?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgProgLight?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              listLabel?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgInfoList?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgInfoSteps?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgInfoFaq?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptocPgFaq?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   seo?:
     | T

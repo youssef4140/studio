@@ -7,6 +7,7 @@ import * as migration_20261001_183635_remove_faq_tny from './20261001_183635_rem
 import * as migration_20261001_184149_tny_article_blocks from './20261001_184149_tny_article_blocks';
 import * as migration_20261001_185816_remove_article_plain_editor from './20261001_185816_remove_article_plain_editor';
 import * as migration_20261001_185823_body_text_blocks from './20261001_185823_body_text_blocks';
+import * as migration_20261005_131115_ptoc_page_blocks from './20261005_131115_ptoc_page_blocks';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261001_185823_body_text_blocks.up,
     down: migration_20261001_185823_body_text_blocks.down,
-    name: '20261001_185823_body_text_blocks'
+    name: '20261001_185823_body_text_blocks',
+  },
+  {
+    up: migration_20261005_131115_ptoc_page_blocks.up,
+    down: migration_20261005_131115_ptoc_page_blocks.down,
+    name: '20261005_131115_ptoc_page_blocks'
   },
 ];

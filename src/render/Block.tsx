@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Content } from '@/blocks/components/Content'
 import { renderPtocBlock } from '@/blocks/components/ptoc'
+import { renderPtocPageBlock } from '@/blocks/components/ptoc/pages'
 import { renderTnyBlock } from '@/blocks/components/tny'
 
 import { appearanceClasses } from './appearance'
@@ -19,8 +20,8 @@ function inner(block: PageBlock): React.ReactNode {
     case 'content':
       return <Content {...block} />
     default:
-      // Tenant article sets render themselves; null for anything unknown.
-      return renderPtocBlock(block) ?? renderTnyBlock(block)
+      // Tenant sets render themselves; null for anything unknown.
+      return renderPtocBlock(block) ?? renderPtocPageBlock(block) ?? renderTnyBlock(block)
   }
 }
 

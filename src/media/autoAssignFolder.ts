@@ -49,9 +49,9 @@ function collectUploadsFromLayout(layout: unknown, acc: Set<number>): void {
       lead?: unknown
       callout?: unknown
       side?: unknown
-      items?: Array<{ answer?: unknown; image?: unknown }>
+      items?: Array<{ image?: unknown; icon?: unknown; avatar?: unknown }>
     }
-    // The tenant article sets (src/blocks/ptoc, src/blocks/tny): every upload field they use.
+    // The tenant sets (src/blocks/ptoc, src/blocks/tny): every upload field they use.
     if (b.blockType?.startsWith('ptoc') || b.blockType?.startsWith('tny')) {
       for (const value of [b.image, b.image2, b.bgImage, b.avatar]) {
         const id = idOf(value)
@@ -59,8 +59,10 @@ function collectUploadsFromLayout(layout: unknown, acc: Set<number>): void {
       }
       if (Array.isArray(b.items)) {
         for (const item of b.items) {
-          const id = idOf(item?.image)
-          if (id !== undefined) acc.add(id)
+          for (const value of [item?.image, item?.icon, item?.avatar]) {
+            const id = idOf(value)
+            if (id !== undefined) acc.add(id)
+          }
         }
       }
       // Images placed inside their "Text Editor" blocks' rich text.

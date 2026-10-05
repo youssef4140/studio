@@ -25,6 +25,9 @@ const PLACEHOLDER_CSS = `
 :is(.ptoc-related__row .ptoc-related__thumb, .tny-related__row .tny-related__thumb):empty::after {
   font-size: 10px;
 }
+.ptoc-pg-media:empty::after { color: #03292e; }
+.ptoc-pg-program--dark .ptoc-pg-media:empty::after { color: #fff; }
+:is(.ptoc-pg-icon, .ptoc-pg-avatar):empty::after { content: none; }
 `
 
 /**

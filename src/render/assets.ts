@@ -30,6 +30,9 @@ interface RenderAssets {
 
 let cached: RenderAssets | null = null
 
+/** SVGs in src/render/assets that the stylesheet uses as background images. */
+const ICONS = ['ptoc-check', 'ptoc-chevron-down']
+
 function assetBaseURL(): string {
   return process.env.RENDER_ASSET_BASE_URL || getServerSideURL()
 }
@@ -56,21 +59,23 @@ export function readAssetSources(): {
     readFileSync(join(SRC_DIR, 'tny.css'), 'utf8'),
   ].join('\n')
   const jsSource = readFileSync(join(SRC_DIR, 'blocks.js'), 'utf8')
-  // The stylesheet points at this as `ptoc-check.__RENDER_VERSION__.svg`.
-  const checkIcon = readFileSync(join(SRC_DIR, 'ptoc-check.svg'), 'utf8')
-  const version = createHash('sha256')
-    .update(cssSource)
-    .update('\0')
-    .update(jsSource)
-    .update('\0')
-    .update(checkIcon)
-    .digest('hex')
-    .slice(0, 8)
+  // The stylesheet points at these as `<name>.__RENDER_VERSION__.svg`.
+  const icons = ICONS.map((name) => ({
+    name,
+    body: readFileSync(join(SRC_DIR, `${name}.svg`), 'utf8'),
+  }))
+  const hash = createHash('sha256').update(cssSource).update('\0').update(jsSource)
+  for (const icon of icons) hash.update('\0').update(icon.body)
+  const version = hash.digest('hex').slice(0, 8)
   return {
     version,
     css: cssSource.replace(/__RENDER_VERSION__/g, version),
     js: jsSource.replace(/__RENDER_VERSION__/g, version),
-    files: [{ name: `ptoc-check.${version}.svg`, body: checkIcon, contentType: 'image/svg+xml' }],
+    files: icons.map((icon) => ({
+      name: `${icon.name}.${version}.svg`,
+      body: icon.body,
+      contentType: 'image/svg+xml',
+    })),
   }
 }
 

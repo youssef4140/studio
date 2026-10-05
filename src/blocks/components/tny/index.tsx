@@ -2,6 +2,7 @@ import React from 'react'
 
 import type { TextEditor } from '@/payload-types'
 import { RichText } from '@/render/RichText'
+import type { PageBlock } from '@/render/types'
 
 import { articleParts } from '../articleParts'
 
@@ -469,7 +470,7 @@ function RelatedArticles({ block }: { block: RelatedBlock }): React.ReactElement
 }
 
 /** Renders a TNY article block, or `null` for any other block type. */
-export function renderTnyBlock(block: ArticleBlock): React.ReactNode {
+export function renderTnyBlock(block: PageBlock): React.ReactNode {
   switch (block.blockType) {
     case 'tnyBodySingle':
     case 'tnyBodyLead':

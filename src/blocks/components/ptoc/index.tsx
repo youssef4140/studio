@@ -1,8 +1,9 @@
 import React from 'react'
 
 import { RichText } from '@/render/RichText'
+import type { PageBlock } from '@/render/types'
 
-import { Background, Button, Media, Meta, type ArticleBlock, type PtocBlock } from './parts'
+import { Background, Button, Media, Meta, type PtocBlock } from './parts'
 
 /**
  * ptofthecity's article blocks (configs in src/blocks/ptoc). One component per
@@ -471,7 +472,7 @@ function RelatedArticles({ block }: { block: RelatedBlock }): React.ReactElement
 }
 
 /** Renders a ptofthecity article block, or `null` for any other block type. */
-export function renderPtocBlock(block: ArticleBlock): React.ReactNode {
+export function renderPtocBlock(block: PageBlock): React.ReactNode {
   switch (block.blockType) {
     case 'ptocBodySingle':
     case 'ptocBodyLead':
