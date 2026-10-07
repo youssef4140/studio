@@ -326,6 +326,12 @@ const relatedArticles: Block[] = [
   }),
 ]
 
+/**
+ * The prose blocks on their own: ptofthecity's Pages (Programs, Conditions,
+ * Services) offer them too, next to the page sections in ./pages.ts.
+ */
+export const PTOC_TEXT_EDITOR_BLOCKS: Block[] = textEditor
+
 /** All 35, in the order the picker lists them. */
 export const PTOC_ARTICLE_BLOCKS: Block[] = [
   ...textEditor,

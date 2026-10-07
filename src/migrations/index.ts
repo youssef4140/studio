@@ -8,6 +8,7 @@ import * as migration_20261001_184149_tny_article_blocks from './20261001_184149
 import * as migration_20261001_185816_remove_article_plain_editor from './20261001_185816_remove_article_plain_editor';
 import * as migration_20261001_185823_body_text_blocks from './20261001_185823_body_text_blocks';
 import * as migration_20261005_131115_ptoc_page_blocks from './20261005_131115_ptoc_page_blocks';
+import * as migration_20261007_144105_ptoc_text_editor_on_pages from './20261007_144105_ptoc_text_editor_on_pages';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261005_131115_ptoc_page_blocks.up,
     down: migration_20261005_131115_ptoc_page_blocks.down,
-    name: '20261005_131115_ptoc_page_blocks'
+    name: '20261005_131115_ptoc_page_blocks',
+  },
+  {
+    up: migration_20261007_144105_ptoc_text_editor_on_pages.up,
+    down: migration_20261007_144105_ptoc_text_editor_on_pages.down,
+    name: '20261007_144105_ptoc_text_editor_on_pages'
   },
 ];
