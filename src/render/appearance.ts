@@ -10,8 +10,8 @@ export interface BlockAppearance {
   paddingY: PaddingYToken
 }
 
-/** The tenant article sets (src/blocks/ptoc, src/blocks/tny), by their slug prefix. */
-type TenantSetBlockType = Extract<PageBlock['blockType'], `ptoc${string}` | `tny${string}`>
+/** The tenant sets (src/blocks/ptoc, src/blocks/tny, src/blocks/cob), by their slug prefix. */
+type TenantSetBlockType = Extract<PageBlock['blockType'], `ptoc${string}` | `tny${string}` | `cob${string}`>
 
 /**
  * Background and vertical padding for each block type. Fixed here, not
@@ -26,13 +26,13 @@ export const BLOCK_APPEARANCE: Record<
 }
 
 /**
- * The tenant article sets carry their own backgrounds and spacing in their
- * tenant stylesheet (ptofthecity.css, tny.css), so the wrapper adds neither.
+ * The tenant sets carry their own backgrounds and spacing in their
+ * tenant stylesheet (ptofthecity.css, tny.css, cob.css), so the wrapper adds neither.
  */
 const TENANT_SET_APPEARANCE: BlockAppearance = { background: 'none', paddingY: 'none' }
 
 const isTenantSetBlock = (blockType: PageBlock['blockType']): blockType is TenantSetBlockType =>
-  blockType.startsWith('ptoc') || blockType.startsWith('tny')
+  blockType.startsWith('ptoc') || blockType.startsWith('tny') || blockType.startsWith('cob')
 
 /**
  * The one shared token -> class helper (§7). Every block's outer <section> gets

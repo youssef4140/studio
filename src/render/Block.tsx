@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { renderCobPageBlock } from '@/blocks/components/cob/pages'
 import { Content } from '@/blocks/components/Content'
 import { renderPtocBlock } from '@/blocks/components/ptoc'
 import { renderPtocPageBlock } from '@/blocks/components/ptoc/pages'
@@ -21,7 +22,12 @@ function inner(block: PageBlock): React.ReactNode {
       return <Content {...block} />
     default:
       // Tenant sets render themselves; null for anything unknown.
-      return renderPtocBlock(block) ?? renderPtocPageBlock(block) ?? renderTnyBlock(block)
+      return (
+        renderPtocBlock(block) ??
+        renderPtocPageBlock(block) ??
+        renderCobPageBlock(block) ??
+        renderTnyBlock(block)
+      )
   }
 }
 

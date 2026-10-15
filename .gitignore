@@ -30,3 +30,5 @@ tsconfig.tsbuildinfo
 
 # Local consumer integration harnesses (step 8) — not part of Studio
 consumers/
+
+cob-website/*

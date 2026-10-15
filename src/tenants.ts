@@ -87,6 +87,19 @@ export const TENANTS = [
       ],
     },
   },
+  {
+    slug: 'cob',
+    name: 'COB Website',
+    subfolders: [
+      { slug: 'articles', name: 'Articles', contains: 'articles' },
+      { slug: 'services', name: 'Services', contains: 'pages' },
+    ],
+    theme: {
+      fontFamily: 'system-ui',
+      palette: {},
+      fontStylesheets: [],
+    },
+  },
 ] as const satisfies readonly TenantConfig[]
 
 export type TenantSlug = (typeof TENANTS)[number]['slug']

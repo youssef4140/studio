@@ -57,6 +57,7 @@ export function readAssetSources(): {
     readFileSync(join(SRC_DIR, 'blocks.css'), 'utf8'),
     readFileSync(join(SRC_DIR, 'ptofthecity.css'), 'utf8'),
     readFileSync(join(SRC_DIR, 'tny.css'), 'utf8'),
+    readFileSync(join(SRC_DIR, 'cob.css'), 'utf8'),
   ].join('\n')
   const jsSource = readFileSync(join(SRC_DIR, 'blocks.js'), 'utf8')
   // The stylesheet points at these as `<name>.__RENDER_VERSION__.svg`.

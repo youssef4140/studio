@@ -796,6 +796,437 @@ export interface Page {
             blockName?: string | null;
             blockType: 'ptocPgFaq';
           }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgHeroLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgHeroRight';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            subtitle?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgHeroBackground';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  icon?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgFeat4';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  image?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgFeat3';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  icon?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgFeatGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgAboutRight';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            stats?:
+              | {
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgAboutLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            steps?:
+              | {
+                  number?: string | null;
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgAboutSteps';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            testimonials?:
+              | {
+                  quote: string;
+                  author: string;
+                  role?: string | null;
+                  avatar?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgTestimonialCards';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            testimonials?:
+              | {
+                  quote: string;
+                  author: string;
+                  role?: string | null;
+                  avatar?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgTestimonialColumns';
+          }
+        | {
+            eyebrow?: string | null;
+            quote: string;
+            author: string;
+            role?: string | null;
+            avatar?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgTestimonialBanner';
+          }
+        | {
+            title: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgCtaBanner';
+          }
+        | {
+            title: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgCtaStrip';
+          }
+        | {
+            title: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgCtaBox';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
+            cards?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            featuresTitle?: string | null;
+            features?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgProgramDark';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
+            cards?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            featuresTitle?: string | null;
+            features?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgProgramLight';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
+            contactMethods?:
+              | {
+                  icon?: (number | null) | Media;
+                  title: string;
+                  value: string;
+                  actionLabel?: string | null;
+                  actionHref?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            mapTitle?: string | null;
+            mapAddress?: string | null;
+            mapButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgLocationDetails';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
+            locations?:
+              | {
+                  icon?: (number | null) | Media;
+                  name: string;
+                  address: string;
+                  phone?: string | null;
+                  button?: {
+                    label?: string | null;
+                    href?: string | null;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgLocationCards';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            items?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgServicesList';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
+            cards?:
+              | {
+                  image?: (number | null) | Media;
+                  title: string;
+                  text?: string | null;
+                  linkText?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgServicesCards';
+          }
       )[]
     | null;
   seo?: {
@@ -2201,7 +2632,6 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  cloudinaryFolder?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -2215,7 +2645,6 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2224,7 +2653,6 @@ export interface Media {
       filename?: string | null;
     };
     square?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2233,7 +2661,6 @@ export interface Media {
       filename?: string | null;
     };
     small?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2242,7 +2669,6 @@ export interface Media {
       filename?: string | null;
     };
     medium?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2251,7 +2677,6 @@ export interface Media {
       filename?: string | null;
     };
     large?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2260,7 +2685,6 @@ export interface Media {
       filename?: string | null;
     };
     xlarge?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2269,7 +2693,6 @@ export interface Media {
       filename?: string | null;
     };
     og?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -3115,6 +3538,419 @@ export interface PagesSelect<T extends boolean = true> {
                 | {
                     question?: T;
                     answer?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgHeroLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgHeroRight?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgHeroBackground?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              subtitle?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgFeat4?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgFeat3?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgFeatGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgAboutRight?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgAboutLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgAboutSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              steps?:
+                | T
+                | {
+                    number?: T;
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgTestimonialCards?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              testimonials?:
+                | T
+                | {
+                    quote?: T;
+                    author?: T;
+                    role?: T;
+                    avatar?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgTestimonialColumns?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              testimonials?:
+                | T
+                | {
+                    quote?: T;
+                    author?: T;
+                    role?: T;
+                    avatar?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgTestimonialBanner?:
+          | T
+          | {
+              eyebrow?: T;
+              quote?: T;
+              author?: T;
+              role?: T;
+              avatar?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgCtaBanner?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgCtaStrip?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgCtaBox?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgProgramDark?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              featuresTitle?: T;
+              features?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgProgramLight?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              featuresTitle?: T;
+              features?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgLocationDetails?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              contactMethods?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    value?: T;
+                    actionLabel?: T;
+                    actionHref?: T;
+                    id?: T;
+                  };
+              mapTitle?: T;
+              mapAddress?: T;
+              mapButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgLocationCards?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              locations?:
+                | T
+                | {
+                    icon?: T;
+                    name?: T;
+                    address?: T;
+                    phone?: T;
+                    button?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgServicesList?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cobPgServicesCards?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              cards?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    text?: T;
+                    linkText?: T;
+                    href?: T;
                     id?: T;
                   };
               hideOn?: T;
@@ -3978,7 +4814,6 @@ export interface MediaSelect<T extends boolean = true> {
   folder?: T;
   alt?: T;
   caption?: T;
-  cloudinaryFolder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -3996,7 +4831,6 @@ export interface MediaSelect<T extends boolean = true> {
         thumbnail?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -4007,7 +4841,6 @@ export interface MediaSelect<T extends boolean = true> {
         square?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -4018,7 +4851,6 @@ export interface MediaSelect<T extends boolean = true> {
         small?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -4029,7 +4861,6 @@ export interface MediaSelect<T extends boolean = true> {
         medium?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -4040,7 +4871,6 @@ export interface MediaSelect<T extends boolean = true> {
         large?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -4051,7 +4881,6 @@ export interface MediaSelect<T extends boolean = true> {
         xlarge?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -4062,7 +4891,6 @@ export interface MediaSelect<T extends boolean = true> {
         og?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;

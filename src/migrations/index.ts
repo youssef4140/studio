@@ -9,6 +9,14 @@ import * as migration_20261001_185816_remove_article_plain_editor from './202610
 import * as migration_20261001_185823_body_text_blocks from './20261001_185823_body_text_blocks';
 import * as migration_20261005_131115_ptoc_page_blocks from './20261005_131115_ptoc_page_blocks';
 import * as migration_20261007_144105_ptoc_text_editor_on_pages from './20261007_144105_ptoc_text_editor_on_pages';
+import * as migration_20261012_152941_add_cob_hero_blocks from './20261012_152941_add_cob_hero_blocks';
+import * as migration_20261012_154428_add_cob_features_blocks from './20261012_154428_add_cob_features_blocks';
+import * as migration_20261012_154840_add_cob_about_blocks from './20261012_154840_add_cob_about_blocks';
+import * as migration_20261012_155211_add_cob_testimonial_blocks from './20261012_155211_add_cob_testimonial_blocks';
+import * as migration_20261012_155351_add_cob_cta_blocks from './20261012_155351_add_cob_cta_blocks';
+import * as migration_20261012_155540_add_cob_program_blocks from './20261012_155540_add_cob_program_blocks';
+import * as migration_20261012_155735_add_cob_location_blocks from './20261012_155735_add_cob_location_blocks';
+import * as migration_20261012_155920_add_cob_services_blocks from './20261012_155920_add_cob_services_blocks';
 
 export const migrations = [
   {
@@ -64,6 +72,46 @@ export const migrations = [
   {
     up: migration_20261007_144105_ptoc_text_editor_on_pages.up,
     down: migration_20261007_144105_ptoc_text_editor_on_pages.down,
-    name: '20261007_144105_ptoc_text_editor_on_pages'
+    name: '20261007_144105_ptoc_text_editor_on_pages',
+  },
+  {
+    up: migration_20261012_152941_add_cob_hero_blocks.up,
+    down: migration_20261012_152941_add_cob_hero_blocks.down,
+    name: '20261012_152941_add_cob_hero_blocks',
+  },
+  {
+    up: migration_20261012_154428_add_cob_features_blocks.up,
+    down: migration_20261012_154428_add_cob_features_blocks.down,
+    name: '20261012_154428_add_cob_features_blocks',
+  },
+  {
+    up: migration_20261012_154840_add_cob_about_blocks.up,
+    down: migration_20261012_154840_add_cob_about_blocks.down,
+    name: '20261012_154840_add_cob_about_blocks',
+  },
+  {
+    up: migration_20261012_155211_add_cob_testimonial_blocks.up,
+    down: migration_20261012_155211_add_cob_testimonial_blocks.down,
+    name: '20261012_155211_add_cob_testimonial_blocks',
+  },
+  {
+    up: migration_20261012_155351_add_cob_cta_blocks.up,
+    down: migration_20261012_155351_add_cob_cta_blocks.down,
+    name: '20261012_155351_add_cob_cta_blocks',
+  },
+  {
+    up: migration_20261012_155540_add_cob_program_blocks.up,
+    down: migration_20261012_155540_add_cob_program_blocks.down,
+    name: '20261012_155540_add_cob_program_blocks',
+  },
+  {
+    up: migration_20261012_155735_add_cob_location_blocks.up,
+    down: migration_20261012_155735_add_cob_location_blocks.down,
+    name: '20261012_155735_add_cob_location_blocks',
+  },
+  {
+    up: migration_20261012_155920_add_cob_services_blocks.up,
+    down: migration_20261012_155920_add_cob_services_blocks.down,
+    name: '20261012_155920_add_cob_services_blocks'
   },
 ];

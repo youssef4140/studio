@@ -51,8 +51,8 @@ function collectUploadsFromLayout(layout: unknown, acc: Set<number>): void {
       side?: unknown
       items?: Array<{ image?: unknown; icon?: unknown; avatar?: unknown }>
     }
-    // The tenant sets (src/blocks/ptoc, src/blocks/tny): every upload field they use.
-    if (b.blockType?.startsWith('ptoc') || b.blockType?.startsWith('tny')) {
+    // The tenant sets (src/blocks/ptoc, src/blocks/tny, src/blocks/cob): every upload field they use.
+    if (b.blockType?.startsWith('ptoc') || b.blockType?.startsWith('tny') || b.blockType?.startsWith('cob')) {
       for (const value of [b.image, b.image2, b.bgImage, b.avatar]) {
         const id = idOf(value)
         if (id !== undefined) acc.add(id)
