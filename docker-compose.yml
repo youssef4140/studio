@@ -131,6 +131,34 @@ services:
         condition: service_completed_successfully
     restart: 'no'
 
+  # Seq log server 
+  # Hello DevOps :), Having a good day today ? 
+  seq:
+    image: datalust/seq:latest
+    container_name: studio-seq
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: 'Y'
+      SEQ_FIRSTRUN_NOAUTHENTICATION: 'true'
+    ports:
+      - '5341:80'
+    volumes:
+      - seq_data:/data
+
+  # GELF UDP input bridge for Seq (translates Docker GELF UDP packets to Seq HTTP API)
+  seq-input-gelf:
+    image: datalust/seq-input-gelf:latest
+    container_name: studio-seq-gelf
+    restart: unless-stopped
+    depends_on:
+      - seq
+    ports:
+      - '12201:12201/udp'
+    environment:
+      SEQ_ADDRESS: 'http://seq:80'
+
+
+
   app:
     profiles: [app]
     build:
@@ -151,7 +179,15 @@ services:
         condition: service_healthy
       minio-setup:
         condition: service_completed_successfully
+      seq:
+        condition: service_started
+    logging:
+      driver: gelf
+      options:
+        gelf-address: 'udp://127.0.0.1:12201'
+        tag: 'studio-app'
     restart: unless-stopped
+
 
   worker:
     profiles: [app]
@@ -171,3 +207,5 @@ volumes:
   postgres_data:
   minio_data:
   media_data:
+  seq_data:
+
