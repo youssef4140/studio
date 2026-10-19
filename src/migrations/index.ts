@@ -17,6 +17,7 @@ import * as migration_20261012_155351_add_cob_cta_blocks from './20261012_155351
 import * as migration_20261012_155540_add_cob_program_blocks from './20261012_155540_add_cob_program_blocks';
 import * as migration_20261012_155735_add_cob_location_blocks from './20261012_155735_add_cob_location_blocks';
 import * as migration_20261012_155920_add_cob_services_blocks from './20261012_155920_add_cob_services_blocks';
+import * as migration_20261019_181253_restore_cloudinary_folder from './20261019_181253_restore_cloudinary_folder';
 
 export const migrations = [
   {
@@ -112,6 +113,11 @@ export const migrations = [
   {
     up: migration_20261012_155920_add_cob_services_blocks.up,
     down: migration_20261012_155920_add_cob_services_blocks.down,
-    name: '20261012_155920_add_cob_services_blocks'
+    name: '20261012_155920_add_cob_services_blocks',
+  },
+  {
+    up: migration_20261019_181253_restore_cloudinary_folder.up,
+    down: migration_20261019_181253_restore_cloudinary_folder.down,
+    name: '20261019_181253_restore_cloudinary_folder'
   },
 ];
