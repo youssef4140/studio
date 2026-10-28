@@ -76,14 +76,18 @@ export const TENANTS = [
   {
     slug: 'tny',
     name: 'TNY',
-    subfolders: [{ slug: 'articles', name: 'Articles', contains: 'articles' }],
+    subfolders: [
+      { slug: 'articles', name: 'Articles', contains: 'articles' },
+      { slug: 'services', name: 'Services', contains: 'pages' },
+    ],
     theme: {
       fontFamily: 'system-ui',
       palette: {},
       fontStylesheets: [
         // Montserrat (headings, buttons), DM Sans (labels), Poppins (body) and
-        // Inter (meta lines) — Google Fonts, only the weights the Figma blocks use.
-        'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,700&family=Inter:wght@400;500;700&family=Montserrat:wght@600;700&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap',
+        // Inter (meta lines) — Google Fonts, only the weights the Figma blocks
+        // use, plus Poppins 500 for the service page blocks' labels.
+        'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,700&family=Inter:wght@400;500;700&family=Montserrat:wght@600;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap',
       ],
     },
   },

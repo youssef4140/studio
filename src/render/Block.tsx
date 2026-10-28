@@ -5,6 +5,7 @@ import { Content } from '@/blocks/components/Content'
 import { renderPtocBlock } from '@/blocks/components/ptoc'
 import { renderPtocPageBlock } from '@/blocks/components/ptoc/pages'
 import { renderTnyBlock } from '@/blocks/components/tny'
+import { renderTnyPageBlock } from '@/blocks/components/tny/pages'
 
 import { appearanceClasses } from './appearance'
 import type { PageBlock } from './types'
@@ -26,6 +27,7 @@ function inner(block: PageBlock): React.ReactNode {
         renderPtocBlock(block) ??
         renderPtocPageBlock(block) ??
         renderCobPageBlock(block) ??
+        renderTnyPageBlock(block) ??
         renderTnyBlock(block)
       )
   }

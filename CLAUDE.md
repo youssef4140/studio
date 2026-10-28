@@ -73,6 +73,9 @@ Pages in ptofthecity's Programs, Conditions and Services folders get 21 section 
 
 When a migration both removes and adds blocks, `payload migrate:create` stops on an interactive "created or renamed?" question. Generate it as two migrations instead: the removal first (with the new blocks temporarily unregistered), then the addition.
 
+### TNY service page blocks
+Pages in TNY's Services folder get 8 section blocks copied from a solution page on the TNY website (tnystaffing.com/solutions/physical-therapy), not from Figma: Hero, Overview, Roles, Spotlight, Focus, Settings, Why TNY and Call to Action, one block per site section. Configs are in [src/blocks/tny/pages.ts](src/blocks/tny/pages.ts) (`TNY_PAGE_BLOCKS`, registered in `LAYOUT_BLOCKS`), markup in [src/blocks/components/tny/pages.tsx](src/blocks/components/tny/pages.tsx), slugs start `tnyPg`, and classes and tokens are `tny-pg-*` at the end of tny.css. Their values are the site's computed styles, which differ from its section CSS where the site's global rules win (see the comment at the top of that part of tny.css).
+
 ### Tenants and folders are hardcoded
 [src/tenants.ts](src/tenants.ts) is the source of truth for tenants, their subfolders (each marked `contains: 'pages' | 'articles'`) and each tenant's theme (font and palette). Nothing here is editable in the admin. On boot, `onInit` runs [src/collections/Folders/sync.ts](src/collections/Folders/sync.ts), which mirrors the list into the read-only `folders` collection (create/update/delete are denied for everyone). The sync adds and renames but never deletes. A few things follow from this:
 - A **root folder is a tenant**; subfolders hold the documents. Adding or changing either means editing `src/tenants.ts` and restarting.

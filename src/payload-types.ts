@@ -1227,6 +1227,144 @@ export interface Page {
             blockName?: string | null;
             blockType: 'cobPgServicesCards';
           }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            intro?: string | null;
+            button?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgHero';
+          }
+        | {
+            image?: (number | null) | Media;
+            eyebrow?: string | null;
+            heading?: string | null;
+            paragraphs?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgOverview';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgRoles';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgSpotlight';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgFocus';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgSettings';
+          }
+        | {
+            eyebrow?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgWhy';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
+            primaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryButton?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tnyPgCta';
+          }
       )[]
     | null;
   seo?: {
@@ -3960,6 +4098,134 @@ export interface PagesSelect<T extends boolean = true> {
                     linkText?: T;
                     href?: T;
                     id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgHero?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              intro?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgOverview?:
+          | T
+          | {
+              image?: T;
+              eyebrow?: T;
+              heading?: T;
+              paragraphs?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgRoles?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgSpotlight?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgFocus?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgSettings?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgWhy?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tnyPgCta?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              primaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryButton?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
                   };
               hideOn?: T;
               id?: T;

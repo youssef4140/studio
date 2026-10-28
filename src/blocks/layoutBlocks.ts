@@ -3,6 +3,7 @@ import { Content } from './Content'
 import { PTOC_ARTICLE_BLOCKS, PTOC_TEXT_EDITOR_BLOCKS } from './ptoc'
 import { PTOC_PAGE_BLOCKS } from './ptoc/pages'
 import { TNY_ARTICLE_BLOCKS } from './tny'
+import { TNY_PAGE_BLOCKS } from './tny/pages'
 
 /**
  * The blocks an editor can add to a document's `layout`. A new block still has
@@ -11,7 +12,8 @@ import { TNY_ARTICLE_BLOCKS } from './tny'
  * Pages get LAYOUT_BLOCKS: the plain Rich Text Editor, ptofthecity's "Text
  * Editor" blocks (shared with its articles) and its page sections
  * (src/blocks/ptoc/pages.ts), as well as COB Website's page sections
- * (src/blocks/cob/pages.ts). Articles get the tenant
+ * (src/blocks/cob/pages.ts) and TNY's service page sections
+ * (src/blocks/tny/pages.ts). Articles get the tenant
  * article sets instead (ptofthecity's and TNY's, from Figma — src/blocks/ptoc,
  * src/blocks/tny), whose "Text Editor" blocks take the plain editor's place.
  * Which of them an editor actually sees depends on the document's tenant:
@@ -22,6 +24,7 @@ export const LAYOUT_BLOCKS = [
   ...PTOC_TEXT_EDITOR_BLOCKS,
   ...PTOC_PAGE_BLOCKS,
   ...COB_PAGE_BLOCKS,
+  ...TNY_PAGE_BLOCKS,
 ]
 
 export const ARTICLE_LAYOUT_BLOCKS = [...PTOC_ARTICLE_BLOCKS, ...TNY_ARTICLE_BLOCKS]
