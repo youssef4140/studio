@@ -6,9 +6,16 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { compoundUniqueSlug } from '@/fields/compoundUnique'
 import { folderScopeFields, syncTenant } from '@/fields/folderScope'
 import { seoField } from '@/fields/seo'
+import {
+  notOnTemplates,
+  requiredUnlessTemplate,
+  templateEditComponents,
+  templateField,
+} from '@/fields/template'
 import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
+import { fromTemplateEndpoint } from '@/templates/fromTemplate'
 
 // Landing pages (§1.1): freeform, blocks arranged on a canvas.
 // This is the minimal shape from build-order step 5 — title, slug, layout, drafts —
@@ -26,6 +33,11 @@ export const Pages: CollectionConfig<'pages'> = {
     // Out of the nav and dashboard (routes stay): reached through the tenant
     // dropdowns instead — src/admin/components/TenantNavLinks.
     group: false,
+    components: {
+      // Under a subfolder list's heading: Create New, blank or from a template.
+      Description: '@/admin/components/TemplatePicker#TemplatePicker',
+      edit: templateEditComponents,
+    },
   },
   defaultPopulate: {
     title: true,
@@ -40,15 +52,19 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'slug',
       type: 'text',
-      required: true,
       index: true,
-      validate: compoundUniqueSlug({ collection: 'pages', scopeField: 'folder' }),
+      // Required on a document; a template has no address, so no slug.
+      validate: requiredUnlessTemplate(
+        compoundUniqueSlug({ collection: 'pages', scopeField: 'folder' }),
+      ),
       admin: {
         position: 'sidebar',
+        condition: notOnTemplates,
         description: 'Unique within its folder — two tenants can both use the same slug.',
       },
     },
     ...folderScopeFields('pages'),
+    templateField,
     {
       name: 'layout',
       type: 'blocks',
@@ -62,6 +78,8 @@ export const Pages: CollectionConfig<'pages'> = {
     },
     seoField,
   ],
+  // POST /api/pages/from-template/:id — the Create New chooser's "start from a template".
+  endpoints: [fromTemplateEndpoint('pages')],
   versions: {
     drafts: true,
   },
@@ -73,6 +91,8 @@ export const Pages: CollectionConfig<'pages'> = {
     // the artifact gets pulled).
     afterChange: [
       ({ doc, previousDoc }) => {
+        // Templates are starting points, never published (src/fields/template.ts).
+        if (doc?.isTemplate) return doc
         const isPublished = doc?._status === 'published'
         const wasPublished = previousDoc?._status === 'published'
         if (isPublished || wasPublished) enqueuePublish('pages', doc.id)
@@ -82,7 +102,7 @@ export const Pages: CollectionConfig<'pages'> = {
     ],
     afterDelete: [
       async ({ doc, req }) => {
-        if (doc?.folder && doc?.slug) {
+        if (doc?.folder && doc?.slug && !doc.isTemplate) {
           const address = await resolveDocAddress(req.payload, doc)
           enqueueUnpublish('pages', address)
         }

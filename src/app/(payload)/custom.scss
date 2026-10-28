@@ -3,3 +3,40 @@
 .payload-settings__language {
   display: none;
 }
+
+// A subfolder's document list: the template chooser's own "Create New"
+// (src/admin/components/TemplatePicker) replaces the stock buttons, so there is
+// one way to start a document there.
+.studio-template-picker-list {
+  .list-create-new-doc__create-new-button,
+  .no-results__actions {
+    display: none;
+  }
+}
+
+.template-picker__option {
+  display: grid;
+  gap: calc(var(--base) * 0.25);
+  padding: calc(var(--base) * 0.75) var(--base);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-0);
+  color: var(--theme-text);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--theme-elevation-400);
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+
+  span {
+    color: var(--theme-elevation-500);
+  }
+}

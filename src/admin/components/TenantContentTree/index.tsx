@@ -16,9 +16,16 @@ interface SubfolderGroup {
   media: DocSummary[]
 }
 
-const fetchDocs = async (collection: string, folderId: number, titleField: string): Promise<DocSummary[]> => {
+/** `withoutTemplates` leaves out Pages/Articles templates (src/fields/template.ts); media has none. */
+const fetchDocs = async (
+  collection: string,
+  folderId: number,
+  titleField: string,
+  withoutTemplates = false,
+): Promise<DocSummary[]> => {
+  const templates = withoutTemplates ? '&where[isTemplate][not_equals]=true' : ''
   const res = await fetch(
-    `/api/${collection}?where[folder][equals]=${folderId}&limit=100&depth=0&sort=${titleField}`,
+    `/api/${collection}?where[folder][equals]=${folderId}${templates}&limit=100&depth=0&sort=${titleField}`,
     { credentials: 'include' },
   )
   if (!res.ok) return []
@@ -58,9 +65,12 @@ export const TenantContentTree: React.FC = () => {
 
     const load = async () => {
       try {
-        const subfoldersRes = await fetch(`/api/folders?where[parent][equals]=${id}&limit=100&depth=0&sort=name`, {
-          credentials: 'include',
-        })
+        const subfoldersRes = await fetch(
+          `/api/folders?where[parent][equals]=${id}&limit=100&depth=0&sort=name`,
+          {
+            credentials: 'include',
+          },
+        )
         const { docs: subfolders } = (await subfoldersRes.json()) as {
           docs: { id: number; name: string; slug: string }[]
         }
@@ -68,8 +78,8 @@ export const TenantContentTree: React.FC = () => {
         const enriched = await Promise.all(
           subfolders.map(async (folder) => {
             const [pages, articles, media] = await Promise.all([
-              fetchDocs('pages', folder.id, 'title'),
-              fetchDocs('textEditor', folder.id, 'title'),
+              fetchDocs('pages', folder.id, 'title', true),
+              fetchDocs('textEditor', folder.id, 'title', true),
               fetchDocs('media', folder.id, 'filename'),
             ])
             return { folder, pages, articles, media }
@@ -92,7 +102,9 @@ export const TenantContentTree: React.FC = () => {
   if (!groups) return <div style={{ color: 'var(--theme-elevation-400)' }}>Loading content…</div>
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBlockEnd: '1rem' }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBlockEnd: '1rem' }}
+    >
       {BUCKETS.map(({ label, collection, key }) => {
         const nonEmpty = groups.filter((group) => group[key].length > 0)
         return (
@@ -107,7 +119,12 @@ export const TenantContentTree: React.FC = () => {
                   <ul style={{ margin: '0.25rem 0 0', paddingInlineStart: '1.25rem' }}>
                     {docs.map((doc) => (
                       <li key={doc.id}>
-                        <Link href={formatAdminURL({ adminRoute, path: `/collections/${collection}/${doc.id}` })}>
+                        <Link
+                          href={formatAdminURL({
+                            adminRoute,
+                            path: `/collections/${collection}/${doc.id}`,
+                          })}
+                        >
                           {doc.title}
                         </Link>
                       </li>

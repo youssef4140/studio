@@ -21,20 +21,27 @@ const Breadcrumb: React.FC<{ crumbs: string[] }> = ({ crumbs }) => {
  * one label is replaced by the folder's name. `Breadcrumb` comes after the
  * list so its effect runs after the list's own, which would otherwise set the
  * breadcrumb back to the collection name.
+ *
+ * `templatePicker` marks a subfolder's document list, where the template
+ * chooser (src/admin/components/TemplatePicker) stands in for the stock
+ * "Create New" buttons; custom.scss hides those under this class.
  */
 export const FolderListFrame: React.FC<{
   children: React.ReactNode
   collection: string
   crumbs: string[]
+  templatePicker?: boolean
   title: string
-}> = ({ children, collection, crumbs, title }) => {
+}> = ({ children, collection, crumbs, templatePicker = false, title }) => {
   const { config } = useConfig()
 
   const scopedConfig = useMemo(
     () => ({
       ...config,
       collections: config.collections.map((entry) =>
-        entry.slug === collection ? { ...entry, labels: { ...entry.labels, plural: title } } : entry,
+        entry.slug === collection
+          ? { ...entry, labels: { ...entry.labels, plural: title } }
+          : entry,
       ),
     }),
     [collection, config, title],
@@ -42,7 +49,7 @@ export const FolderListFrame: React.FC<{
 
   return (
     <ConfigProvider config={scopedConfig}>
-      {children}
+      {templatePicker ? <div className="studio-template-picker-list">{children}</div> : children}
       <Breadcrumb crumbs={crumbs} />
     </ConfigProvider>
   )

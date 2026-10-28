@@ -24,6 +24,10 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SeoPopup as SeoPopup_966e0b2e453ee3ca9d1db3fdd1782d96 } from '@/admin/components/SeoPopup'
+import { TemplatePicker as TemplatePicker_97e87a939f2536bb1653e6725b932acc } from '@/admin/components/TemplatePicker'
+import { TemplatePublishButton as TemplatePublishButton_3aa507d690652d220da268d7162fc184 } from '@/admin/components/TemplateControls'
+import { TemplateSaveDraftButton as TemplateSaveDraftButton_3aa507d690652d220da268d7162fc184 } from '@/admin/components/TemplateControls'
+import { TemplateUnpublishButton as TemplateUnpublishButton_3aa507d690652d220da268d7162fc184 } from '@/admin/components/TemplateControls'
 import { MediaUsageField as MediaUsageField_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
 import { MediaDeleteMenuItem as MediaDeleteMenuItem_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
 import { MediaSaveButton as MediaSaveButton_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
@@ -65,6 +69,10 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/admin/components/SeoPopup#SeoPopup": SeoPopup_966e0b2e453ee3ca9d1db3fdd1782d96,
+  "@/admin/components/TemplatePicker#TemplatePicker": TemplatePicker_97e87a939f2536bb1653e6725b932acc,
+  "@/admin/components/TemplateControls#TemplatePublishButton": TemplatePublishButton_3aa507d690652d220da268d7162fc184,
+  "@/admin/components/TemplateControls#TemplateSaveDraftButton": TemplateSaveDraftButton_3aa507d690652d220da268d7162fc184,
+  "@/admin/components/TemplateControls#TemplateUnpublishButton": TemplateUnpublishButton_3aa507d690652d220da268d7162fc184,
   "@/admin/components/MediaSafety#MediaUsageField": MediaUsageField_d3bc586fb0c486c97aa8503ecdc392f9,
   "@/admin/components/MediaSafety#MediaDeleteMenuItem": MediaDeleteMenuItem_d3bc586fb0c486c97aa8503ecdc392f9,
   "@/admin/components/MediaSafety#MediaSaveButton": MediaSaveButton_d3bc586fb0c486c97aa8503ecdc392f9,

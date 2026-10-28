@@ -1,6 +1,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
+import { notTemplate } from '@/fields/template'
 import { renderBlocks } from '@/render/renderBlocks'
 import { getRenderVersion } from '@/render/assets'
 import { RENDERABLE_COLLECTIONS, type RenderableCollection } from '@/render/collections'
@@ -45,6 +46,8 @@ export async function publishDoc({
   }
 
   if (!doc) return { status: 'missing' }
+  // Templates never publish (src/fields/template.ts); nothing was ever written for one.
+  if ((doc as { isTemplate?: boolean | null }).isTemplate) return { status: 'unpublished' }
 
   if (doc._status !== 'published') {
     if (doc.slug && doc.folder) {
@@ -120,7 +123,7 @@ export async function rerenderAll({
     for (;;) {
       const res = await payload.find({
         collection,
-        where: { _status: { equals: 'published' } },
+        where: { and: [{ _status: { equals: 'published' } }, notTemplate] },
         depth: 2,
         draft: false,
         overrideAccess: true,

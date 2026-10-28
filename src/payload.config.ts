@@ -36,11 +36,12 @@ export default buildConfig({
         Logo: '@/admin/components/graphics#Logo',
         Icon: '@/admin/components/graphics#Icon',
       },
-      // One list page per subfolder, plus one for media, under each tenant:
-      // /admin/<tenant>/<subfolder> and /admin/<tenant>/media.
+      // One list page per subfolder and one for its templates, plus one for
+      // media, under each tenant: /admin/<tenant>/<subfolder>,
+      // /admin/<tenant>/<subfolder>/templates and /admin/<tenant>/media.
       views: Object.fromEntries(
-        TENANTS.flatMap((tenant) =>
-          [...tenant.subfolders, { slug: 'media', name: 'Media' }].map((section) => [
+        TENANTS.flatMap((tenant) => [
+          ...[...tenant.subfolders, { slug: 'media', name: 'Media' }].map((section) => [
             `${tenant.slug}-${section.slug}`,
             {
               Component: '@/admin/views/FolderList#FolderListView',
@@ -49,7 +50,16 @@ export default buildConfig({
               meta: { title: `${section.name} - ${tenant.name}` },
             },
           ]),
-        ),
+          ...tenant.subfolders.map((section) => [
+            `${tenant.slug}-${section.slug}-templates`,
+            {
+              Component: '@/admin/views/FolderList#FolderListView',
+              path: `/${tenant.slug}/${section.slug}/templates` as const,
+              exact: true,
+              meta: { title: `${section.name} templates - ${tenant.name}` },
+            },
+          ]),
+        ]),
       ),
     },
     meta: {

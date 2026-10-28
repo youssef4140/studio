@@ -2,32 +2,23 @@ import type { PayloadRequest } from 'payload'
 
 import { getTenant, type SubfolderContent } from '@/tenants'
 
+import { adminRefererSegments } from './adminReferer'
+
 /**
  * Default folder for a new document, taken from the admin page the user came
- * from: "Create New" on /admin/ptofthecity/programs should start a page that
- * is already filed under Programs. Media created from /admin/<tenant>/media
- * defaults to the tenant's root folder. Anything else gets no default.
+ * from: "Create New" on /admin/ptofthecity/programs (or on its templates list,
+ * /admin/ptofthecity/programs/templates) should start a page that is already
+ * filed under Programs. Media created from /admin/<tenant>/media defaults to
+ * the tenant's root folder. Anything else gets no default.
  */
 export async function folderFromReferer(
   req: PayloadRequest | undefined,
   content: SubfolderContent | 'media',
 ): Promise<number | undefined> {
-  const referer = req?.headers?.get('referer')
-  if (!req || !referer) return undefined
-
-  let pathname: string
-  try {
-    pathname = new URL(referer).pathname
-  } catch {
-    return undefined
-  }
-
-  const adminRoute = req.payload.config.routes.admin
-  if (!pathname.startsWith(`${adminRoute}/`)) return undefined
-  const [tenantSlug, section] = pathname.slice(adminRoute.length + 1).split('/')
+  const [tenantSlug, section] = adminRefererSegments(req)
 
   const tenant = getTenant(tenantSlug)
-  if (!tenant || !section) return undefined
+  if (!req || !tenant || !section) return undefined
 
   let path: string
   if (content === 'media') {

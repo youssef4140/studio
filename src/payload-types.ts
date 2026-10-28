@@ -154,7 +154,7 @@ export interface Page {
   /**
    * Unique within its folder — two tenants can both use the same slug.
    */
-  slug: string;
+  slug?: string | null;
   /**
    * The subfolder this lives in.
    */
@@ -163,6 +163,10 @@ export interface Page {
    * Computed from folder — the root (tenant) folder.
    */
   tenant?: (number | null) | Folder;
+  /**
+   * A starting point for new documents in this folder. Never published.
+   */
+  isTemplate?: boolean | null;
   layout?:
     | (
         | ContentBlock
@@ -1447,7 +1451,7 @@ export interface TextEditor {
   /**
    * Unique within its folder — two tenants can both use the same slug.
    */
-  slug: string;
+  slug?: string | null;
   /**
    * The subfolder this lives in.
    */
@@ -1456,6 +1460,10 @@ export interface TextEditor {
    * Computed from folder — the root (tenant) folder.
    */
   tenant?: (number | null) | Folder;
+  /**
+   * A starting point for new documents in this folder. Never published.
+   */
+  isTemplate?: boolean | null;
   publishedAt?: string | null;
   layout?:
     | (
@@ -3244,6 +3252,7 @@ export interface PagesSelect<T extends boolean = true> {
   slug?: T;
   folder?: T;
   tenant?: T;
+  isTemplate?: T;
   layout?:
     | T
     | {
@@ -4269,6 +4278,7 @@ export interface TextEditorSelect<T extends boolean = true> {
   slug?: T;
   folder?: T;
   tenant?: T;
+  isTemplate?: T;
   publishedAt?: T;
   layout?:
     | T

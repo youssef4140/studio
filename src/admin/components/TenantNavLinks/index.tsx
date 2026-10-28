@@ -1,6 +1,7 @@
 import type { Payload, TypedUser } from 'payload'
 import React from 'react'
 
+import { notTemplate } from '@/fields/template'
 import { TENANTS } from '@/tenants'
 
 import { TenantNavLinksClient, type NavTenant } from './index.client'
@@ -59,10 +60,11 @@ export const TenantNavLinks = async ({ payload, user }: { payload: Payload; user
       if (!folderId) continue
       folderIds.push(folderId)
 
+      // The documents in the folder, as its list shows them: templates aren't counted.
       const collection = COLLECTION_FOR[subfolder.contains]
       const { totalDocs } = await payload.count({
         collection,
-        where: { folder: { equals: folderId } },
+        where: { and: [{ folder: { equals: folderId } }, notTemplate] },
         overrideAccess: true,
       })
       links.push({
