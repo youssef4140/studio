@@ -28,13 +28,6 @@ export const Pages: CollectionConfig<'pages'> = {
   access: {
     read: authenticatedOrPublished,
   },
-  endpoints: [
-    {
-      path: '/import',
-      method: 'post',
-      handler: importPageHandler,
-    },
-  ],
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'folder', 'slug', 'updatedAt'],
@@ -87,8 +80,15 @@ export const Pages: CollectionConfig<'pages'> = {
     },
     seoField,
   ],
-  // POST /api/pages/from-template/:id — the Create New chooser's "start from a template".
-  endpoints: [fromTemplateEndpoint('pages')],
+  // Custom endpoints: from-template and page import
+  endpoints: [
+    fromTemplateEndpoint('pages'),
+    {
+      path: '/import',
+      method: 'post',
+      handler: importPageHandler,
+    },
+  ],
   versions: {
     drafts: true,
   },
