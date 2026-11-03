@@ -300,6 +300,13 @@ export const COB_PAGE_PROGRAM_BLOCKS: Block[] = [
     fields: programFields,
     hints: programHints,
   }),
+  cobPageBlock({
+    slug: 'cobPgProgramLightLeft',
+    group: 'Program',
+    variant: 'Light with Left Image',
+    fields: programFields,
+    hints: programHints,
+  }),
 ]
 
 // ---- Location ----

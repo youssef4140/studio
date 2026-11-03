@@ -1141,6 +1141,33 @@ export interface Page {
             eyebrow?: string | null;
             heading: string;
             text?: string | null;
+            cards?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            featuresTitle?: string | null;
+            features?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Breakpoints where this block is hidden. Empty = visible everywhere.
+             */
+            hideOn?: ('mobile' | 'tablet' | 'desktop')[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cobPgProgramLightLeft';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            text?: string | null;
             contactMethods?:
               | {
                   icon?: (number | null) | Media;
@@ -2778,7 +2805,6 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  cloudinaryFolder?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -2792,7 +2818,6 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2801,7 +2826,6 @@ export interface Media {
       filename?: string | null;
     };
     square?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2810,7 +2834,6 @@ export interface Media {
       filename?: string | null;
     };
     small?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2819,7 +2842,6 @@ export interface Media {
       filename?: string | null;
     };
     medium?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2828,7 +2850,6 @@ export interface Media {
       filename?: string | null;
     };
     large?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2837,7 +2858,6 @@ export interface Media {
       filename?: string | null;
     };
     xlarge?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -2846,7 +2866,6 @@ export interface Media {
       filename?: string | null;
     };
     og?: {
-      cloudinaryFolder?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -4022,6 +4041,31 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        cobPgProgramLightLeft?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              text?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              featuresTitle?: T;
+              features?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              image?: T;
+              hideOn?: T;
+              id?: T;
+              blockName?: T;
+            };
         cobPgLocationDetails?:
           | T
           | {
@@ -5098,7 +5142,6 @@ export interface MediaSelect<T extends boolean = true> {
   folder?: T;
   alt?: T;
   caption?: T;
-  cloudinaryFolder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -5116,7 +5159,6 @@ export interface MediaSelect<T extends boolean = true> {
         thumbnail?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -5127,7 +5169,6 @@ export interface MediaSelect<T extends boolean = true> {
         square?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -5138,7 +5179,6 @@ export interface MediaSelect<T extends boolean = true> {
         small?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -5149,7 +5189,6 @@ export interface MediaSelect<T extends boolean = true> {
         medium?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -5160,7 +5199,6 @@ export interface MediaSelect<T extends boolean = true> {
         large?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -5171,7 +5209,6 @@ export interface MediaSelect<T extends boolean = true> {
         xlarge?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -5182,7 +5219,6 @@ export interface MediaSelect<T extends boolean = true> {
         og?:
           | T
           | {
-              cloudinaryFolder?: T;
               url?: T;
               width?: T;
               height?: T;
