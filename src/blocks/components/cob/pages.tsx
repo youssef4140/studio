@@ -449,7 +449,7 @@ function CallToAction({ block }: { block: CtaBlock }): React.ReactElement {
 /** Renders a COB Website page block, or `null` for any other block type. */
 // ---- Program / Services Details ----
 
-type ProgramBlock = PgBlock<'cobPgProgramDark' | 'cobPgProgramLight' | 'cobPgProgramLightLeft'>
+type ProgramBlock = PgBlock<'cobPgProgramDark' | 'cobPgProgramLight'>
 
 function CheckIcon({ dark = false }: { dark?: boolean }): React.ReactElement {
   return (
@@ -473,7 +473,6 @@ function CheckIcon({ dark = false }: { dark?: boolean }): React.ReactElement {
 
 function Program({ block }: { block: ProgramBlock }): React.ReactElement {
   const isDark = block.blockType === 'cobPgProgramDark'
-  const isImageLeft = block.blockType === 'cobPgProgramDark' || block.blockType === 'cobPgProgramLightLeft'
 
   const content = (
     <div className="cob-pg-program__content">
@@ -554,7 +553,7 @@ function Program({ block }: { block: ProgramBlock }): React.ReactElement {
       }`}
     >
       <div className="cob-pg-container cob-pg-program__container">
-        {isImageLeft ? (
+        {isDark ? (
           <>
             {media}
             {content}
@@ -833,7 +832,6 @@ export function renderCobPageBlock(block: PageBlock): React.ReactElement | null 
       return <CallToAction block={block} />
     case 'cobPgProgramDark':
     case 'cobPgProgramLight':
-    case 'cobPgProgramLightLeft':
       return <Program block={block} />
     case 'cobPgLocationDetails':
     case 'cobPgLocationCards':

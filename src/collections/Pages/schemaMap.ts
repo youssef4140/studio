@@ -13,12 +13,9 @@ export const COMPONENT_NAME_MAP: Record<string, string> = {
 
   // Program blocks
   'program-light': 'cobPgProgramLight',
-  'program-light-left': 'cobPgProgramLightLeft',
   'program-dark': 'cobPgProgramDark',
-  'capability-deliverables': 'cobPgProgramLightLeft',
-  'capability-deliverables-left': 'cobPgProgramLightLeft',
+  'capability-deliverables': 'cobPgProgramLight',
   'cobPgProgramLight': 'cobPgProgramLight',
-  'cobPgProgramLightLeft': 'cobPgProgramLightLeft',
   'cobPgProgramDark': 'cobPgProgramDark',
 
   // Feature blocks
