@@ -16,6 +16,7 @@ import { resolveDocAddress } from '@/publish/address'
 import { enqueuePublish, enqueueUnpublish } from '@/publish/enqueue'
 import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
 import { fromTemplateEndpoint } from '@/templates/fromTemplate'
+import { importPageHandler } from './importHandler'
 
 // Landing pages (§1.1): freeform, blocks arranged on a canvas.
 // This is the minimal shape from build-order step 5 — title, slug, layout, drafts —
@@ -27,6 +28,13 @@ export const Pages: CollectionConfig<'pages'> = {
   access: {
     read: authenticatedOrPublished,
   },
+  endpoints: [
+    {
+      path: '/import',
+      method: 'post',
+      handler: importPageHandler,
+    },
+  ],
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'folder', 'slug', 'updatedAt'],
@@ -37,6 +45,7 @@ export const Pages: CollectionConfig<'pages'> = {
       // Under a subfolder list's heading: Create New, blank or from a template.
       Description: '@/admin/components/TemplatePicker#TemplatePicker',
       edit: templateEditComponents,
+      beforeListTable: ['@/admin/components/ImportPageModal#ImportPageModal'],
     },
   },
   defaultPopulate: {

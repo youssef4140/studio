@@ -28,6 +28,7 @@ import { TemplatePicker as TemplatePicker_97e87a939f2536bb1653e6725b932acc } fro
 import { TemplatePublishButton as TemplatePublishButton_3aa507d690652d220da268d7162fc184 } from '@/admin/components/TemplateControls'
 import { TemplateSaveDraftButton as TemplateSaveDraftButton_3aa507d690652d220da268d7162fc184 } from '@/admin/components/TemplateControls'
 import { TemplateUnpublishButton as TemplateUnpublishButton_3aa507d690652d220da268d7162fc184 } from '@/admin/components/TemplateControls'
+import { ImportPageModal as ImportPageModal_3023cc787cd2e9fafa5caee8bc289e4b } from '@/admin/components/ImportPageModal'
 import { MediaUsageField as MediaUsageField_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
 import { MediaDeleteMenuItem as MediaDeleteMenuItem_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
 import { MediaSaveButton as MediaSaveButton_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
@@ -73,6 +74,7 @@ export const importMap = {
   "@/admin/components/TemplateControls#TemplatePublishButton": TemplatePublishButton_3aa507d690652d220da268d7162fc184,
   "@/admin/components/TemplateControls#TemplateSaveDraftButton": TemplateSaveDraftButton_3aa507d690652d220da268d7162fc184,
   "@/admin/components/TemplateControls#TemplateUnpublishButton": TemplateUnpublishButton_3aa507d690652d220da268d7162fc184,
+  "@/admin/components/ImportPageModal#ImportPageModal": ImportPageModal_3023cc787cd2e9fafa5caee8bc289e4b,
   "@/admin/components/MediaSafety#MediaUsageField": MediaUsageField_d3bc586fb0c486c97aa8503ecdc392f9,
   "@/admin/components/MediaSafety#MediaDeleteMenuItem": MediaDeleteMenuItem_d3bc586fb0c486c97aa8503ecdc392f9,
   "@/admin/components/MediaSafety#MediaSaveButton": MediaSaveButton_d3bc586fb0c486c97aa8503ecdc392f9,
