@@ -20,6 +20,7 @@ import * as migration_20261012_155920_add_cob_services_blocks from './20261012_1
 import * as migration_20261019_181253_restore_cloudinary_folder from './20261019_181253_restore_cloudinary_folder';
 import * as migration_20261028_181615_add_tny_service_blocks from './20261028_181615_add_tny_service_blocks';
 import * as migration_20261028_183143_add_is_template from './20261028_183143_add_is_template';
+import * as migration_20261105_190125_import_keys from './20261105_190125_import_keys';
 
 export const migrations = [
   {
@@ -130,6 +131,11 @@ export const migrations = [
   {
     up: migration_20261028_183143_add_is_template.up,
     down: migration_20261028_183143_add_is_template.down,
-    name: '20261028_183143_add_is_template'
+    name: '20261028_183143_add_is_template',
+  },
+  {
+    up: migration_20261105_190125_import_keys.up,
+    down: migration_20261105_190125_import_keys.down,
+    name: '20261105_190125_import_keys'
   },
 ];

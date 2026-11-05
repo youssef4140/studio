@@ -34,6 +34,7 @@ import { MediaDeleteMenuItem as MediaDeleteMenuItem_d3bc586fb0c486c97aa8503ecdc3
 import { MediaSaveButton as MediaSaveButton_d3bc586fb0c486c97aa8503ecdc392f9 } from '@/admin/components/MediaSafety'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { TenantContentTree as TenantContentTree_485c2e23145025d15d4de565bdab1591 } from '@/admin/components/TenantContentTree'
+import { ImportKeyModal as ImportKeyModal_8ae1b4a96d0498536e12dd228ce0a582 } from '@/admin/components/ImportKeyModal'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
 import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
 import { Icon as Icon_9f3bc5e87c15183abac27468b04462c5 } from '@/admin/components/graphics'
@@ -80,6 +81,7 @@ export const importMap = {
   "@/admin/components/MediaSafety#MediaSaveButton": MediaSaveButton_d3bc586fb0c486c97aa8503ecdc392f9,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@/admin/components/TenantContentTree#TenantContentTree": TenantContentTree_485c2e23145025d15d4de565bdab1591,
+  "@/admin/components/ImportKeyModal#ImportKeyModal": ImportKeyModal_8ae1b4a96d0498536e12dd228ce0a582,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
   "@/Footer/RowLabel#RowLabel": RowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
   "@/admin/components/graphics#Icon": Icon_9f3bc5e87c15183abac27468b04462c5,

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
 import { Folders } from './collections/Folders'
+import { ImportKeys } from './collections/ImportKeys'
 import { syncFolders } from './collections/Folders/sync'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -118,7 +119,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, TextEditor, Media, Categories, Folders, Users],
+  collections: [Pages, TextEditor, Media, Categories, Folders, Users, ImportKeys],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   // Tenants and subfolders are defined in src/tenants.ts; mirror them into the

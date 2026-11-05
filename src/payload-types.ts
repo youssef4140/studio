@@ -73,6 +73,7 @@ export interface Config {
     categories: Category;
     folders: Folder;
     users: User;
+    importKeys: ImportKey;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -96,6 +97,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     folders: FoldersSelect<false> | FoldersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    importKeys: ImportKeysSelect<false> | ImportKeysSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -2939,6 +2941,43 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Keys content teams give their AI so it can create, edit and publish pages. Each is limited to one tenant and expires.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "importKeys".
+ */
+export interface ImportKey {
+  id: number;
+  /**
+   * Who it is for, e.g. "PTOC content team".
+   */
+  name: string;
+  /**
+   * The only tenant this key can touch.
+   */
+  tenant: 'ptofthecity' | 'tny' | 'cob';
+  /**
+   * The start of the key, to tell keys apart.
+   */
+  keyPrefix?: string | null;
+  keyHash?: string | null;
+  /**
+   * The key stops working at this time.
+   */
+  expiresAt: string;
+  /**
+   * Set a date to switch the key off now.
+   */
+  revokedAt?: string | null;
+  /**
+   * Lets the key delete pages. Without it the AI can only unpublish.
+   */
+  canDelete?: boolean | null;
+  lastUsedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -3188,6 +3227,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'importKeys';
+        value: number | ImportKey;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -5260,6 +5303,22 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "importKeys_select".
+ */
+export interface ImportKeysSelect<T extends boolean = true> {
+  name?: T;
+  tenant?: T;
+  keyPrefix?: T;
+  keyHash?: T;
+  expiresAt?: T;
+  revokedAt?: T;
+  canDelete?: T;
+  lastUsedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
