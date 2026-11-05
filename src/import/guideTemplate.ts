@@ -1,5 +1,3 @@
-import { folderPathsFor, getTenant } from '@/tenants'
-
 /**
  * The markdown file a content team gives its AI: where the API is, the key, and
  * how to use it. It stays short on purpose: the component list and tone of each
@@ -10,6 +8,7 @@ export function buildTeamGuide({
   key,
   tenantSlug,
   tenantName,
+  folders,
   expiresAt,
   canDelete,
 }: {
@@ -17,30 +16,31 @@ export function buildTeamGuide({
   key: string
   tenantSlug: string
   tenantName: string
+  /** The page folders this key is limited to, with a readable name each. */
+  folders: { path: string; label: string }[]
   expiresAt: Date
   canDelete: boolean
 }): string {
   const base = `${serverURL.replace(/\/$/, '')}/api/import`
-  const tenant = getTenant(tenantSlug)
-  const folders = folderPathsFor('pages').filter((path) => path.startsWith(`${tenantSlug}/`))
-  const example = folders[0] ?? `${tenantSlug}/services`
-  const names = new Map(tenant?.subfolders.map((sub) => [`${tenantSlug}/${sub.slug}`, sub.name]) ?? [])
+  const example = folders[0].path
+  const only = folders.length === 1
+  const scopeName = folders.map((folder) => folder.label).join(', ')
 
-  return `# Publish pages to ${tenantName} (Studio API)
+  return `# Publish pages: ${scopeName} (Studio API)
 
-You can create, edit and publish pages on the ${tenantName} website through an HTTP API. When the user gives you page content (or asks you to change a page), do the work yourself with \`curl\` and report back. Don't ask the user to copy or paste JSON.
+You can create, edit and publish pages on the ${tenantName} website, in ${only ? 'one folder' : 'the folders listed below'}, through an HTTP API. When the user gives you page content (or asks you to change a page), do the work yourself with \`curl\` and report back. Don't ask the user to copy or paste JSON.
 
 - **API:** \`${base}\`
 - **Key:** \`${key}\` (send it as \`Authorization: Bearer <key>\`; keep it private, never put it in the page content)
 - **Expires:** ${expiresAt.toISOString().slice(0, 10)}. If calls return 401, tell the user to ask an admin for a new key.
-- **Allowed folders** (pages only, for ${tenantName} only):
-${folders.map((path) => `  - \`${path}\` (${names.get(path) ?? path})`).join('\n')}
+- **${only ? 'Folder' : 'Folders'}** (this key works ${only ? 'in this folder only' : 'in these folders only'}; anything else returns 403):
+${folders.map((folder) => `  - \`${folder.path}\` (${folder.label})`).join('\n')}
 
 Set once in your shell: \`KEY='${key}'\` and \`API='${base}'\`.
 
 ## How to work
 
-1. **Read the guide for the folder first**, every time. It lists the exact components and fields, and what kind of page that folder holds (e.g. program vs service) and how it should read:
+1. **Read the guide for the folder first**, every time${only ? '' : ' (use the folder the page belongs in)'}. It lists the exact components and fields, and what kind of page that folder holds (e.g. program vs service) and how it should read:
    \`curl -s -H "Authorization: Bearer $KEY" "$API/guide?folder=${example}"\`
 2. **Write the page JSON to a file** (e.g. \`page.json\`), then send it with \`--data @page.json\`. Don't paste JSON inline in the shell; quotes and apostrophes break it.
 3. **Dry run first.** It checks everything and writes nothing. Fix every error it lists, then send it for real:

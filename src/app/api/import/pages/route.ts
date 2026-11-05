@@ -16,7 +16,7 @@ const folderOf = (body: Record<string, unknown>) => body.folder ?? body.folderPa
 export async function GET(request: Request): Promise<Response> {
   return keyed(request, async ({ payload, key }) => {
     const params = new URL(request.url).searchParams
-    return { ok: true, ...(await readPages(payload, params.get('folder'), params.get('slug'), key.tenantSlug)) }
+    return { ok: true, ...(await readPages(payload, params.get('folder'), params.get('slug'), key)) }
   })
 }
 
@@ -24,7 +24,7 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   return keyed(request, async ({ payload, key }) => {
     const body = await readJson(request)
-    const result = await upsertPage(payload, { ...body, folderPath: folderOf(body) }, key.tenantSlug)
+    const result = await upsertPage(payload, { ...body, folderPath: folderOf(body) }, key)
     if (result.ok && !result.dryRun) {
       payload.logger.info(`[import api] "${key.name}" ${result.updated ? 'updated' : 'created'} ${result.folderPath}/${result.slug}`)
     }
@@ -36,7 +36,7 @@ export async function POST(request: Request): Promise<Response> {
 export async function PATCH(request: Request): Promise<Response> {
   return keyed(request, async ({ payload, key }) => {
     const body = await readJson(request)
-    const result = await patchPage(payload, { ...body, folderPath: folderOf(body) }, key.tenantSlug)
+    const result = await patchPage(payload, { ...body, folderPath: folderOf(body) }, key)
     if (result.ok && !result.dryRun) {
       payload.logger.info(`[import api] "${key.name}" edited ${result.folderPath}/${result.slug}`)
     }
@@ -49,7 +49,7 @@ export async function DELETE(request: Request): Promise<Response> {
   return keyed(request, async ({ payload, key }) => {
     if (!key.canDelete) throw new ImportError('This key cannot delete pages. You can unpublish instead.', 403)
     const body = await readJson(request)
-    const result = await deletePage(payload, { ...body, folderPath: folderOf(body) }, key.tenantSlug)
+    const result = await deletePage(payload, { ...body, folderPath: folderOf(body) }, key)
     payload.logger.info(`[import api] "${key.name}" deleted ${result.folderPath}/${result.slug}`)
     return result
   })

@@ -81,21 +81,29 @@ export interface ResolvedFolder {
   path: string
 }
 
+/** What a scoped key may reach: exactly these page folders. */
+export interface KeyScope {
+  folders: string[]
+}
+
 /**
- * The page folder for `folderPath` (e.g. "ptofthecity/programs"). `onlyTenant`
- * restricts it to one tenant (what a scoped key is allowed to reach).
+ * The page folder for `folderPath` (e.g. "ptofthecity/programs"). With a
+ * `scope` (a key's), any other folder is refused.
  */
 export async function resolveFolder(
   payload: Payload,
   folderPath: unknown,
-  onlyTenant?: string,
+  scope?: KeyScope,
 ): Promise<ResolvedFolder> {
   if (typeof folderPath !== 'string' || !folderPathsFor('pages').includes(folderPath)) {
     throw new ImportError(`"${String(folderPath ?? '')}" is not a folder that holds pages.`, 400)
   }
   const tenantSlug = folderPath.split('/')[0]
-  if (onlyTenant && tenantSlug !== onlyTenant) {
-    throw new ImportError(`This key cannot use the folder "${folderPath}".`, 403)
+  if (scope && !scope.folders.includes(folderPath)) {
+    throw new ImportError(
+      `This key cannot use the folder "${folderPath}". It can use: ${scope.folders.join(', ')}.`,
+      403,
+    )
   }
   const res = await payload.find({
     collection: 'folders',
@@ -571,9 +579,9 @@ export interface UpsertInput {
 export async function upsertPage(
   payload: Payload,
   input: UpsertInput,
-  onlyTenant?: string,
+  scope?: KeyScope,
 ): Promise<SaveResult> {
-  const folder = await resolveFolder(payload, input.folderPath, onlyTenant)
+  const folder = await resolveFolder(payload, input.folderPath, scope)
   const dryRun = input.dryRun === true
   const ctx = newCtx(payload, folder, dryRun)
 
@@ -668,9 +676,9 @@ export async function readPages(
   payload: Payload,
   folderPath: unknown,
   slug: unknown,
-  onlyTenant?: string,
+  scope?: KeyScope,
 ) {
-  const folder = await resolveFolder(payload, folderPath, onlyTenant)
+  const folder = await resolveFolder(payload, folderPath, scope)
 
   if (!slug) {
     const res = await payload.find({
@@ -772,9 +780,9 @@ function mergeStored(existing: Json, patch: Json): Json {
 export async function patchPage(
   payload: Payload,
   input: PatchInput,
-  onlyTenant?: string,
+  scope?: KeyScope,
 ): Promise<SaveResult> {
-  const folder = await resolveFolder(payload, input.folderPath, onlyTenant)
+  const folder = await resolveFolder(payload, input.folderPath, scope)
   const dryRun = input.dryRun === true
   const ctx = newCtx(payload, folder, dryRun)
   const page = await requirePage(payload, folder, input.slug)
@@ -883,9 +891,9 @@ export async function patchPage(
 export async function unpublishPage(
   payload: Payload,
   input: { folderPath?: unknown; slug?: unknown },
-  onlyTenant?: string,
+  scope?: KeyScope,
 ) {
-  const folder = await resolveFolder(payload, input.folderPath, onlyTenant)
+  const folder = await resolveFolder(payload, input.folderPath, scope)
   const page = await requirePage(payload, folder, input.slug)
   await payload.update({
     collection: 'pages',
@@ -900,9 +908,9 @@ export async function unpublishPage(
 export async function deletePage(
   payload: Payload,
   input: { folderPath?: unknown; slug?: unknown },
-  onlyTenant?: string,
+  scope?: KeyScope,
 ) {
-  const folder = await resolveFolder(payload, input.folderPath, onlyTenant)
+  const folder = await resolveFolder(payload, input.folderPath, scope)
   const page = await requirePage(payload, folder, input.slug)
   await payload.delete({ collection: 'pages', id: page.id, overrideAccess: true })
   return { ok: true, folderPath: folder.path, slug: page.slug, deleted: true }

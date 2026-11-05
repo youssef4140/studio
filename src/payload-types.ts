@@ -2941,7 +2941,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Keys content teams give their AI so it can create, edit and publish pages. Each is limited to one tenant and expires.
+ * Keys content teams give their AI so it can create, edit and publish pages. Each is limited to the folders it was made for and expires.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "importKeys".
@@ -2949,11 +2949,17 @@ export interface User {
 export interface ImportKey {
   id: number;
   /**
-   * Who it is for, e.g. "PTOC content team".
+   * Who it is for, e.g. "PTOC programs team".
    */
   name: string;
   /**
-   * The only tenant this key can touch.
+   * The only folders this key can create, edit or read pages in.
+   */
+  folders: (
+    'ptofthecity/programs' | 'ptofthecity/conditions' | 'ptofthecity/services' | 'tny/services' | 'cob/services'
+  )[];
+  /**
+   * The tenant those folders belong to.
    */
   tenant: 'ptofthecity' | 'tny' | 'cob';
   /**
@@ -2974,6 +2980,7 @@ export interface ImportKey {
    */
   canDelete?: boolean | null;
   lastUsedAt?: string | null;
+  createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -5310,6 +5317,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface ImportKeysSelect<T extends boolean = true> {
   name?: T;
+  folders?: T;
   tenant?: T;
   keyPrefix?: T;
   keyHash?: T;
@@ -5317,6 +5325,7 @@ export interface ImportKeysSelect<T extends boolean = true> {
   revokedAt?: T;
   canDelete?: T;
   lastUsedAt?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

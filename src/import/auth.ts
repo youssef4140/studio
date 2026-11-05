@@ -4,8 +4,8 @@ import type { Payload } from 'payload'
 import { ImportError } from './pageService'
 
 /**
- * Scoped, expiring keys for the import API (src/app/api/import). A key belongs
- * to one tenant and only opens those endpoints; it is not a Payload user and
+ * Scoped, expiring keys for the import API (src/app/api/import). A key is
+ * limited to the page folders chosen when it was made and only opens those endpoints; it is not a Payload user and
  * cannot reach any other route. Only a hash is stored (collection
  * src/collections/ImportKeys); the plaintext is shown once, when generated.
  */
@@ -24,6 +24,8 @@ export interface AuthedKey {
   id: number
   name: string
   tenantSlug: string
+  /** The page folders (`tenant/subfolder`) this key may touch, nothing else. */
+  folders: string[]
   canDelete: boolean
 }
 
@@ -70,6 +72,7 @@ export async function authenticateKey(payload: Payload, request: Request): Promi
     id: doc.id as number,
     name: doc.name,
     tenantSlug: doc.tenant,
+    folders: (doc.folders ?? []) as string[],
     canDelete: Boolean(doc.canDelete),
   }
 }

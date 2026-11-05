@@ -34,12 +34,17 @@ async function copyText(text: string) {
   if (!ok) throw new Error('Copy failed')
 }
 
-export const ImportKeyModalClient: React.FC<{ tenants: { slug: string; name: string }[] }> = ({
-  tenants,
-}) => {
+interface TenantOption {
+  slug: string
+  name: string
+  folders: { path: string; name: string }[]
+}
+
+export const ImportKeyModalClient: React.FC<{ tenants: TenantOption[] }> = ({ tenants }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [name, setName] = useState('')
   const [tenant, setTenant] = useState(tenants[0]?.slug ?? '')
+  const [folders, setFolders] = useState<string[]>([])
   const [days, setDays] = useState(90)
   const [canDelete, setCanDelete] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -58,13 +63,14 @@ export const ImportKeyModalClient: React.FC<{ tenants: { slug: string; name: str
 
   const create = async () => {
     if (!name.trim()) return toast.error('Give the key a name')
+    if (folders.length === 0) return toast.error('Tick at least one folder')
     setBusy(true)
     try {
       const res = await fetch('/api/importKeys/generate', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, tenant, days, canDelete }),
+        body: JSON.stringify({ name, folders, days, canDelete }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Could not create the key')
@@ -81,7 +87,7 @@ export const ImportKeyModalClient: React.FC<{ tenants: { slug: string; name: str
     const url = URL.createObjectURL(new Blob([guide], { type: 'text/markdown' }))
     const link = document.createElement('a')
     link.href = url
-    link.download = `${tenant}-studio-api-guide.md`
+    link.download = `${folders[0]?.replace('/', '-') ?? tenant}-studio-api-guide.md`
     link.click()
     URL.revokeObjectURL(url)
   }
@@ -169,8 +175,9 @@ export const ImportKeyModalClient: React.FC<{ tenants: { slug: string; name: str
             ) : (
               <>
                 <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.75 }}>
-                  The key lets a content team&apos;s AI create, edit and publish pages for one tenant
-                  only, until it expires. You can switch it off any time from its page.
+                  The key lets a content team&apos;s AI create, edit and publish pages in the folders
+                  you tick, and nowhere else, until it expires. You can switch it off any time from
+                  its page.
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                   <div>
@@ -184,13 +191,41 @@ export const ImportKeyModalClient: React.FC<{ tenants: { slug: string; name: str
                   </div>
                   <div>
                     <label style={labelStyle}>Tenant *</label>
-                    <select style={inputStyle} value={tenant} onChange={(e) => setTenant(e.target.value)}>
+                    <select
+                      style={inputStyle}
+                      value={tenant}
+                      onChange={(e) => {
+                        setTenant(e.target.value)
+                        setFolders([])
+                      }}
+                    >
                       {tenants.map((item) => (
                         <option key={item.slug} value={item.slug}>
                           {item.name}
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={labelStyle}>Folders it can use *</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 18px' }}>
+                      {(tenants.find((item) => item.slug === tenant)?.folders ?? []).map((folder) => (
+                        <label key={folder.path} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                          <input
+                            type="checkbox"
+                            checked={folders.includes(folder.path)}
+                            onChange={(e) =>
+                              setFolders((current) =>
+                                e.target.checked
+                                  ? [...current, folder.path]
+                                  : current.filter((path) => path !== folder.path),
+                              )
+                            }
+                          />
+                          {folder.name}
+                        </label>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <label style={labelStyle}>Expires after (days)</label>

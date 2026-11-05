@@ -67955,6 +67955,89 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.import_keys_folders": {
+      "name": "import_keys_folders",
+      "schema": "",
+      "columns": {
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "enum_import_keys_folders",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "import_keys_folders_order_idx": {
+          "name": "import_keys_folders_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_keys_folders_parent_idx": {
+          "name": "import_keys_folders_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "import_keys_folders_parent_fk": {
+          "name": "import_keys_folders_parent_fk",
+          "tableFrom": "import_keys_folders",
+          "tableTo": "import_keys",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.import_keys": {
       "name": "import_keys",
       "schema": "",
@@ -68015,6 +68098,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "created_by_id": {
+          "name": "created_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp(3) with time zone",
@@ -68036,6 +68125,21 @@
           "columns": [
             {
               "expression": "key_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_keys_created_by_idx": {
+          "name": "import_keys_created_by_idx",
+          "columns": [
+            {
+              "expression": "created_by_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -68077,7 +68181,21 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "import_keys_created_by_id_users_id_fk": {
+          "name": "import_keys_created_by_id_users_id_fk",
+          "tableFrom": "import_keys",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -73688,6 +73806,17 @@
         "superadmin"
       ]
     },
+    "public.enum_import_keys_folders": {
+      "name": "enum_import_keys_folders",
+      "schema": "public",
+      "values": [
+        "ptofthecity/programs",
+        "ptofthecity/conditions",
+        "ptofthecity/services",
+        "tny/services",
+        "cob/services"
+      ]
+    },
     "public.enum_import_keys_tenant": {
       "name": "enum_import_keys_tenant",
       "schema": "public",
@@ -73740,6 +73869,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "6936d5cd-5a31-4a0e-ab7b-32c0022a298d",
+  "id": "bae96454-b85b-459d-af3a-c9362f67226f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

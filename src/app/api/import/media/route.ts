@@ -39,12 +39,12 @@ export async function POST(request: Request): Promise<Response> {
       folderValue = body.folder || key.tenantSlug
     }
 
-    // Media folders: the tenant's root folder, or one of its page folders.
+    // Media goes in the tenant's media folder, or one of the key's own page folders.
     const target = String(folderValue)
     if (target.split('/')[0] !== key.tenantSlug) {
       throw new ImportError(`This key cannot use the folder "${target}".`, 403)
     }
-    if (target !== key.tenantSlug) await resolveFolder(payload, target, key.tenantSlug)
+    if (target !== key.tenantSlug) await resolveFolder(payload, target, key)
     const folderDoc = (
       await payload.find({
         collection: 'folders',

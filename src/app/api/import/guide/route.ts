@@ -1,7 +1,7 @@
 import { buildAiPrompt } from '@/import/aiPrompt'
 import { keyed } from '@/import/http'
 import { resolveFolder } from '@/import/pageService'
-import { folderPathsFor, getTenant } from '@/tenants'
+import { getTenant } from '@/tenants'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,14 +19,14 @@ export async function GET(request: Request): Promise<Response> {
     const tenant = getTenant(key.tenantSlug)
 
     if (!folderPath) {
-      const folders = folderPathsFor('pages').filter((path) => path.startsWith(`${key.tenantSlug}/`))
+      const folders = key.folders
       return new Response(
         `# Folders you can use\n\n${folders.map((path) => `- ${path}`).join('\n')}\n\nGet a folder's guide with GET /api/import/guide?folder=<folder>.\n`,
         { headers: { 'Content-Type': 'text/markdown; charset=utf-8' } },
       )
     }
 
-    const folder = await resolveFolder(payload, folderPath, key.tenantSlug)
+    const folder = await resolveFolder(payload, folderPath, key)
     const subSlug = folder.path.split('/')[1]
     const sub = tenant?.subfolders.find((entry) => entry.slug === subSlug)
     return new Response(

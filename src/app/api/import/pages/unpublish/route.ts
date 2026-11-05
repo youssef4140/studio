@@ -10,7 +10,7 @@ export async function POST(request: Request): Promise<Response> {
     const result = await unpublishPage(
       payload,
       { folderPath: body.folder ?? body.folderPath, slug: body.slug },
-      key.tenantSlug,
+      key,
     )
     payload.logger.info(`[import api] "${key.name}" unpublished ${result.folderPath}/${result.slug}`)
     return result
