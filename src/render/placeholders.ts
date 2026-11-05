@@ -82,31 +82,44 @@ const hintRichText = (hint: string) => ({
   },
 })
 
-function fill(fields: Field[], data: Data): Data {
+function fill(fields: Field[], data: Data, keepEmptyLists = false): Data {
   const filled: Data = { ...data }
+  const hasListRows =
+    keepEmptyLists &&
+    fields.some((field) => {
+      if (field.type !== 'array') return false
+      const rows = data[field.name]
+      return Array.isArray(rows) && rows.length > 0
+    })
 
   for (const field of fields) {
     if (field.type === 'row') {
-      Object.assign(filled, fill(field.fields, filled))
+      Object.assign(filled, fill(field.fields, filled, keepEmptyLists))
       continue
     }
 
     if (field.type === 'group') {
       if (!('name' in field) || !field.name) {
-        Object.assign(filled, fill(field.fields, filled))
+        Object.assign(filled, fill(field.fields, filled, keepEmptyLists))
         continue
       }
-      filled[field.name] = fill(field.fields, (filled[field.name] as Data | null) ?? {})
+      filled[field.name] = fill(
+        field.fields,
+        (filled[field.name] as Data | null) ?? {},
+        keepEmptyLists,
+      )
       continue
     }
 
     if (field.type === 'array') {
       const rows = Array.isArray(filled[field.name]) ? (filled[field.name] as Data[]) : []
+      // COB only: a block already holding rows in one list has been filled in, so
+      // a list left empty beside it is a choice, and samples would read as content.
       const shown =
-        rows.length > 0
+        rows.length > 0 || hasListRows
           ? rows
           : Array.from({ length: SAMPLE_ROWS }, (_, index) => ({ id: `hint-${index}` }))
-      filled[field.name] = shown.map((row) => fill(field.fields, row))
+      filled[field.name] = shown.map((row) => fill(field.fields, row, keepEmptyLists))
       continue
     }
 
@@ -136,7 +149,8 @@ export function fillPlaceholders(blocks: PageBlock[]): PageBlock[] {
   return blocks.map((block) => {
     const config = BLOCKS_BY_SLUG.get(block.blockType)
     if (!config) return block
-    return fill(config.fields, block as unknown as Data) as unknown as PageBlock
+    const tenant = (config.custom as { studioTenant?: string } | undefined)?.studioTenant
+    return fill(config.fields, block as unknown as Data, tenant === 'cob') as unknown as PageBlock
   })
 }
 
