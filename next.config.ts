@@ -46,6 +46,14 @@ const nextConfig: NextConfig = {
 
     return webpackConfig
   },
+  // Dev only: Next blocks dev scripts and HMR for any origin but localhost, which
+  // leaves the admin blank when opened by LAN IP. Set DEV_ALLOWED_ORIGINS to a
+  // comma-separated list of hosts (no port) to add more.
+  allowedDevOrigins: [
+    '192.168.*.*',
+    ...(process.env.DEV_ALLOWED_ORIGINS?.split(',').map((host) => host.trim()).filter(Boolean) ??
+      []),
+  ],
   // Also stops withPayload adding its own "X-Powered-By: Next.js, Payload" header.
   poweredByHeader: false,
   reactStrictMode: true,
