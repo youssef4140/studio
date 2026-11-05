@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from '@payloadcms/ui'
 
@@ -9,6 +9,21 @@ const toSlug = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
+
+/**
+ * Undoes what copying from a chat window does to JSON: a code fence around it,
+ * HTML-escaped spaces (`&#x20;`, `&nbsp;`) and a lone backslash at the end of
+ * each line. None of these can be valid JSON, so removing them never changes a
+ * valid paste (a real `\n` escape is a backslash followed by "n", not a line break).
+ */
+export function cleanPastedJson(text: string): string {
+  return text
+    .replace(/&#x0*20;|&#0*32;|&nbsp;|\u00a0/gi, ' ')
+    .replace(/\\[ \t]*\r?\n/g, '\n')
+    .replace(/^\s*```(?:json)?\s*\n/i, '')
+    .replace(/\n\s*```\s*$/, '')
+    .trim()
+}
 
 /** navigator.clipboard needs a secure context; fall back to execCommand on plain http. */
 async function copyText(text: string) {
@@ -54,6 +69,7 @@ export const ImportPageModalClient: React.FC<{
   const [slug, setSlug] = useState('')
   const [jsonText, setJsonText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const fromJson = useRef({ title: '', slug: '' })
   const router = useRouter()
 
   const handleTitleChange = (val: string) => {
@@ -61,16 +77,28 @@ export const ImportPageModalClient: React.FC<{
     if (!slug) setSlug(toSlug(val))
   }
 
-  /** Fills title and slug from the JSON when they are still empty. */
-  const handleJsonChange = (text: string) => {
+  /**
+   * The JSON's title and slug fill the fields whenever they differ from the ones
+   * last read from the JSON (a new paste or upload), replacing what is there.
+   * Edits made in the fields afterwards stay, until the JSON's own values change.
+   * With no slug in the JSON, the slug comes from its title.
+   */
+  const handleJsonChange = (raw: string) => {
+    const text = cleanPastedJson(raw)
     setJsonText(text)
     try {
       const parsed = JSON.parse(text)
-      if (parsed && !Array.isArray(parsed)) {
-        if (!title && typeof parsed.title === 'string') setTitle(parsed.title)
-        if (!slug && typeof parsed.slug === 'string') setSlug(toSlug(parsed.slug))
-        else if (!slug && typeof parsed.title === 'string') setSlug(toSlug(parsed.title))
-      }
+      if (!parsed || Array.isArray(parsed)) return
+      const jsonTitle = typeof parsed.title === 'string' ? parsed.title.trim() : ''
+      const jsonSlug =
+        typeof parsed.slug === 'string' && parsed.slug.trim()
+          ? toSlug(parsed.slug)
+          : jsonTitle
+            ? toSlug(jsonTitle)
+            : ''
+      if (jsonTitle && jsonTitle !== fromJson.current.title) setTitle(jsonTitle)
+      if (jsonSlug && jsonSlug !== fromJson.current.slug) setSlug(jsonSlug)
+      fromJson.current = { title: jsonTitle, slug: jsonSlug }
     } catch {
       // Not valid (yet); checked again on import.
     }
@@ -144,12 +172,13 @@ export const ImportPageModalClient: React.FC<{
       if (!res.ok) throw new Error(data.error || 'Import failed')
 
       toast.success(
-        `${data.updated ? 'Updated' : 'Imported'} page "${title}" with ${data.blocksCount} components!`,
+        `${data.updated ? 'Updated' : 'Imported'} and published "${title}" with ${data.blocksCount} components!`,
       )
       setIsOpen(false)
       setTitle('')
       setSlug('')
       setJsonText('')
+      fromJson.current = { title: '', slug: '' }
       router.refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Import failed')
@@ -229,7 +258,7 @@ export const ImportPageModalClient: React.FC<{
                   Import Page from JSON
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: '0.875rem', opacity: 0.7 }}>
-                  Into <strong>{folderLabel}</strong>. A page with the same slug here is updated.
+                  Into <strong>{folderLabel}</strong>. A page with the same slug here is updated. The page is published right away.
                 </p>
               </div>
               <button

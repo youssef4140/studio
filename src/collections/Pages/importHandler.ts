@@ -81,6 +81,48 @@ async function resolveImageToMediaId(
   }
 }
 
+interface ButtonValue {
+  label: string
+  href: string
+}
+
+/**
+ * Buttons a tenant's imported pages get when the JSON doesn't set them. Applied
+ * to every block that has the field: a block's `button` field (the single
+ * button of the light and banner Call to Action) takes the primary default.
+ * A label or link the JSON does give is kept; only the missing part is filled.
+ */
+const BUTTON_DEFAULTS: Record<string, { primary: ButtonValue; secondary: ButtonValue }> = {
+  ptofthecity: {
+    primary: { label: 'Book an Appointment', href: '/booking' },
+    secondary: { label: 'Check Eligibility', href: '/insurances' },
+  },
+}
+
+function withDefaultButtons(
+  tenantSlug: string,
+  fields: Field[],
+  data: Record<string, unknown>,
+): Record<string, unknown> {
+  const defaults = BUTTON_DEFAULTS[tenantSlug]
+  if (!defaults) return data
+  const slots: Record<string, ButtonValue> = {
+    primaryButton: defaults.primary,
+    secondaryButton: defaults.secondary,
+    button: defaults.primary,
+  }
+  const out = { ...data }
+  for (const field of dataFields(fields)) {
+    if (field.type !== 'group' || !('name' in field) || !(field.name in slots)) continue
+    const given = (out[field.name] ?? {}) as Partial<ButtonValue>
+    out[field.name] = {
+      label: given.label?.trim() ? given.label : slots[field.name].label,
+      href: given.href?.trim() ? given.href : slots[field.name].href,
+    }
+  }
+  return out
+}
+
 const textNode = (text: string) => ({
   type: 'text',
   text,
@@ -282,7 +324,11 @@ export async function importPageHandler(req: PayloadRequest): Promise<Response> 
       }
       layoutBlocks.push({
         blockType,
-        ...(await normalizeFields(config.fields, rawBlock, ctx)),
+        ...withDefaultButtons(
+          tenantSlug,
+          config.fields,
+          await normalizeFields(config.fields, rawBlock, ctx),
+        ),
       })
     }
 
@@ -301,6 +347,9 @@ export async function importPageHandler(req: PayloadRequest): Promise<Response> 
       slug,
       folder: folderId,
       layout: layoutBlocks,
+      // Imported pages go live straight away; the collection's afterChange hook
+      // then queues the publish.
+      _status: 'published',
       ...(seo ? { seo: { title: seo.title, description: seo.description } } : {}),
     }
 

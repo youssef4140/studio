@@ -23,6 +23,7 @@ export const ImportPageModal = ({ params }: { params?: { segments?: string[] } }
         tenantSlug: tenant.slug,
         tenantName: tenant.name,
         folderName: subfolder.name,
+        folderSlug: subfolder.slug,
       })}
       folderLabel={`${tenant.name} / ${subfolder.name}`}
       folderPath={`${tenant.slug}/${subfolder.slug}`}
