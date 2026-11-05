@@ -4,24 +4,75 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from '@payloadcms/ui'
 
-export const ImportPageModalClient: React.FC<{ folderPath?: string }> = ({ folderPath = 'cob/services' }) => {
+const toSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+
+/** navigator.clipboard needs a secure context; fall back to execCommand on plain http. */
+async function copyText(text: string) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text)
+    return
+  }
+  const area = document.createElement('textarea')
+  area.value = text
+  area.style.position = 'fixed'
+  area.style.opacity = '0'
+  document.body.appendChild(area)
+  area.select()
+  const ok = document.execCommand('copy')
+  document.body.removeChild(area)
+  if (!ok) throw new Error('Copy failed')
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '8px 12px',
+  borderRadius: '6px',
+  border: '1px solid var(--theme-elevation-200, #3f3f46)',
+  background: 'var(--theme-input-bg, #09090b)',
+  color: 'inherit',
+  fontSize: '0.9rem',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '0.8rem',
+  fontWeight: 600,
+  marginBottom: '6px',
+}
+
+export const ImportPageModalClient: React.FC<{
+  aiPrompt: string
+  folderLabel: string
+  folderPath: string
+}> = ({ aiPrompt, folderLabel, folderPath }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
-  const [targetFolder, setTargetFolder] = useState(folderPath)
   const [jsonText, setJsonText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleTitleChange = (val: string) => {
     setTitle(val)
-    if (!slug) {
-      setSlug(
-        val
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, ''),
-      )
+    if (!slug) setSlug(toSlug(val))
+  }
+
+  /** Fills title and slug from the JSON when they are still empty. */
+  const handleJsonChange = (text: string) => {
+    setJsonText(text)
+    try {
+      const parsed = JSON.parse(text)
+      if (parsed && !Array.isArray(parsed)) {
+        if (!title && typeof parsed.title === 'string') setTitle(parsed.title)
+        if (!slug && typeof parsed.slug === 'string') setSlug(toSlug(parsed.slug))
+        else if (!slug && typeof parsed.title === 'string') setSlug(toSlug(parsed.title))
+      }
+    } catch {
+      // Not valid (yet); checked again on import.
     }
   }
 
@@ -29,51 +80,49 @@ export const ImportPageModalClient: React.FC<{ folderPath?: string }> = ({ folde
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (evt) => {
-      try {
-        const text = evt.target?.result as string
-        setJsonText(text)
-        const parsed = JSON.parse(text)
-        if (parsed.title) setTitle(parsed.title)
-        if (parsed.slug) setSlug(parsed.slug)
-      } catch (err) {
-        toast.error('Invalid JSON file format')
-      }
-    }
+    reader.onload = (evt) => handleJsonChange((evt.target?.result as string) ?? '')
     reader.readAsText(file)
   }
 
+  const handleCopyPrompt = async () => {
+    try {
+      await copyText(aiPrompt)
+      toast.success('AI prompt copied. Paste it into the AI, then add the page content after it.')
+    } catch {
+      toast.error('Could not copy to the clipboard')
+    }
+  }
+
   const handleImport = async () => {
+    if (!jsonText.trim()) {
+      toast.error('Please paste or upload JSON')
+      return
+    }
+
+    let parsedBlocks: unknown[] = []
+    let seo = undefined
+    try {
+      const parsed = JSON.parse(jsonText)
+      if (Array.isArray(parsed)) {
+        parsedBlocks = parsed
+      } else if (parsed && Array.isArray(parsed.blocks)) {
+        parsedBlocks = parsed.blocks
+        if (parsed.seo) seo = parsed.seo
+      } else {
+        toast.error('JSON must be an array of blocks or an object with a "blocks" array')
+        return
+      }
+    } catch (e) {
+      toast.error(`JSON Syntax Error: ${e instanceof Error ? e.message : String(e)}`)
+      return
+    }
+
     if (!title.trim()) {
       toast.error('Please enter a Page Title')
       return
     }
     if (!slug.trim()) {
       toast.error('Please enter a Page Slug')
-      return
-    }
-    if (!jsonText.trim()) {
-      toast.error('Please paste or upload JSON')
-      return
-    }
-
-    let parsedBlocks = []
-    let seo = undefined
-    try {
-      const parsed = JSON.parse(jsonText)
-      if (Array.isArray(parsed)) {
-        parsedBlocks = parsed
-      } else if (parsed.blocks && Array.isArray(parsed.blocks)) {
-        parsedBlocks = parsed.blocks
-        if (parsed.seo) seo = parsed.seo
-        if (!title && parsed.title) setTitle(parsed.title)
-        if (!slug && parsed.slug) setSlug(parsed.slug)
-      } else {
-        toast.error('JSON must be an array of blocks or an object with a "blocks" array')
-        return
-      }
-    } catch (e: any) {
-      toast.error(`JSON Syntax Error: ${e.message}`)
       return
     }
 
@@ -85,25 +134,25 @@ export const ImportPageModalClient: React.FC<{ folderPath?: string }> = ({ folde
         body: JSON.stringify({
           title: title.trim(),
           slug: slug.trim(),
-          folderPath: targetFolder.trim(),
+          folderPath,
           seo,
           blocks: parsedBlocks,
         }),
       })
 
       const data = await res.json()
-      if (!res.ok) {
-        throw new Error(data.error || 'Import failed')
-      }
+      if (!res.ok) throw new Error(data.error || 'Import failed')
 
-      toast.success(`Successfully imported page "${title}" with ${data.blocksCount} components!`)
+      toast.success(
+        `${data.updated ? 'Updated' : 'Imported'} page "${title}" with ${data.blocksCount} components!`,
+      )
       setIsOpen(false)
       setTitle('')
       setSlug('')
       setJsonText('')
       router.refresh()
-    } catch (err: any) {
-      toast.error(err.message || 'Import failed')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Import failed')
     } finally {
       setIsLoading(false)
     }
@@ -180,7 +229,7 @@ export const ImportPageModalClient: React.FC<{ folderPath?: string }> = ({ folde
                   Import Page from JSON
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: '0.875rem', opacity: 0.7 }}>
-                  Create or update a page with pre-structured component blocks
+                  Into <strong>{folderLabel}</strong>. A page with the same slug here is updated.
                 </p>
               </div>
               <button
@@ -201,112 +250,83 @@ export const ImportPageModalClient: React.FC<{ folderPath?: string }> = ({ folde
               </button>
             </div>
 
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '14px',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                border: '1px dashed var(--theme-elevation-200, #3f3f46)',
+              }}
+            >
+              <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8 }}>
+                Copy the prompt into an AI chat, add your page content after it, and paste the JSON
+                it returns below. It lists this folder&apos;s components.
+              </p>
+              <button
+                type="button"
+                onClick={handleCopyPrompt}
+                className="btn btn--style-secondary btn--size-small"
+                style={{ margin: 0, whiteSpace: 'nowrap' }}
+              >
+                Copy AI prompt
+              </button>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>
-                  Page Title *
-                </label>
+                <label style={labelStyle}>Page Title *</label>
                 <input
                   type="text"
                   placeholder="e.g. Medical Billing & Claims Recovery"
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   disabled={isLoading}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid var(--theme-elevation-200, #3f3f46)',
-                    background: 'var(--theme-input-bg, #09090b)',
-                    color: 'inherit',
-                    fontSize: '0.9rem',
-                  }}
+                  style={inputStyle}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>
-                  Slug *
-                </label>
+                <label style={labelStyle}>Slug *</label>
                 <input
                   type="text"
                   placeholder="e.g. advanced-medical-billing"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   disabled={isLoading}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid var(--theme-elevation-200, #3f3f46)',
-                    background: 'var(--theme-input-bg, #09090b)',
-                    color: 'inherit',
-                    fontSize: '0.9rem',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>
-                  Target Folder Path
-                </label>
-                <input
-                  type="text"
-                  value={targetFolder}
-                  onChange={(e) => setTargetFolder(e.target.value)}
-                  disabled={isLoading}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid var(--theme-elevation-200, #3f3f46)',
-                    background: 'var(--theme-input-bg, #09090b)',
-                    color: 'inherit',
-                    fontSize: '0.9rem',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>
-                  Or Upload .json file
-                </label>
-                <input
-                  type="file"
-                  accept=".json,application/json"
-                  onChange={handleFileUpload}
-                  disabled={isLoading}
-                  style={{
-                    width: '100%',
-                    padding: '6px 0',
-                    fontSize: '0.85rem',
-                    color: 'inherit',
-                  }}
+                  style={inputStyle}
                 />
               </div>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>
-                JSON Payload (Array of blocks or &#123; blocks: [...] &#125;)
+              <label style={labelStyle}>Or upload a .json file</label>
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={handleFileUpload}
+                disabled={isLoading}
+                style={{ width: '100%', padding: '6px 0', fontSize: '0.85rem', color: 'inherit' }}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>
+                JSON (&#123; title, slug, seo, blocks: [...] &#125; or an array of blocks)
               </label>
               <textarea
                 rows={10}
-                placeholder='[&#10;  {&#10;    "component": "cobPgHeroRight",&#10;    "title": "Medical Billing",&#10;    "image": "https://..."&#10;  }&#10;]'
+                placeholder='{&#10;  "title": "...",&#10;  "slug": "...",&#10;  "blocks": [ { "component": "...", ... } ]&#10;}'
                 value={jsonText}
-                onChange={(e) => setJsonText(e.target.value)}
+                onChange={(e) => handleJsonChange(e.target.value)}
                 disabled={isLoading}
                 style={{
-                  width: '100%',
+                  ...inputStyle,
                   fontFamily: 'monospace',
                   fontSize: '0.82rem',
                   padding: '10px 12px',
-                  borderRadius: '6px',
-                  border: '1px solid var(--theme-elevation-200, #3f3f46)',
-                  background: 'var(--theme-input-bg, #09090b)',
-                  color: 'inherit',
                   resize: 'vertical',
                 }}
               />
