@@ -142,6 +142,7 @@ ${forApi ? '  "folder": "' + tenantSlug + '/' + folderSlug + '",\n' : ''}  "titl
 
 ## Rules
 
+- The "slug" is made from the page title: lowercase, words joined with dashes, no other punctuation (e.g. "Pelvic Floor Therapy" becomes "pelvic-floor-therapy"). Use the slug the user gives you if there is one. The slug must match the page's cms_slug in its dashboard.
 - Every item in "blocks" has "component" set to one of the component names below, plus that component's fields. Use only the field names listed. Do not add "id" or any other keys.
 - Fields marked (required) must be filled. Leave out optional fields you have no content for; never invent filler, statistics, testimonials or quotes the content doesn't contain.
 - "text, one line" fields take a short single line. "plain text" fields take plain text without HTML or markdown.
