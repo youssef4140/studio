@@ -43,10 +43,10 @@ Set once in your shell: \`KEY='${key}'\` and \`API='${base}'\`.
 1. **Read the guide for the folder first**, every time${only ? '' : ' (use the folder the page belongs in)'}. It lists the exact components and fields, and what kind of page that folder holds (e.g. program vs service) and how it should read:
    \`curl -s -H "Authorization: Bearer $KEY" "$API/guide?folder=${example}"\`
 2. **Write the page JSON to a file** (e.g. \`page.json\`), then send it with \`--data @page.json\`. Don't paste JSON inline in the shell; quotes and apostrophes break it.
-3. **Dry run first.** It checks everything and writes nothing. Fix every error it lists, and **look at \`unfilled\`**: it names the optional fields you left empty in each component. Fill every one the content can support (eyebrows, subtitles, button text, images, stats, list items) and dry-run again; leave a field out only when the content has nothing for it. Then send it for real:
+3. **Dry run first.** It checks everything and writes nothing. Fix every error it lists, and **look at \`unfilled\`**: it names the optional text fields you left empty in each component. Fill every one the content can support (eyebrows, subtitles, button text, stats, list items) and dry-run again; leave a field out only when the content has nothing for it. **Don't fill image fields** unless the user gave you a real image for that spot. Then send it for real:
    \`curl -s -X POST -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" --data @page.json "$API/pages"\`
    (add \`"dryRun": true\` to the JSON for the check). A real call publishes the page right away unless the JSON has \`"publish": false\` (saves a draft). An existing page with the same slug in that folder is replaced.
-4. **Tell the user** the result: the page link (\`adminUrl\`), whether it was created or updated, any \`warnings\`, and **the slug you used, with this reminder: the slug must match the \`cms_slug\` of this page in its dashboard.** Always include both, every time you create a page.
+4. **Tell the user** the result: the page link (\`adminUrl\`), whether it was created or updated, any \`warnings\`, and **the slug you used, with this reminder: the slug must match the \`cms_slug\` of this page in its dashboard.** Also give them the **images they need to add**, from \`imagesNeeded\` in the response, in plain words by section, e.g. "Hero: an image goes on the right", "Why choose us: an icon for each of the 4 cards". Always include all of this, every time you create a page.
 
 ## The page JSON
 
@@ -64,7 +64,7 @@ Set once in your shell: \`KEY='${key}'\` and \`API='${base}'\`.
 
 The slug is **always made from the page title**: lowercase, words joined with dashes, no other punctuation, e.g. "Pelvic Floor Therapy" becomes \`pelvic-floor-therapy\`. Don't shorten it or invent a different one, unless the user gives you the slug (then use theirs exactly). The user must set the same value as the \`cms_slug\` of this page in its dashboard, otherwise the page won't be found, so give them the slug and tell them to check it matches (see step 4). The same slug in the same folder replaces the existing page.
 
-Use only the components and fields in the guide. Fill every field the content supports, optional ones included: don't skip a field because it is optional. Never invent facts, statistics, testimonials or images: leave a field out only when the content truly has nothing for it.
+Use only the components and fields in the guide. Fill every text field the content supports, optional ones included: don't skip a field because it is optional. Never invent facts, statistics, testimonials or images: leave a field out only when the content truly has nothing for it. Image fields stay empty unless the user gave you a real image; you tell them where images belong instead.
 
 ## Changing an existing page
 

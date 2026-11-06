@@ -32,6 +32,8 @@ interface Issues {
   warnings: string[]
   /** Optional fields left empty, as paths like `blocks[0].eyebrow` (grouped for the response). */
   unfilled: string[]
+  /** Image fields left empty, as paths; reported separately so the AI can tell the user where images belong. */
+  imageSlots: string[]
 }
 
 interface Ctx {
@@ -327,7 +329,9 @@ async function normalizeFields(
     const at = `${where}${field.name}`
 
     if (isEmpty(value) && !(field.type === 'array' && Array.isArray(value))) {
-      if (!partial && 'required' in field && field.required && field.type !== 'upload') {
+      if (field.type === 'upload') {
+        if (!partial) ctx.issues.imageSlots.push(at)
+      } else if (!partial && 'required' in field && field.required) {
         ctx.issues.errors.push(`${at} is required`)
       } else if (!partial && !META_KEYS.has(field.name) && !hasDefault(ctx.tenantSlug, field)) {
         ctx.issues.unfilled.push(at)
@@ -416,7 +420,7 @@ const hasDefault = (tenantSlug: string, field: Field) =>
  * `blocks[0].eyebrow`, `blocks[0].items[1].text`... as one line per block:
  * `blocks[0] (ptocPgHeroRight): eyebrow, subtitle, image`. What a dry run hands
  * back so the AI sees the optional fields it left empty and can fill the ones
- * the content supports.
+ * the content supports (and, for images, tell the user where they belong).
  */
 function summarizeUnfilled(paths: string[], blockTypes: string[]): string[] {
   const byBlock = new Map<string, string[]>()
@@ -511,7 +515,7 @@ const newCtx = (
   folderId: folder.id,
   tenantSlug: folder.tenantSlug,
   dryRun,
-  issues: { errors: [], warnings: [], unfilled: [] },
+  issues: { errors: [], warnings: [], unfilled: [], imageSlots: [] },
 })
 
 const seoData = (seo: unknown) =>
@@ -567,8 +571,10 @@ export interface SaveResult {
   adminUrl?: string
   errors: string[]
   warnings: string[]
-  /** Optional fields left empty, per block. Fill the ones the content has something for. */
+  /** Optional text fields left empty, per block. Fill the ones the content has something for. */
   unfilled?: string[]
+  /** Image fields left empty, per block. Not to be filled; tell the user an image belongs there. */
+  imagesNeeded?: string[]
 }
 
 async function save(
@@ -631,13 +637,12 @@ export async function upsertPage(
 
   const layout = await buildLayout(input.blocks, ctx)
   const { errors, warnings } = ctx.issues
-  const unfilled = summarizeUnfilled(
-    ctx.issues.unfilled,
-    (Array.isArray(input.blocks) ? input.blocks : []).map((raw) =>
-      isObject(raw) ? (COMPONENT_NAME_MAP[String(raw.component)] ?? String(raw.component)) : '',
-    ),
+  const blockTypes = (Array.isArray(input.blocks) ? input.blocks : []).map((raw) =>
+    isObject(raw) ? (COMPONENT_NAME_MAP[String(raw.component)] ?? String(raw.component)) : '',
   )
-  const base = { dryRun, folderPath: folder.path, errors, warnings, unfilled, slug }
+  const unfilled = summarizeUnfilled(ctx.issues.unfilled, blockTypes)
+  const imagesNeeded = summarizeUnfilled(ctx.issues.imageSlots, blockTypes)
+  const base = { dryRun, folderPath: folder.path, errors, warnings, unfilled, imagesNeeded, slug }
 
   if (ctx.issues.errors.length > 0) return { ok: false, ...base }
 

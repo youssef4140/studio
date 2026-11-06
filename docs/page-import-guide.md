@@ -23,7 +23,9 @@ Give your AI (ChatGPT or Claude) a short setup file once. After that you hand it
 2. The AI does the work and replies with a link to the page, plus the **slug** it used.
 3. Open the link and check the page. To fix something, just ask the AI.
 
-The AI is told to fill in every field it can from your content (not only the required ones). If a section looks bare, tell it which part is missing and what should go there.
+The AI fills in every text field it can from your content, not only the required ones. If a section looks bare, tell it which part is missing and what should go there.
+
+**Images:** the AI doesn't add images unless you give it one. Instead it lists where images belong, e.g. "Hero: an image on the right". Add them yourself in the admin, or send the AI the image (a file or a link) and ask it to put it there.
 
 Pages are **published straight away**. If you'd rather review first, say "save it as a draft".
 
