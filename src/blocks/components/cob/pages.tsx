@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { resolveImage } from '@/render/media'
 import type { PageBlock } from '@/render/types'
 
 import { Button, Media } from './parts'
@@ -113,6 +114,28 @@ function SectionHead({
   )
 }
 
+
+/**
+ * A feature's icon. With none uploaded, the same box holds a check mark, so a
+ * feature without an icon still reads as a deliberate list item, not an empty box.
+ */
+function FeatureIcon({ image }: { image: Parameters<typeof resolveImage>[0] }): React.ReactElement {
+  if (resolveImage(image)) return <Media image={image} className="cob-pg-feature-icon" />
+  return (
+    <div className="cob-pg-feature-icon cob-pg-feature-icon--fallback" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M5 12.5l4.5 4.5L19 7.5"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  )
+}
+
 function Features({ block }: { block: FeaturesBlock }): React.ReactElement {
   if (block.blockType === 'cobPgFeat3') {
     return (
@@ -148,7 +171,7 @@ function Features({ block }: { block: FeaturesBlock }): React.ReactElement {
             {(block.items ?? []).map((item, index) => (
               <div className="cob-pg-feature-row" key={item.id ?? index}>
                 <div className="cob-pg-feature-icon-wrapper">
-                  <Media image={item.icon} className="cob-pg-feature-icon" />
+                  <FeatureIcon image={item.icon} />
                 </div>
                 <div className="cob-pg-feature-row__body">
                   <h3 className="cob-pg-feature-card__title">{item.title}</h3>
@@ -173,7 +196,7 @@ function Features({ block }: { block: FeaturesBlock }): React.ReactElement {
           {(block.items ?? []).map((item, index) => (
             <div className="cob-pg-feature-card" key={item.id ?? index}>
               <div className="cob-pg-feature-icon-wrapper">
-                <Media image={item.icon} className="cob-pg-feature-icon" />
+                <FeatureIcon image={item.icon} />
               </div>
               <h3 className="cob-pg-feature-card__title">{item.title}</h3>
               {item.text ? (

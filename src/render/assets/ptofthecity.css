@@ -1373,6 +1373,13 @@
   block-size: 48px;
   border-radius: 8px;
 }
+/* A feature with no icon uploaded shows a check mark in the same tile. */
+.ptoc-pg-icon--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ptoc-primary-400);
+}
 .ptoc-pg-avatar {
   flex: none;
   inline-size: 40px;

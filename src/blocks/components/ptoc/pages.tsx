@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { resolveImage } from '@/render/media'
 import type { PageBlock } from '@/render/types'
 
 import { Background, Button, Media } from './parts'
@@ -140,6 +141,27 @@ const FEATURES_VARIANT = {
   ptocPgFeatList: 'list',
 } as const
 
+/**
+ * A feature's icon. With none uploaded, the same tile holds a check mark, so a
+ * feature without an icon still reads as a deliberate list item, not an empty box.
+ */
+function FeatureIcon({ image }: { image: Parameters<typeof resolveImage>[0] }): React.ReactElement {
+  if (resolveImage(image)) return <Media image={image} className="ptoc-pg-icon" />
+  return (
+    <div className="ptoc-media ptoc-pg-icon ptoc-pg-icon--fallback" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M5 12.5l4.5 4.5L19 7.5"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  )
+}
+
 function Features({ block }: { block: FeaturesBlock }): React.ReactElement {
   return (
     <div
@@ -150,7 +172,7 @@ function Features({ block }: { block: FeaturesBlock }): React.ReactElement {
         <ul className="ptoc-pg-features__items">
           {(block.items ?? []).map((item, index) => (
             <li className="ptoc-pg-feature" key={item.id ?? index}>
-              <Media image={item.icon} className="ptoc-pg-icon" />
+              <FeatureIcon image={item.icon} />
               <div className="ptoc-pg-feature__body">
                 <h3 className="ptoc-pg-feature__title">{item.title}</h3>
                 {item.text ? <p className="ptoc-pg-feature__text">{item.text}</p> : null}

@@ -31,7 +31,7 @@ Pages are **published straight away**. If you'd rather review first, say "save i
 
 ## 3. The slug (important)
 
-- The slug is made from the page **title**: lowercase, words joined by dashes. "Pelvic Floor Therapy" → `pelvic-floor-therapy`.
+- The slug is the **name of the page** from its title, without the location: lowercase, words joined by dashes. "Pelvic Floor Therapy" → `pelvic-floor-therapy`; "Orthopedic Rehabilitation in NYC" → `orthopedic-rehabilitation`; "Lymphedema Treatment" → `lymphedema-treatment`. The title itself keeps "in NYC".
 - The AI will tell you the slug after it creates a page. **That slug must match the `cms_slug` of the page in its dashboard.** If it doesn't, the page won't be found on the site. Check it every time.
 - Want a different slug? Tell the AI up front and it will use yours exactly.
 - Using the same slug in the same folder again **replaces** that page's content.
