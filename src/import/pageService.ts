@@ -30,6 +30,8 @@ export class ImportError extends Error {
 interface Issues {
   errors: string[]
   warnings: string[]
+  /** Optional fields left empty, as paths like `blocks[0].eyebrow` (grouped for the response). */
+  unfilled: string[]
 }
 
 interface Ctx {
@@ -327,6 +329,8 @@ async function normalizeFields(
     if (isEmpty(value) && !(field.type === 'array' && Array.isArray(value))) {
       if (!partial && 'required' in field && field.required && field.type !== 'upload') {
         ctx.issues.errors.push(`${at} is required`)
+      } else if (!partial && !META_KEYS.has(field.name) && !hasDefault(ctx.tenantSlug, field)) {
+        ctx.issues.unfilled.push(at)
       }
       continue
     }
@@ -399,6 +403,36 @@ async function normalizeFields(
     }
   }
   return out
+}
+
+/** A button group the tenant's defaults fill in, so leaving it out is not a gap. */
+const hasDefault = (tenantSlug: string, field: Field) =>
+  field.type === 'group' &&
+  'name' in field &&
+  ['primaryButton', 'secondaryButton', 'button'].includes(field.name) &&
+  Boolean(BUTTON_DEFAULTS[tenantSlug])
+
+/**
+ * `blocks[0].eyebrow`, `blocks[0].items[1].text`... as one line per block:
+ * `blocks[0] (ptocPgHeroRight): eyebrow, subtitle, image`. What a dry run hands
+ * back so the AI sees the optional fields it left empty and can fill the ones
+ * the content supports.
+ */
+function summarizeUnfilled(paths: string[], blockTypes: string[]): string[] {
+  const byBlock = new Map<string, string[]>()
+  for (const full of paths) {
+    const match = /^(blocks\[(\d+)\])\.(.+)$/.exec(full)
+    if (!match) continue
+    const list = byBlock.get(match[1]) ?? []
+    // Rows repeat the same fields; name each field once, as `items.text`.
+    const field = match[3].replace(/\[\d+\]/g, '')
+    if (!list.includes(field)) list.push(field)
+    byBlock.set(match[1], list)
+  }
+  return [...byBlock.entries()].map(([block, fields]) => {
+    const type = blockTypes[Number(/\d+/.exec(block)?.[0])]
+    return `${block}${type ? ` (${type})` : ''}: ${fields.join(', ')}`
+  })
 }
 
 function withDefaultButtons(
@@ -477,7 +511,7 @@ const newCtx = (
   folderId: folder.id,
   tenantSlug: folder.tenantSlug,
   dryRun,
-  issues: { errors: [], warnings: [] },
+  issues: { errors: [], warnings: [], unfilled: [] },
 })
 
 const seoData = (seo: unknown) =>
@@ -533,6 +567,8 @@ export interface SaveResult {
   adminUrl?: string
   errors: string[]
   warnings: string[]
+  /** Optional fields left empty, per block. Fill the ones the content has something for. */
+  unfilled?: string[]
 }
 
 async function save(
@@ -594,7 +630,14 @@ export async function upsertPage(
   }
 
   const layout = await buildLayout(input.blocks, ctx)
-  const base = { dryRun, folderPath: folder.path, ...ctx.issues, slug }
+  const { errors, warnings } = ctx.issues
+  const unfilled = summarizeUnfilled(
+    ctx.issues.unfilled,
+    (Array.isArray(input.blocks) ? input.blocks : []).map((raw) =>
+      isObject(raw) ? (COMPONENT_NAME_MAP[String(raw.component)] ?? String(raw.component)) : '',
+    ),
+  )
+  const base = { dryRun, folderPath: folder.path, errors, warnings, unfilled, slug }
 
   if (ctx.issues.errors.length > 0) return { ok: false, ...base }
 
@@ -857,7 +900,13 @@ export async function patchPage(
   }
   if (layout.length === 0) ctx.issues.errors.push('a page needs at least one block')
 
-  const base = { dryRun, folderPath: folder.path, slug: page.slug, ...ctx.issues }
+  const base = {
+    dryRun,
+    folderPath: folder.path,
+    slug: page.slug,
+    errors: ctx.issues.errors,
+    warnings: ctx.issues.warnings,
+  }
   if (ctx.issues.errors.length > 0) return { ok: false, ...base }
   if (dryRun) return { ok: true, ...base, updated: true, blocksCount: layout.length }
 

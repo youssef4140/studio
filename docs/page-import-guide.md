@@ -23,6 +23,8 @@ Give your AI (ChatGPT or Claude) a short setup file once. After that you hand it
 2. The AI does the work and replies with a link to the page, plus the **slug** it used.
 3. Open the link and check the page. To fix something, just ask the AI.
 
+The AI is told to fill in every field it can from your content (not only the required ones). If a section looks bare, tell it which part is missing and what should go there.
+
 Pages are **published straight away**. If you'd rather review first, say "save it as a draft".
 
 ## 3. The slug (important)
