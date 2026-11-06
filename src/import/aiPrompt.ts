@@ -125,7 +125,9 @@ export function buildAiPrompt({
 
   const intro = forApi
     ? `You are building a page for ${tenantName} (${folderName}) in a headless CMS. Turn the content you are given into the JSON below, using only the components listed, and send it to the API as your setup file describes. The JSON is the request body: there is no need to show it to the user.`
-    : `You are building a page for ${tenantName} (${folderName}) in a headless CMS. Convert the content I give you into the JSON below, using only the components listed. Reply with the JSON object only: no commentary, no markdown fences.`
+    : `You are building a page for ${tenantName} (${folderName}) in a headless CMS. Convert the content I give you into the JSON below, using only the components listed.
+
+**Your whole reply must be exactly one \`\`\`json code block containing the JSON object, and nothing else**: no text before or after it, no explanation, no notes, no questions. A code block keeps the JSON exactly as written when it is copied. The "title" and "slug" in the JSON are read automatically.`
 
   return `${intro}
 
@@ -142,10 +144,10 @@ ${forApi ? '  "folder": "' + tenantSlug + '/' + folderSlug + '",\n' : ''}  "titl
 
 ## Rules
 
-- The "slug" is made from the page title: lowercase, words joined with dashes, no other punctuation (e.g. "Pelvic Floor Therapy" becomes "pelvic-floor-therapy"). Use the slug the user gives you if there is one. The slug must match the page's cms_slug in its dashboard.
+- The "slug" is made from the page title: lowercase, words joined with dashes, no other punctuation (e.g. "Pelvic Floor Therapy" becomes "pelvic-floor-therapy"). Use the slug the user gives you if there is one.${forApi ? " The slug must match the page's cms_slug in its dashboard." : ''}
 - Every item in "blocks" has "component" set to one of the component names below, plus that component's fields. Use only the field names listed. Do not add "id" or any other keys.
 - Fields marked (required) must be filled. **Fill the optional text fields too**: for every component, go through its field list and fill each text field the content can support (eyebrow, subtitle, button text, stats, list items, and so on). A component with empty optional fields looks unfinished. Leave a field out only when the content truly has nothing for it, and never invent filler, statistics, testimonials or quotes the content doesn't contain.${forApi ? ' The dry run lists the optional fields you left empty (`unfilled`): fill the ones the content covers, then check again.' : ''}
-- **Images are the exception: leave image fields empty** unless the user gave you a real image for that spot. But always tell the user where an image belongs (which component and which field) so they can add it${forApi ? ': the response lists these under `imagesNeeded`' : ''}.
+- **Images are the exception: leave image fields empty** unless you were given a real image for that spot.${forApi ? ' But always tell the user where an image belongs (which component and which field) so they can add it: the response lists these under `imagesNeeded`.' : ' Do not mention images or add any note about them: the reply is the JSON only.'}
 - "text, one line" fields take a short single line. "plain text" fields take plain text without HTML or markdown.
 - "rich text" fields take a string: separate paragraphs with a blank line, start a line with "## " or "### " for a heading, and with "- " for a bullet point.
 - "image URL" fields take a full image URL (https://...) taken from the content${forApi ? ', or the media id returned by an upload to the API' : ''}. If there is no real image, leave the field out; never make one up.

@@ -17,12 +17,33 @@ const toSlug = (value: string) =>
  * valid paste (a real `\n` escape is a backslash followed by "n", not a line break).
  */
 export function cleanPastedJson(text: string): string {
-  return text
+  const cleaned = text
     .replace(/&#x0*20;|&#0*32;|&nbsp;|\u00a0/gi, ' ')
     .replace(/\\[ \t]*\r?\n/g, '\n')
     .replace(/^\s*```(?:json)?\s*\n/i, '')
     .replace(/\n\s*```\s*$/, '')
     .trim()
+  // An AI that adds a sentence before or after the JSON: keep from the first
+  // "{" to the last "}" (an array of blocks, "[", is left as it is).
+  if (cleaned && !/^[{[]/.test(cleaned)) {
+    const start = cleaned.indexOf('{')
+    const end = cleaned.lastIndexOf('}')
+    if (start >= 0 && end > start) return cleaned.slice(start, end + 1)
+  }
+  return cleaned
+}
+
+/** What the pasted text is, for the line under the box. */
+function describeJson(text: string): { ok: boolean; message: string } | null {
+  if (!text.trim()) return null
+  try {
+    const parsed = JSON.parse(text)
+    const blocks = Array.isArray(parsed) ? parsed : parsed?.blocks
+    if (!Array.isArray(blocks)) return { ok: false, message: 'Valid JSON, but it has no "blocks" list.' }
+    return { ok: true, message: `Valid JSON: ${blocks.length} component${blocks.length === 1 ? '' : 's'}.` }
+  } catch (e) {
+    return { ok: false, message: `Not valid JSON yet: ${e instanceof Error ? e.message : String(e)}` }
+  }
 }
 
 /** navigator.clipboard needs a secure context; fall back to execCommand on plain http. */
@@ -359,6 +380,14 @@ export const ImportPageModalClient: React.FC<{
                   resize: 'vertical',
                 }}
               />
+              {(() => {
+                const status = describeJson(jsonText)
+                return status ? (
+                  <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: status.ok ? 'var(--theme-success-500, #22c55e)' : 'var(--theme-error-500, #ef4444)' }}>
+                    {status.message}
+                  </p>
+                ) : null
+              })()}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
