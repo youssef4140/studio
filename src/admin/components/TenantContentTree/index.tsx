@@ -45,9 +45,9 @@ const BUCKETS = [
 /**
  * A tenant's own `pages`/`articles` join fields are always empty (docs live
  * in a SUBFOLDER, never directly in the tenant root — see folderScopeFields).
- * This fetches one level down instead: each subfolder (services, programs,
+ * This fetches one level down instead: each subfolder (services, conditions,
  * ...) plus what it holds, grouped by content type — "under Pages, the
- * subfolders (services, programs, ...), and under each, its pages."
+ * subfolders (services, conditions, ...), and under each, its pages."
  */
 export const TenantContentTree: React.FC = () => {
   const { id } = useDocumentInfo()

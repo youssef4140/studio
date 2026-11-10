@@ -2955,9 +2955,7 @@ export interface ImportKey {
   /**
    * The only folders this key can create, edit or read pages in.
    */
-  folders: (
-    'ptofthecity/programs' | 'ptofthecity/conditions' | 'ptofthecity/services' | 'tny/services' | 'cob/services'
-  )[];
+  folders: ('ptofthecity/conditions' | 'ptofthecity/services' | 'tny/services' | 'cob/services')[];
   /**
    * The tenant those folders belong to.
    */

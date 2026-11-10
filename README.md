@@ -163,7 +163,7 @@ This command runs Postgres, Redis, MinIO (standing in for R2), migrations, the a
 
 Tenants and their subfolders are **defined in code**, in [src/tenants.ts](src/tenants.ts) — nobody can create, rename or delete them in the admin or over the API, not even a superadmin. To add or change one, edit that file and restart; on boot the list is mirrored into a read-only `Folders` collection so Pages, Articles and Media can be filed under a folder. The sync only adds and renames; a folder removed from the file stays in the database (and is logged) so nothing filed under it is orphaned.
 
-A **tenant is a root folder** (`ptofthecity`, `tny`); **subfolders** (`services`, `programs`, `articles`, ...) organize Pages and Articles underneath it. A folder's `path` (e.g. `ptofthecity/services`) is the *render/storage address* — not a real public URL, since Studio has no frontend of its own; each consumer app decides its own real routing and just fetches content by this address.
+A **tenant is a root folder** (`ptofthecity`, `tny`); **subfolders** (`services`, `conditions`, `articles`, ...) organize Pages and Articles underneath it. A folder's `path` (e.g. `ptofthecity/services`) is the *render/storage address* — not a real public URL, since Studio has no frontend of its own; each consumer app decides its own real routing and just fetches content by this address.
 
 Pages and Articles always live inside a subfolder, never directly in a tenant root, and their slugs are unique **within their folder**, not globally — `ptofthecity/services` and `tny/services` can both exist.
 

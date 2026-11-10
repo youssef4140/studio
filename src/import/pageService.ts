@@ -91,7 +91,7 @@ export interface KeyScope {
 }
 
 /**
- * The page folder for `folderPath` (e.g. "ptofthecity/programs"). With a
+ * The page folder for `folderPath` (e.g. "ptofthecity/services"). With a
  * `scope` (a key's), any other folder is refused.
  */
 export async function resolveFolder(

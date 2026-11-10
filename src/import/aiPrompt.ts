@@ -65,24 +65,10 @@ function describeBlock(block: Block): string {
 /**
  * What kind of page each folder holds and how its content should read, for the
  * folders whose pages differ in character. Keyed by folder path. Written from
- * the Figma pages "Pelvic Floor Therapy" (a program) and "Sports Rehabilitation"
- * (a service) in PTOC-2026; a folder with no entry gets no section.
+ * the Figma page "Sports Rehabilitation" (a service) in PTOC-2026; a folder
+ * with no entry gets no section.
  */
 const FOLDER_GUIDES: Record<string, string> = {
-  'ptofthecity/programs': `## What this page is: a PROGRAM page
-
-A program is a branded, multi-week care offering, sold as a journey with a named approach. Write it like a landing page: promotional, benefit-led and warm, in short punchy copy, with outcomes and a clear invitation to start. Avoid clinical lecture; one idea per sentence.
-
-How it is built, in this order (drop a section only when the content has nothing for it):
-1. Hero: \`ptocPgHeroRight\` or \`ptocPgHeroLeft\`. The eyebrow is the program label (e.g. "Specialized Medical Program"), the title is the program name, the subtitle is one or two sentences of promise, and one primary button invites the visitor to begin.
-2. "Why choose us": \`ptocPgFeat4\`, four cards that each name a strength (e.g. Personalized Plans, Expert Therapists, Progress Tracking, Holistic Approach), each with a one-sentence explanation.
-3. The approach: \`ptocPgAboutRight\` or \`ptocPgAboutLeft\`: a heading that states the philosophy, a paragraph, and 2 stats ONLY if the content states real figures (e.g. "94%" / "Success Rate").
-4. Program structure: \`ptocPgInfoSteps\` for the stages or phases of the program, or \`ptocPgProgLight\` / \`ptocPgProgDark\` when it is a feature checklist.
-5. Patient stories: \`ptocPgTesti3\` ONLY if the content includes real testimonials.
-6. Closing call to action: \`ptocPgCtaDark\` with two buttons (the importer fills the booking and insurance buttons when you leave them out).
-
-Do not build a clinic finder or locations list, an "Other services" list, or any header, footer or navigation: the CMS has no components for them, so leave that content out.`,
-
   'ptofthecity/services': `## What this page is: a SERVICE page
 
 A service is a single type of treatment someone searches for (e.g. "Sports Rehabilitation in NYC"). Write it as an informational, plain-spoken page for people deciding whether this service is for them, and for search engines: name the service and "NYC" naturally in the hero and headings, explain what the treatment is, who it helps and what happens, and keep the tone reassuring and practical. No hype, no program branding, no stats or testimonials unless the content contains them.

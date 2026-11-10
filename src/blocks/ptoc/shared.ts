@@ -36,7 +36,7 @@ const PAGE_HINTS: Record<string, string> = {
 }
 
 /**
- * ptofthecity's page blocks (Programs, Conditions, Services), built from the
+ * ptofthecity's page blocks (Conditions, Services), built from the
  * "PTOC programs and services" section of the same Figma file. Their slugs
  * start `ptocPg` to stay clear of the article set's.
  */

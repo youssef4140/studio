@@ -8,7 +8,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 const DAY_MS = 24 * 60 * 60 * 1000
 const MAX_DAYS = 365
 
-/** "PT of the City / Programs" for a page folder path, for the admin and the guide. */
+/** "PT of the City / Services" for a page folder path, for the admin and the guide. */
 const folderLabel = (path: string) => {
   const [tenantSlug, subSlug] = path.split('/')
   const tenant = getTenant(tenantSlug)

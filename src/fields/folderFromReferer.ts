@@ -6,9 +6,9 @@ import { adminRefererSegments } from './adminReferer'
 
 /**
  * Default folder for a new document, taken from the admin page the user came
- * from: "Create New" on /admin/ptofthecity/programs (or on its templates list,
- * /admin/ptofthecity/programs/templates) should start a page that is already
- * filed under Programs. Media created from /admin/<tenant>/media defaults to
+ * from: "Create New" on /admin/ptofthecity/services (or on its templates list,
+ * /admin/ptofthecity/services/templates) should start a page that is already
+ * filed under Services. Media created from /admin/<tenant>/media defaults to
  * the tenant's root folder. Anything else gets no default.
  */
 export async function folderFromReferer(

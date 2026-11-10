@@ -1273,7 +1273,7 @@
 
 /* ==========================================================================
  * Page blocks — the "PTOC programs and services" section of the same Figma
- * file: the sections Programs, Conditions and Services pages are built from
+ * file: the sections Conditions and Services pages are built from
  * (configs in src/blocks/ptoc/pages.ts, markup in
  * src/blocks/components/ptoc/pages.tsx). Every class is `ptoc-pg-*`.
  *

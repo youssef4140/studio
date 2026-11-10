@@ -327,7 +327,7 @@ const relatedArticles: Block[] = [
 ]
 
 /**
- * The prose blocks on their own: ptofthecity's Pages (Programs, Conditions,
+ * The prose blocks on their own: ptofthecity's Pages (Conditions,
  * Services) offer them too, next to the page sections in ./pages.ts.
  */
 export const PTOC_TEXT_EDITOR_BLOCKS: Block[] = textEditor

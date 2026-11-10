@@ -21,6 +21,7 @@ import * as migration_20261019_181253_restore_cloudinary_folder from './20261019
 import * as migration_20261028_181615_add_tny_service_blocks from './20261028_181615_add_tny_service_blocks';
 import * as migration_20261028_183143_add_is_template from './20261028_183143_add_is_template';
 import * as migration_20261105_190951_import_keys from './20261105_190951_import_keys';
+import * as migration_20261110_174356_remove_programs_folder from './20261110_174356_remove_programs_folder';
 
 export const migrations = [
   {
@@ -136,6 +137,11 @@ export const migrations = [
   {
     up: migration_20261105_190951_import_keys.up,
     down: migration_20261105_190951_import_keys.down,
-    name: '20261105_190951_import_keys'
+    name: '20261105_190951_import_keys',
+  },
+  {
+    up: migration_20261110_174356_remove_programs_folder.up,
+    down: migration_20261110_174356_remove_programs_folder.down,
+    name: '20261110_174356_remove_programs_folder'
   },
 ];

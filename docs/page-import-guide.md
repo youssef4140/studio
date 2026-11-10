@@ -8,7 +8,7 @@ Give your AI (ChatGPT or Claude) a short setup file once. After that you hand it
 2. Click **New key and guide**.
 3. Fill in:
    - **Name**: who it's for, e.g. "PTOC programs team".
-   - **Tenant** and **Folders**: tick the folder(s) the team may publish to (e.g. *Programs*). The key works **only** in the folders you tick.
+   - **Tenant** and **Folders**: tick the folder(s) the team may publish to (e.g. *Services*). The key works **only** in the folders you tick.
    - **Expires after**: 90 days is the default.
    - **Can delete pages**: leave off unless the team really needs it.
 4. Click **Create key and guide**, then **Download .md** (or Copy). **You can't see the key again after closing**, so do this now.

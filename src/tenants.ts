@@ -58,7 +58,6 @@ export const TENANTS = [
     name: 'PT of the City',
     subfolders: [
       { slug: 'articles', name: 'Articles', contains: 'articles' },
-      { slug: 'programs', name: 'Programs', contains: 'pages' },
       { slug: 'conditions', name: 'Conditions', contains: 'pages' },
       { slug: 'services', name: 'Services', contains: 'pages' },
     ],

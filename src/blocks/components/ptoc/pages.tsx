@@ -7,7 +7,7 @@ import { Background, Button, Media } from './parts'
 
 /**
  * ptofthecity's page blocks (configs in src/blocks/ptoc/pages.ts): the sections
- * its Programs, Conditions and Services pages are built from. One component per
+ * its Conditions and Services pages are built from. One component per
  * Figma component, switching on the variant's slug. Inner content only — the
  * shared <Block> wrapper owns the outer <section>. All styling is in
  * src/render/assets/ptofthecity.css under `ptoc-pg-*`; nothing here is
