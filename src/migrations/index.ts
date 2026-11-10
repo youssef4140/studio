@@ -22,6 +22,7 @@ import * as migration_20261028_181615_add_tny_service_blocks from './20261028_18
 import * as migration_20261028_183143_add_is_template from './20261028_183143_add_is_template';
 import * as migration_20261105_190951_import_keys from './20261105_190951_import_keys';
 import * as migration_20261110_174356_remove_programs_folder from './20261110_174356_remove_programs_folder';
+import * as migration_20261110_190000_move_programs_to_services from './20261110_190000_move_programs_to_services';
 
 export const migrations = [
   {
@@ -142,6 +143,11 @@ export const migrations = [
   {
     up: migration_20261110_174356_remove_programs_folder.up,
     down: migration_20261110_174356_remove_programs_folder.down,
-    name: '20261110_174356_remove_programs_folder'
+    name: '20261110_174356_remove_programs_folder',
+  },
+  {
+    up: migration_20261110_190000_move_programs_to_services.up,
+    down: migration_20261110_190000_move_programs_to_services.down,
+    name: '20261110_190000_move_programs_to_services',
   },
 ];
