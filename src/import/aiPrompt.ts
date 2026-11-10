@@ -1,6 +1,6 @@
 import type { Block, Field } from 'payload'
 
-import { dataFields, importableBlocksFor } from './importableBlocks'
+import { dataFields, importableBlocksFor, type ImportContent } from './importableBlocks'
 
 const labelOf = (block: Block): string =>
   typeof block.labels?.singular === 'string' ? block.labels.singular : block.slug
@@ -86,6 +86,30 @@ Do not build a clinic finder or locations list, an "Other services" list, or any
 }
 
 /**
+ * The guide for a tenant's Articles folder. Both tenants' article sets have the
+ * same components under a different slug prefix (`ptoc`, `tny`), so one text
+ * serves both. Articles are long-form prose that already exists, so unlike a
+ * service page the job is to structure the author's text, not to write it.
+ */
+const articleGuide = (prefix: string) => `## What this document is: an ARTICLE
+
+An article is long-form writing (a blog or news-style piece) that someone chose to read from top to bottom. The text already exists: **keep the author's own words**. Do not summarise, shorten, reword, translate or add to it. Your job is to split it into components and put each part in the right field.
+
+How it is built, in this order (drop a part only when the content has nothing for it):
+1. Opening: exactly one hero, first. \`${prefix}HeroText\` (no image), \`${prefix}HeroSplit\` or \`${prefix}HeroSplitLeft\` (with an image) or \`${prefix}HeroImage\` (image behind the text). The title is the article's title and the subtitle is its standfirst or summary line if it has one. Fill the author, date and read time fields only with what the content states.
+2. Body: the "Text Editor" components carry the prose, as rich text. \`${prefix}BodySingle\` is the default for a run of text; \`${prefix}BodyLead\` when the opening paragraph is an intro that should read larger; \`${prefix}BodyCallout\` when the article states a key takeaway to set apart; \`${prefix}BodySidebar\` for a side note or editor's note; \`${prefix}BodyTwoCol\` only when the text is genuinely set in two columns; \`${prefix}BodyDropCap\` only when the content asks for a drop cap. Put each section's heading inside the rich text (\`## Heading\`) and keep a section's paragraphs together, rather than making one component per paragraph. Split into a new component where the article changes pace: an image, a quote, a list, or a new major part.
+3. Headings: the hero's title is the article's main heading, so in rich text use \`## \` for sections and \`### \` for sub-sections, never a single \`#\`. For a long article, a Section Header component (\`${prefix}HeaderMedium\` or \`${prefix}HeaderLabel\`) may open each major part instead.
+4. Breaks in the text, only where the content has them: Blockquote components for a quote with its attribution; Image Block components for a real image with its caption; List components (\`${prefix}ListBullets\`, \`${prefix}ListNumbered\`, \`${prefix}ListChecklist\`) for a list that stands on its own (rich text only does "- " bullets, so use a List component for a numbered one); a Divider only where the content has a clear break.
+5. Ending: an Author Card (\`${prefix}AuthorRow\` or \`${prefix}AuthorCard\`) if the content gives the author's name and bio; a Call to Action if the content ends with one; Related Articles (\`${prefix}RelGrid\` or \`${prefix}RelList\`) only if the content lists related articles with their titles. Never make up an author, a related article or a call to action.
+
+Do not build a header, footer, navigation, share buttons, comments or a newsletter form: the CMS has no components for them, so leave that content out.`
+
+const FOLDER_GUIDES_ARTICLES: Record<string, string> = {
+  'ptofthecity/articles': articleGuide('ptoc'),
+  'tny/articles': articleGuide('tny'),
+}
+
+/**
  * The text behind the import modal's "Copy AI prompt" button: how to turn a
  * page's content into the JSON that POST /api/pages/import accepts, listing the
  * blocks of this folder's tenant, built from their configs so it never drifts
@@ -97,6 +121,7 @@ export function buildAiPrompt({
   folderName,
   folderSlug,
   forApi = false,
+  content = 'pages',
 }: {
   tenantSlug: string
   tenantName: string
@@ -104,14 +129,18 @@ export function buildAiPrompt({
   folderSlug: string
   /** For an AI that calls the import API itself (GET /api/import/guide), not one pasting JSON. */
   forApi?: boolean
+  /** The kind of folder: its documents are pages or articles. */
+  content?: ImportContent
 }): string {
-  const blocks = importableBlocksFor(tenantSlug)
+  const articles = content === 'articles'
+  const noun = articles ? 'article' : 'page'
+  const blocks = importableBlocksFor(tenantSlug, content)
   const example = blocks[0]
-  const guide = FOLDER_GUIDES[`${tenantSlug}/${folderSlug}`]
+  const guide = (articles ? FOLDER_GUIDES_ARTICLES : FOLDER_GUIDES)[`${tenantSlug}/${folderSlug}`]
 
   const intro = forApi
-    ? `You are building a page for ${tenantName} (${folderName}) in a headless CMS. Turn the content you are given into the JSON below, using only the components listed, and send it to the API as your setup file describes. The JSON is the request body: there is no need to show it to the user.`
-    : `You are building a page for ${tenantName} (${folderName}) in a headless CMS. Convert the content I give you into the JSON below, using only the components listed.
+    ? `You are building ${articles ? 'an' : 'a'} ${noun} for ${tenantName} (${folderName}) in a headless CMS. Turn the content you are given into the JSON below, using only the components listed, and send it to the API as your setup file describes. The JSON is the request body: there is no need to show it to the user.`
+    : `You are building ${articles ? 'an' : 'a'} ${noun} for ${tenantName} (${folderName}) in a headless CMS. Convert the content I give you into the JSON below, using only the components listed.
 
 **Your whole reply must be exactly one \`\`\`json code block containing the JSON object, and nothing else**: no text before or after it, no explanation, no notes, no questions. A code block keeps the JSON exactly as written when it is copied. The "title" and "slug" in the JSON are read automatically.`
 
@@ -120,8 +149,8 @@ export function buildAiPrompt({
 ## Output shape
 
 {
-${forApi ? '  "folder": "' + tenantSlug + '/' + folderSlug + '",\n' : ''}  "title": "Page title",
-  "slug": "page-slug-lowercase-with-dashes",
+${forApi ? '  "folder": "' + tenantSlug + '/' + folderSlug + '",\n' : ''}  "title": "${articles ? 'Article' : 'Page'} title",
+  "slug": "${noun}-slug-lowercase-with-dashes",
   "seo": { "title": "SEO title, max 60 characters", "description": "Meta description, max 160 characters" },
   "blocks": [
     { "component": "${example?.slug ?? 'blockSlug'}", "...": "the component's fields" }
@@ -130,7 +159,7 @@ ${forApi ? '  "folder": "' + tenantSlug + '/' + folderSlug + '",\n' : ''}  "titl
 
 ## Rules
 
-- The "slug" is the **name of the page only**, made from the title with any location removed: lowercase, words joined with dashes, no other punctuation. Drop location phrases such as "in NYC", "in New York" and "near me" (e.g. "Orthopedic Rehabilitation in NYC" becomes "orthopedic-rehabilitation", "Sports Rehabilitation in NYC" becomes "sports-rehabilitation"). Keep every other word ("Lymphedema Treatment" becomes "lymphedema-treatment"). The title keeps its full wording; only the slug is shortened. Use the slug the user gives you if there is one.${forApi ? " The slug must match the page's cms_slug in its dashboard." : ''}
+${articles ? `- The "slug" is made from the title: lowercase, words joined with dashes, no other punctuation (e.g. "Five Ways to Prevent a Running Injury" becomes "five-ways-to-prevent-a-running-injury"). Use the slug the user gives you if there is one. The title keeps its full wording.` : `- The "slug" is the **name of the page only**, made from the title with any location removed: lowercase, words joined with dashes, no other punctuation. Drop location phrases such as "in NYC", "in New York" and "near me" (e.g. "Orthopedic Rehabilitation in NYC" becomes "orthopedic-rehabilitation", "Sports Rehabilitation in NYC" becomes "sports-rehabilitation"). Keep every other word ("Lymphedema Treatment" becomes "lymphedema-treatment"). The title keeps its full wording; only the slug is shortened. Use the slug the user gives you if there is one.${forApi ? " The slug must match the page's cms_slug in its dashboard." : ''}`}
 - Every item in "blocks" has "component" set to one of the component names below, plus that component's fields. Use only the field names listed. Do not add "id" or any other keys.
 - Fields marked (required) must be filled. **Fill the optional text fields too**: for every component, go through its field list and fill each text field the content can support (eyebrow, subtitle, button text, stats, list items, and so on). A component with empty optional fields looks unfinished. Leave a field out only when the content truly has nothing for it, and never invent filler, statistics, testimonials or quotes the content doesn't contain.${forApi ? ' The dry run lists the optional fields you left empty (`unfilled`): fill the ones the content covers, then check again.' : ''}
 - **Images are the exception: leave image fields empty** unless you were given a real image for that spot.${forApi ? ' But always tell the user where an image belongs (which component and which field) so they can add it: the response lists these under `imagesNeeded`. An icon left empty shows a check mark until one is added, so say that instead of calling the card broken.' : ' Do not mention images or add any note about them: the reply is the JSON only.'}
@@ -138,12 +167,12 @@ ${forApi ? '  "folder": "' + tenantSlug + '/' + folderSlug + '",\n' : ''}  "titl
 - "rich text" fields take a string: separate paragraphs with a blank line, start a line with "## " or "### " for a heading, and with "- " for a bullet point.
 - "image URL" fields take a full image URL (https://...) taken from the content${forApi ? ', or the media id returned by an upload to the API' : ''}. If there is no real image, leave the field out; never make one up.
 - "object" fields take a JSON object with the nested fields listed under them. "list of objects" fields take an array of such objects; match the number of items the component's name suggests (e.g. "4 Cards" means 4 items).
-- Pick the components that fit the content best, in the order the page should read, typically starting with a Hero and ending with a Call to Action. Each component can be used more than once.
+- Pick the components that fit the content best, in the order the ${noun} should read${articles ? '' : ', typically starting with a Hero and ending with a Call to Action'}. Each component can be used more than once.
 - The "e.g." values show the kind and length of text each field expects. Do not copy them; write from the content.
 
 ${guide ? `${guide}\n\n` : ''}## Components
 
 ${blocks.map(describeBlock).join('\n\n')}
 
-${forApi ? '' : '## Content\n\n(The page content follows.)\n\n'}`
+${forApi ? '' : `## Content\n\n(The ${noun} content follows.)\n\n`}`
 }

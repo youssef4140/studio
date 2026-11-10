@@ -6,7 +6,7 @@ import { notTemplate } from '@/fields/template'
 import { folderPathsFor } from '@/tenants'
 import { getServerSideURL } from '@/utilities/getURL'
 
-import { dataFields, importableBlocksFor } from './importableBlocks'
+import { dataFields, importableBlocksFor, type ImportContent } from './importableBlocks'
 
 /**
  * Everything that creates, reads, edits, unpublishes or deletes a Page from
@@ -14,7 +14,15 @@ import { dataFields, importableBlocksFor } from './importableBlocks'
  * "Import Page JSON" popup (src/collections/Pages/importHandler.ts, session
  * auth) and the keyed API for content teams' AIs (src/app/api/import, scoped
  * keys: src/import/auth.ts).
+ *
+ * `upsertPage` also creates Articles (`content: 'articles'`, the textEditor
+ * collection), for the Articles lists' "Import Article JSON" popup. Reading,
+ * editing and deleting through the keyed API are still Pages only.
  */
+
+/** The collection each kind of import writes to. */
+const COLLECTION_FOR = { pages: 'pages', articles: 'textEditor' } as const
+type ImportCollection = (typeof COLLECTION_FOR)[ImportContent]
 
 /** An error with an HTTP status and, for validation, the list of problems. */
 export class ImportError extends Error {
@@ -38,6 +46,7 @@ interface Issues {
 
 interface Ctx {
   payload: Payload
+  content: ImportContent
   folderId: number
   tenantSlug: string
   dryRun: boolean
@@ -74,8 +83,8 @@ const BUTTON_DEFAULTS: Record<string, { primary: ButtonValue; secondary: ButtonV
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
-export const adminPageURL = (id: number | string) =>
-  `${getServerSideURL()}/admin/collections/pages/${id}`
+export const adminPageURL = (id: number | string, collection: ImportCollection = 'pages') =>
+  `${getServerSideURL()}/admin/collections/${collection}/${id}`
 
 // ---------------------------------------------------------------- folders
 
@@ -91,16 +100,18 @@ export interface KeyScope {
 }
 
 /**
- * The page folder for `folderPath` (e.g. "ptofthecity/services"). With a
- * `scope` (a key's), any other folder is refused.
+ * The page (or, with `content: 'articles'`, article) folder for `folderPath`
+ * (e.g. "ptofthecity/services"). With a `scope` (a key's), any other folder is
+ * refused.
  */
 export async function resolveFolder(
   payload: Payload,
   folderPath: unknown,
   scope?: KeyScope,
+  content: ImportContent = 'pages',
 ): Promise<ResolvedFolder> {
-  if (typeof folderPath !== 'string' || !folderPathsFor('pages').includes(folderPath)) {
-    throw new ImportError(`"${String(folderPath ?? '')}" is not a folder that holds pages.`, 400)
+  if (typeof folderPath !== 'string' || !folderPathsFor(content).includes(folderPath)) {
+    throw new ImportError(`"${String(folderPath ?? '')}" is not a folder that holds ${content}.`, 400)
   }
   const tenantSlug = folderPath.split('/')[0]
   if (scope && !scope.folders.includes(folderPath)) {
@@ -333,7 +344,7 @@ async function normalizeFields(
         if (!partial) ctx.issues.imageSlots.push(at)
       } else if (!partial && 'required' in field && field.required) {
         ctx.issues.errors.push(`${at} is required`)
-      } else if (!partial && !META_KEYS.has(field.name) && !hasDefault(ctx.tenantSlug, field)) {
+      } else if (!partial && !META_KEYS.has(field.name) && !hasDefault(ctx, field)) {
         ctx.issues.unfilled.push(at)
       }
       continue
@@ -409,8 +420,12 @@ async function normalizeFields(
   return out
 }
 
-/** A button group the tenant's defaults fill in, so leaving it out is not a gap. */
-const hasDefault = (tenantSlug: string, field: Field) =>
+/**
+ * A button group the tenant's defaults fill in, so leaving it out is not a gap.
+ * Pages only: an article's buttons are whatever its content gives.
+ */
+const hasDefault = ({ content, tenantSlug }: Ctx, field: Field) =>
+  content === 'pages' &&
   field.type === 'group' &&
   'name' in field &&
   ['primaryButton', 'secondaryButton', 'button'].includes(field.name) &&
@@ -463,8 +478,8 @@ function withDefaultButtons(
   return out
 }
 
-const allowedBlocks = (tenantSlug: string) =>
-  new Map<string, Block>(importableBlocksFor(tenantSlug).map((block) => [block.slug, block]))
+const allowedBlocks = (tenantSlug: string, content: ImportContent = 'pages') =>
+  new Map<string, Block>(importableBlocksFor(tenantSlug, content).map((block) => [block.slug, block]))
 
 type StoredBlock = { blockType: string; id?: string } & Record<string, unknown>
 
@@ -489,7 +504,10 @@ async function buildBlock(
     return null
   }
   const fields = await normalizeFields(config.fields, raw, ctx, `${where}.`)
-  return { blockType, ...withDefaultButtons(ctx.tenantSlug, config.fields, fields) }
+  return {
+    blockType,
+    ...(ctx.content === 'pages' ? withDefaultButtons(ctx.tenantSlug, config.fields, fields) : fields),
+  }
 }
 
 async function buildLayout(blocks: unknown, ctx: Ctx): Promise<StoredBlock[]> {
@@ -497,7 +515,7 @@ async function buildLayout(blocks: unknown, ctx: Ctx): Promise<StoredBlock[]> {
     ctx.issues.errors.push('blocks must be a non-empty list')
     return []
   }
-  const allowed = allowedBlocks(ctx.tenantSlug)
+  const allowed = allowedBlocks(ctx.tenantSlug, ctx.content)
   const layout: StoredBlock[] = []
   for (const [index, raw] of blocks.entries()) {
     const block = await buildBlock(raw, ctx, allowed, `blocks[${index}]`)
@@ -510,8 +528,10 @@ const newCtx = (
   payload: Payload,
   folder: ResolvedFolder,
   dryRun: boolean,
+  content: ImportContent = 'pages',
 ): Ctx => ({
   payload,
+  content,
   folderId: folder.id,
   tenantSlug: folder.tenantSlug,
   dryRun,
@@ -540,9 +560,14 @@ interface PageDoc {
   layout?: StoredBlock[] | null
 }
 
-async function findPage(payload: Payload, folderId: number, slug: string) {
+async function findPage(
+  payload: Payload,
+  folderId: number,
+  slug: string,
+  collection: ImportCollection = 'pages',
+) {
   const res = await payload.find({
-    collection: 'pages',
+    collection,
     where: { and: [{ slug: { equals: slug } }, { folder: { equals: folderId } }, notTemplate] },
     limit: 1,
     depth: 0,
@@ -583,20 +608,21 @@ async function save(
   existing: PageDoc | null,
   data: Record<string, unknown>,
   publish: boolean,
+  collection: ImportCollection = 'pages',
 ): Promise<PageDoc> {
   const body = { ...data, folder: folder.id, _status: publish ? 'published' : 'draft' }
   // A draft save writes a version only, so a live page keeps serving until it is published.
   const draft = !publish
   return (existing
     ? await payload.update({
-        collection: 'pages',
+        collection,
         id: existing.id,
         data: body as never,
         draft,
         overrideAccess: true,
       })
     : await payload.create({
-        collection: 'pages',
+        collection,
         data: body as never,
         draft,
         overrideAccess: true,
@@ -616,16 +642,19 @@ export interface UpsertInput {
 /**
  * Creates a page in `folderPath`, or replaces the layout of the page there
  * with the same slug. Published unless `publish` is false; with `dryRun`,
- * validates and reports without writing or downloading images.
+ * validates and reports without writing or downloading images. With `content:
+ * 'articles'` the same happens in an article folder, on the Articles collection.
  */
 export async function upsertPage(
   payload: Payload,
   input: UpsertInput,
   scope?: KeyScope,
+  content: ImportContent = 'pages',
 ): Promise<SaveResult> {
-  const folder = await resolveFolder(payload, input.folderPath, scope)
+  const collection = COLLECTION_FOR[content]
+  const folder = await resolveFolder(payload, input.folderPath, scope, content)
   const dryRun = input.dryRun === true
-  const ctx = newCtx(payload, folder, dryRun)
+  const ctx = newCtx(payload, folder, dryRun, content)
 
   const title = typeof input.title === 'string' ? input.title.trim() : ''
   const slug = typeof input.slug === 'string' ? input.slug.trim() : ''
@@ -646,7 +675,7 @@ export async function upsertPage(
 
   if (ctx.issues.errors.length > 0) return { ok: false, ...base }
 
-  const existing = await findPage(payload, folder.id, slug)
+  const existing = await findPage(payload, folder.id, slug, collection)
   if (dryRun) {
     return { ok: true, ...base, updated: Boolean(existing), blocksCount: layout.length }
   }
@@ -657,6 +686,7 @@ export async function upsertPage(
     existing,
     { title, slug, layout, ...seoData(input.seo) },
     input.publish !== false,
+    collection,
   )
   return {
     ok: true,
@@ -665,7 +695,7 @@ export async function upsertPage(
     id: page.id,
     status: page._status ?? undefined,
     blocksCount: layout.length,
-    adminUrl: adminPageURL(page.id),
+    adminUrl: adminPageURL(page.id, collection),
   }
 }
 

@@ -80,11 +80,32 @@ const labelStyle: React.CSSProperties = {
   marginBottom: '6px',
 }
 
+/** What differs between importing a page and an article. */
+const KINDS = {
+  pages: {
+    noun: 'Page',
+    endpoint: '/api/pages/import',
+    titleExample: 'e.g. Medical Billing & Claims Recovery',
+    slugExample: 'e.g. advanced-medical-billing',
+  },
+  articles: {
+    noun: 'Article',
+    endpoint: '/api/textEditor/import',
+    titleExample: 'e.g. Five Ways to Prevent a Running Injury',
+    slugExample: 'e.g. prevent-a-running-injury',
+  },
+} as const
+
 export const ImportPageModalClient: React.FC<{
   aiPrompt: string
+  content?: 'pages' | 'articles'
   folderLabel: string
   folderPath: string
-}> = ({ aiPrompt, folderLabel, folderPath }) => {
+}> = ({ aiPrompt, content = 'pages', folderLabel, folderPath }) => {
+  const kind = KINDS[content]
+  const noun = kind.noun
+  const lower = noun.toLowerCase()
+  const a = content === 'pages' ? 'a' : 'an'
   const [isOpen, setIsOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -167,17 +188,17 @@ export const ImportPageModalClient: React.FC<{
     }
 
     if (!title.trim()) {
-      toast.error('Please enter a Page Title')
+      toast.error(`Please enter ${a} ${noun} Title`)
       return
     }
     if (!slug.trim()) {
-      toast.error('Please enter a Page Slug')
+      toast.error(`Please enter ${a} ${noun} Slug`)
       return
     }
 
     setIsLoading(true)
     try {
-      const res = await fetch('/api/pages/import', {
+      const res = await fetch(kind.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -237,7 +258,7 @@ export const ImportPageModalClient: React.FC<{
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
-        Import Page JSON
+        Import {noun} JSON
       </button>
 
       {isOpen && (
@@ -276,10 +297,10 @@ export const ImportPageModalClient: React.FC<{
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>
-                  Import Page from JSON
+                  Import {noun} from JSON
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: '0.875rem', opacity: 0.7 }}>
-                  Into <strong>{folderLabel}</strong>. A page with the same slug here is updated. The page is published right away.
+                  Into <strong>{folderLabel}</strong>. {a === 'a' ? 'A page' : 'An article'} with the same slug here is updated. It is published right away.
                 </p>
               </div>
               <button
@@ -312,7 +333,7 @@ export const ImportPageModalClient: React.FC<{
               }}
             >
               <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8 }}>
-                Copy the prompt into an AI chat, add your page content after it, and paste the JSON
+                Copy the prompt into an AI chat, add your {lower} content after it, and paste the JSON
                 it returns below. It lists this folder&apos;s components.
               </p>
               <button
@@ -327,10 +348,10 @@ export const ImportPageModalClient: React.FC<{
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label style={labelStyle}>Page Title *</label>
+                <label style={labelStyle}>{noun} Title *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Medical Billing & Claims Recovery"
+                  placeholder={kind.titleExample}
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   disabled={isLoading}
@@ -342,7 +363,7 @@ export const ImportPageModalClient: React.FC<{
                 <label style={labelStyle}>Slug *</label>
                 <input
                   type="text"
-                  placeholder="e.g. advanced-medical-billing"
+                  placeholder={kind.slugExample}
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   disabled={isLoading}

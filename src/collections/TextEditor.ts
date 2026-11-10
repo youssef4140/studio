@@ -16,6 +16,7 @@ import {
 } from '@/fields/template'
 import { autoAssignMediaFolder } from '@/media/autoAssignFolder'
 import { fromTemplateEndpoint } from '@/templates/fromTemplate'
+import { importArticleHandler } from './Pages/importHandler'
 
 /**
  * Articles (§1.3): the same shape as Pages — title, a `layout` blocks array,
@@ -41,6 +42,8 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
       // Under a subfolder list's heading: Create New, blank or from a template.
       Description: '@/admin/components/TemplatePicker#TemplatePicker',
       edit: templateEditComponents,
+      // The "Import Article JSON" button, on an article subfolder's list only.
+      beforeListTable: ['@/admin/components/ImportPageModal#ImportPageModal'],
     },
   },
   defaultPopulate: {
@@ -90,8 +93,11 @@ export const TextEditor: CollectionConfig<'textEditor'> = {
     },
     seoField,
   ],
-  // POST /api/textEditor/from-template/:id — the Create New chooser's "start from a template".
-  endpoints: [fromTemplateEndpoint('textEditor')],
+  // from-template: the Create New chooser's "start from a template"; import: the "Import Article JSON" popup.
+  endpoints: [
+    fromTemplateEndpoint('textEditor'),
+    { path: '/import', method: 'post', handler: importArticleHandler },
+  ],
   versions: {
     drafts: true,
   },
